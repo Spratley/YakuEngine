@@ -27,26 +27,26 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -70,6 +70,14 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)BuildOutput\$(Configuration)\</OutDir>
+    <IntDir>BuildOutput\$(Configuration)\Intermediates\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)BuildOutput\$(Configuration)\</OutDir>
+    <IntDir>BuildOutput\$(Configuration)\Intermediates\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
@@ -131,7 +139,34 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Temp.cpp" />
+    <ClCompile Include="Libraries\HIDra\Gamepad\HIDraGamepad.cpp" />
+    <ClCompile Include="Libraries\HIDra\Gamepad\HIDraGamepadManager.cpp" />
+    <ClCompile Include="Libraries\HIDra\Gamepad\HIDraGenericGamepad.cpp" />
+    <ClCompile Include="Libraries\HIDra\HIDra.cpp" />
+    <ClCompile Include="Libraries\HIDra\HIDraTypes.cpp" />
+    <ClCompile Include="Libraries\HIDra\Keyboard\HIDraKeyboardManager.cpp" />
+    <ClCompile Include="Libraries\HIDra\Platforms\Windows\Gamepad\HIDraGamepadDecoder_Windows.cpp" />
+    <ClCompile Include="Libraries\HIDra\Platforms\Windows\Gamepad\HIDraGamepad_Windows.cpp" />
+    <ClCompile Include="Libraries\HIDra\Platforms\Windows\HIDraCore_Windows.cpp" />
+    <ClCompile Include="Libraries\HIDra\Platforms\Windows\Keyboard\HIDraKeyCodeTranslator_Windows.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Libraries\HIDra\Gamepad\HIDraGamepad.h" />
+    <ClInclude Include="Libraries\HIDra\Gamepad\HIDraGamepadManager.h" />
+    <ClInclude Include="Libraries\HIDra\Gamepad\HIDraGenericGamepad.h" />
+    <ClInclude Include="Libraries\HIDra\Gamepad\HIDraHIDDatabase.h" />
+    <ClInclude Include="Libraries\HIDra\HIDra.h" />
+    <ClInclude Include="Libraries\HIDra\HIDraDefs.h" />
+    <ClInclude Include="Libraries\HIDra\HIDraEnums.h" />
+    <ClInclude Include="Libraries\HIDra\HIDraTypes.h" />
+    <ClInclude Include="Libraries\HIDra\Keyboard\HIDraKeyboardManager.h" />
+    <ClInclude Include="Libraries\HIDra\Platforms\Windows\Gamepad\HIDraGamepadDecoder_Windows.h" />
+    <ClInclude Include="Libraries\HIDra\Platforms\Windows\Gamepad\HIDraGamepad_Windows.h" />
+    <ClInclude Include="Libraries\HIDra\Platforms\Windows\HIDraCore_Windows.h" />
+    <ClInclude Include="Libraries\HIDra\Platforms\Windows\Keyboard\HIDraKeyCodeTranslator_Windows.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Libraries\HIDra\Platforms\HIDraPlatformInclude.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
