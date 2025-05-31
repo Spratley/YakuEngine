@@ -1,0 +1,3 @@
+[submodule "Libraries/HIDra"]
+	path = Libraries/HIDra
+	url = https://github.com/Spratley/HIDra.git
