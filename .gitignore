@@ -406,5 +406,5 @@ FodyWeavers.xsd
 *.sln.iml
 
 # Custom Excludes
-.vcxproj
-.vcxproj.filters
+*.vcxproj
+*.vcxproj.filters
