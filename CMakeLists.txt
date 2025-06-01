@@ -22,6 +22,19 @@ target_sources(YakuEngine PRIVATE ${ENGINE_SOURCES})
 # Set public include directory
 target_include_directories(YakuEngine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
+# Setup Precompiled Headers
+set(PCH_HEADER "YK_PCH.h")
+set(PCH_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/PCH/YK_PCH.cpp")
+set(PCH_OUTPUT "${CMAKE_BINARY_DIR}/PCH/YK.pch")
+set_source_files_properties(${PCH_SOURCE} PROPERTIES COMPILE_FLAGS "/Yc${PCH_HEADER} /Fp${PCH_OUTPUT}")
+target_compile_options(YakuEngine PRIVATE "/YuPCH/${PCH_HEADER}" "/Fp${PCH_OUTPUT}")
+
+# Disable PCH for external code
+file(GLOB_RECURSE NO_PCH_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/*cpp)
+foreach(file ${NO_PCH_SOURCES})
+	set_source_files_properties(${file} PROPERTIES COMPILE_FLAGS "/Y-")
+endforeach()
+
 # Project Settings
 include(${CMAKE_SOURCE_DIR}/YakuEngine/CMake/CommonSettings.cmake)
 
