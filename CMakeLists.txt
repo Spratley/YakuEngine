@@ -1,5 +1,3 @@
-project (YakuEngine LANGUAGES CXX)
-
 # Create the static library
 add_library(YakuEngine STATIC)
 
