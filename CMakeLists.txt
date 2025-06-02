@@ -23,9 +23,9 @@ target_sources(YakuEngine PRIVATE ${ENGINE_SOURCES})
 target_include_directories(YakuEngine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Setup Precompiled Headers
-set(PCH_HEADER "YK_PCH.h")
-set(PCH_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/PCH/YK_PCH.cpp")
-set(PCH_OUTPUT "${CMAKE_BINARY_DIR}/PCH/YK.pch")
+set(PCH_HEADER "Yaku_PCH.h")
+set(PCH_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/PCH/Yaku_PCH.cpp")
+set(PCH_OUTPUT "${CMAKE_BINARY_DIR}/PCH/Yaku.pch")
 set_source_files_properties(${PCH_SOURCE} PROPERTIES COMPILE_FLAGS "/Yc${PCH_HEADER} /Fp${PCH_OUTPUT}")
 target_compile_options(YakuEngine PRIVATE "/YuPCH/${PCH_HEADER}" "/Fp${PCH_OUTPUT}")
 
