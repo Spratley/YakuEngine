@@ -3,6 +3,8 @@ setlocal enabledelayedexpansion
 
 echo Cleaning up CMake junk.. If you want something done right you've got to do it yourself I guess
 
+if exist "CMakeCache.txt" (del /q "CmakeCache.txt")
+
 set "HOME_DIR=%CD%"
 cd ../../
 
