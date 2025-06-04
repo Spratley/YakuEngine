@@ -64,3 +64,56 @@ function(yaku_link TARGET_NAME ACCESS_TYPE)
 		target_link_libraries(${TARGET_NAME} ${ACCESS_TYPE} ${LIBRARY})
 	endforeach()
 endfunction()
+
+function(yaku_solution NAME)
+	# Configuration settings
+	set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Retail" CACHE STRING "" FORCE)
+	# Shared project settings
+	include(${CMAKE_SOURCE_DIR}/YakuEngine/CMake/CommonSettings.cmake)
+endfunction()
+
+function(yaku_subproject_dir NAME DIRECTORY)
+	add_subdirectory(${NAME} ${CMAKE_SOURCE_DIR}/${DIRECTORY})
+endfunction()
+
+function(yaku_subproject NAME)
+	yaku_subproject_dir(${NAME} ${NAME})
+endfunction()
+
+function(yaku_startup PROJECT_NAME)
+	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+endfunction()
+
+function(apply_configuration_settings TARGET_NAME)
+	if(MSVC)
+		# Set SubSystem
+		foreach(CONFIG_NAME DEBUG RELEASE RETAIL)
+			if(CONFIG_NAME STREQUAL "RETAIL")
+				set_target_properties(${TARGET_NAME} PROPERTIES
+					LINK_FLAGS_${CONFIG_NAME} "/SUBSYSTEM:WINDOWS"
+				)
+			else()
+				set_target_properties(${TARGET_NAME} PROPERTIES
+					LINK_FLAGS_${CONFIG_NAME} "/SUBSYSTEM:CONSOLE"
+				)
+			endif()
+		endforeach()
+
+		# Set Debug and Optimizations for Retail
+		target_compile_definitions(${TARGET_NAME} PRIVATE
+			$<$<CONFIG:Retail>:YAKU_RETAIL;NDEBUG>
+		)
+		target_compile_options(${TARGET_NAME} PRIVATE
+			$<$<CONFIG:Retail>:/O2 /Ob2 /MD>
+		)
+		target_link_options(${TARGET_NAME} PRIVATE
+			$<$<CONFIG:Retail>:/INCREMENTAL:NO /DEBUG:NONE>
+		)
+	endif()
+endfunction()
+
+function(yaku_config_projects)
+	foreach(PROJECT_NAME IN LISTS ARGN)
+		apply_configuration_settings(${PROJECT_NAME})
+	endforeach()
+endfunction()
