@@ -23,6 +23,13 @@ function(yaku_pch_exclude TARGET_NAME)
 	endforeach()
 endfunction()
 
+function(yaku_set_output_dirs TARGET_NAME)
+	set_target_properties(${TARGET_NAME} PROPERTIES
+	RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+	LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+	ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+	)
+endfunction()
 
 function(yaku_project_body TARGET_NAME)
 	# Gather all code files
@@ -42,7 +49,8 @@ function(yaku_project_body TARGET_NAME)
 	
 	#Project Settings
 	include(${CMAKE_SOURCE_DIR}/YakuEngine/CMake/CommonSettings.cmake)
-
+	
+	yaku_set_output_dirs(${TARGET_NAME})
 endfunction()
 
 function(yaku_executable TARGET_NAME EXE_NAME)
@@ -60,9 +68,7 @@ function(yaku_lib TARGET_NAME LIB_TYPE)
 endfunction()
 
 function(yaku_link TARGET_NAME ACCESS_TYPE)
-	foreach(LIBRARY IN LISTS ARGN)
-		target_link_libraries(${TARGET_NAME} ${ACCESS_TYPE} ${LIBRARY})
-	endforeach()
+	target_link_libraries(${TARGET_NAME} ${ACCESS_TYPE} ${ARGN})
 endfunction()
 
 function(yaku_solution NAME)
@@ -72,8 +78,8 @@ function(yaku_solution NAME)
 	include(${CMAKE_SOURCE_DIR}/YakuEngine/CMake/CommonSettings.cmake)
 endfunction()
 
-function(yaku_subproject_dir NAME DIRECTORY)
-	add_subdirectory(${NAME} ${CMAKE_SOURCE_DIR}/${DIRECTORY})
+function(yaku_subproject_dir DIRECTORY)
+	add_subdirectory(${DIRECTORY} ${CMAKE_SOURCE_DIR}/${DIRECTORY})
 endfunction()
 
 function(yaku_subproject NAME)
