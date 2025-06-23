@@ -4,6 +4,7 @@ function(yaku_pch TARGET_NAME PCH_NAME)
 	set(PCH_OUTPUT "${CMAKE_BINARY_DIR}/PCH/${PCH_NAME}.pch")
 	set_source_files_properties(${PCH_SOURCE} PROPERTIES COMPILE_FLAGS "/Yc${PCH_HEADER} /Fp${PCH_OUTPUT}")
 	target_compile_options(${TARGET_NAME} PRIVATE "/YuPCH/${PCH_HEADER}" "/Fp${PCH_OUTPUT}")
+	target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/PCH)
 endfunction()
 
 function(yaku_pch_exclude TARGET_NAME)
@@ -12,7 +13,7 @@ function(yaku_pch_exclude TARGET_NAME)
 		get_filename_component(ABS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${EXCLUDE_FOLDER}" ABSOLUTE)
 
 		if(EXISTS "${ABS_PATH}" AND IS_DIRECTORY "${ABS_PATH}")
-			file(GLOB_RECURSE NO_PCH_SOURCES CONFIGURE_DEPENDS "${ABS_PATH}/*.cpp")
+			file(GLOB_RECURSE NO_PCH_SOURCES CONFIGURE_DEPENDS "${ABS_PATH}/*.cpp" "${ABS_PATH}/*.c")
 			foreach(EXCLUDE_FILE IN LISTS NO_PCH_SOURCES)
 				set_source_files_properties(${EXCLUDE_FILE} PROPERTIES COMPILE_FLAGS "/Y-")
 				message(STATUS "Disabling PCH for: ${EXCLUDE_FILE}")
@@ -32,12 +33,14 @@ function(yaku_set_output_dirs TARGET_NAME)
 endfunction()
 
 function(yaku_project_body TARGET_NAME)
+	set(CMAKE_CXX_STANDARD 20)
 	# Gather all code files
 	file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS
 		${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/*.h
 		${CMAKE_CURRENT_SOURCE_DIR}/*.hpp
 		${CMAKE_CURRENT_SOURCE_DIR}/*.inl
+		${CMAKE_CURRENT_SOURCE_DIR}/*.c
 	)
 
 	# Generate project filters
@@ -122,4 +125,12 @@ function(yaku_config_projects)
 	foreach(PROJECT_NAME IN LISTS ARGN)
 		apply_configuration_settings(${PROJECT_NAME})
 	endforeach()
+endfunction()
+
+function(yaku_link_lib TARGET_NAME LIB_PATH)
+	target_link_libraries(${TARGET_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/${LIB_PATH}.lib")
+endfunction()
+
+function(yaku_add_include_dir TARGET_NAME INCLUDE_PATH)
+	target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/${INCLUDE_PATH})
 endfunction()

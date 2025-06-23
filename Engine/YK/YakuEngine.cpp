@@ -1,0 +1,52 @@
+#include "PCH/YakuEngine_PCH.h"
+#include "YakuEngine.h"
+
+#include "CG/CG_RenderModule.h"
+
+// TODO: Figure out how to make this platform agnostic at this level
+#include "YK/Platforms/YK_PlatformDefines.h"
+#include "YK/Platforms/Windows/YK_WindowsWindow.h"
+
+bool YakuEngine::Init()
+{
+	if (!m_platformCore.Init())
+	{
+		return false;
+	}
+
+	m_renderModule = new CG_RenderModule(m_platformCore.GetMainWindow()->GetGLFWWindow()); // TODO: Don't do this
+
+	return true;
+}
+
+void YakuEngine::ShutDown()
+{
+	YKC_SAFE_DELETE(m_game);
+
+	YKC_SAFE_DELETE(m_renderModule);
+
+	m_platformCore.ShutDown();
+}
+
+void YakuEngine::EngineLoop()
+{
+	// Run Game Loop
+	while (!m_platformCore.ShouldClose())
+	{
+		BeginFrame();
+
+		m_renderModule->Render();
+
+		EndFrame();
+	}
+}
+
+void YakuEngine::BeginFrame()
+{
+	m_platformCore.OnFrameStart();
+}
+
+void YakuEngine::EndFrame()
+{
+
+}
