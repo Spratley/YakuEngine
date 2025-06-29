@@ -1,0 +1,11 @@
+#pragma once
+
+#include "CG/Mesh/CG_Mesh.h"
+
+class CG_MeshFactory
+{
+public:
+	static CG_Mesh* FromData(float* p_vertexData, YK_U32 p_vertexDataCount, YK_U32* p_indexData, YK_U32 p_indexCount);
+
+	static CG_Mesh* Quad();
+};

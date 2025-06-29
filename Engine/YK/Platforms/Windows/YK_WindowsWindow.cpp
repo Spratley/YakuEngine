@@ -10,7 +10,7 @@ void loc_FramebufferResizeCallback(GLFWwindow* /*p_window*/, int p_width, int p_
 	glViewport(0, 0, p_width, p_height);
 }
 
-YK_WindowsWindow::YK_WindowsWindow(YK_uint32 p_width, YK_uint32 p_height)
+YK_WindowsWindow::YK_WindowsWindow(YK_U32 p_width, YK_U32 p_height)
 {
 	m_glfwWindow = glfwCreateWindow(p_width, p_height, "YakuEngine Game", NULL, NULL);
 	if (!m_glfwWindow)
@@ -20,6 +20,15 @@ YK_WindowsWindow::YK_WindowsWindow(YK_uint32 p_width, YK_uint32 p_height)
 
 	glfwSetFramebufferSizeCallback(m_glfwWindow, loc_FramebufferResizeCallback);
 	glfwMakeContextCurrent(m_glfwWindow);
+}
+
+YK_WindowsWindow::~YK_WindowsWindow()
+{
+	if (m_glfwWindow)
+	{
+		glfwDestroyWindow(m_glfwWindow);
+		m_glfwWindow = nullptr;
+	}
 }
 
 bool YK_WindowsWindow::ShouldClose() const

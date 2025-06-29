@@ -21,9 +21,9 @@ bool YakuEngine::Init()
 
 void YakuEngine::ShutDown()
 {
-	YKC_SAFE_DELETE(m_game);
+	YK_SAFE_DELETE(m_game);
 
-	YKC_SAFE_DELETE(m_renderModule);
+	YK_SAFE_DELETE(m_renderModule);
 
 	m_platformCore.ShutDown();
 }

@@ -408,3 +408,4 @@ FodyWeavers.xsd
 # Custom Excludes
 *.vcxproj
 *.vcxproj.filters
+*.dir/

@@ -6,7 +6,7 @@
 
 #include "YKC/Types/YKC_Vector.h"
 
-template <typename DataType, YK_uint32 RowCount, YK_uint32 ColumnCount>
+template <typename DataType, YK_U32 RowCount, YK_U32 ColumnCount>
 struct YK_Matrix_R_C
 {
 	using MatrixType = YK_Matrix_R_C<DataType, RowCount, ColumnCount>;
@@ -18,8 +18,8 @@ public:
 
 	constexpr YK_Matrix_R_C(DataType p_diagonal) : m_rows{}
 	{
-		YK_uint32 lowestDimension = YK_Min(RowCount, ColumnCount);
-		for (YK_uint32 i = 0; i < lowestDimension; ++i)
+		YK_U32 lowestDimension = YK_Min(RowCount, ColumnCount);
+		for (YK_U32 i = 0; i < lowestDimension; ++i)
 		{
 			m_rows[i][i] = p_diagonal;
 		}
@@ -35,11 +35,14 @@ public:
 	// Note: Shallow copies only!
 	YK_Matrix_R_C(MatrixType const& p_other)
 	{
-		std::memcpy(GetData(), p_other.GetData(), sizeof(DataType) * (RowCount * ColumnCount))
+		std::memcpy(GetData(), p_other.GetData(), sizeof(DataType) * (RowCount * ColumnCount));
 	}
 
-	constexpr DataType& operator[](size_t const p_index) { return m_data[p_index]; }
-	constexpr DataType const& operator[](size_t const p_index) const { return m_data[p_index]; }
+	constexpr DataType& operator[](size_t const p_index) { return m_rows[p_index]; }
+	constexpr DataType const& operator[](size_t const p_index) const { return m_rows[p_index]; }
+
+	DataType* GetData() { return m_rows[0].GetData(); }
+	constexpr DataType const* GetData() const { return m_rows[0].GetData(); }
 
 private:
 	YK_Vector_N<DataType, ColumnCount> m_rows[RowCount];

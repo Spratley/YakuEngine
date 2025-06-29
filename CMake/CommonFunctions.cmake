@@ -57,12 +57,14 @@ function(yaku_project_body TARGET_NAME)
 endfunction()
 
 function(yaku_executable TARGET_NAME EXE_NAME)
+	set(CMAKE_CXX_STANDARD 20)
 	add_executable(${TARGET_NAME})
 	set_target_properties(${TARGET_NAME} PROPERTIES OUTPUT_NAME "${EXE_NAME}")
 	yaku_project_body(${TARGET_NAME})
 endfunction()
 
 function(yaku_lib TARGET_NAME LIB_TYPE)
+	set(CMAKE_CXX_STANDARD 20)
 	add_library(${TARGET_NAME} ${LIB_TYPE})
 	yaku_project_body(${TARGET_NAME})
 

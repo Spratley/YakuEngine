@@ -5,9 +5,9 @@
 #include "YKC_TypeTraits.h"
 
 #define DECL_VECTOR_ACCESSOR(AccessorName, MinimumDimensionCount)																					\
-template <typename VectorBase, typename DataType, YK_uint32 DimensionCount, typename Enable = void>														\
+template <typename VectorBase, typename DataType, YK_U32 DimensionCount, typename Enable = void>														\
 struct Vector_Accessor_##AccessorName {};																											\
-template <typename VectorBase, typename DataType, YK_uint32 DimensionCount>																				\
+template <typename VectorBase, typename DataType, YK_U32 DimensionCount>																				\
 struct Vector_Accessor_##AccessorName <VectorBase, DataType, DimensionCount, typename YK_EnableIf<(DimensionCount > MinimumDimensionCount)>::Type>	\
 {																																					\
 	constexpr inline DataType& AccessorName() { return static_cast<VectorBase*>(this)->m_data[MinimumDimensionCount]; }								\
@@ -23,7 +23,7 @@ DECL_VECTOR_ACCESSOR(w, 3);
 
 #define APPLY_VECTOR_ACCESSOR(AccessorName) public Vector_Accessor_##AccessorName<YK_Vector_N<DataType, DimensionCount>, DataType, DimensionCount>
 
-template <typename DataType, YK_uint32 DimensionCount>
+template <typename DataType, YK_U32 DimensionCount>
 struct YK_Vector_N
 	: APPLY_VECTOR_ACCESSOR(x)
 	, APPLY_VECTOR_ACCESSOR(y)
@@ -40,7 +40,7 @@ public:
 	constexpr YK_Vector_N() : m_data{} {}
 	constexpr YK_Vector_N(DataType p_defaultValue) : m_data{}
 	{
-		for (YK_uint32 i = 0; i < DimensionCount; ++i)
+		for (YK_U32 i = 0; i < DimensionCount; ++i)
 		{
 			m_data[i] = p_defaultValue;
 		}
@@ -58,7 +58,7 @@ public:
 
 	constexpr VectorType& operator+=(VectorType const& p_rhs)
 	{
-		for (YK_uint32 i = 0; i < DimensionCount; ++i)
+		for (YK_U32 i = 0; i < DimensionCount; ++i)
 		{
 			m_data[i] += p_rhs.m_data[i];
 		}
@@ -67,7 +67,7 @@ public:
 
 	constexpr VectorType& operator-=(VectorType const& p_rhs)
 	{
-		for (YK_uint32 i = 0; i < DimensionCount; ++i)
+		for (YK_U32 i = 0; i < DimensionCount; ++i)
 		{
 			m_data[i] -= p_rhs.m_data[i];
 		}
@@ -86,7 +86,7 @@ public:
 
 	constexpr VectorType& operator*=(float const& p_scalar)
 	{
-		for (YK_uint32 i = 0; i < DimensionCount; ++i)
+		for (YK_U32 i = 0; i < DimensionCount; ++i)
 		{
 			m_data[i] *= p_scalar;
 		}
@@ -105,7 +105,7 @@ public:
 
 	constexpr VectorType& operator/=(float const& p_scalar)
 	{
-		for (YK_uint32 i = 0; i < DimensionCount; ++i)
+		for (YK_U32 i = 0; i < DimensionCount; ++i)
 		{
 			m_data[i] /= p_scalar;
 		}
@@ -128,7 +128,7 @@ public:
 public:
 	constexpr VectorType& Scale(VectorType const& p_other)
 	{
-		for (YK_uint32 i = 0; i < DimensionCount; ++i)
+		for (YK_U32 i = 0; i < DimensionCount; ++i)
 		{
 			m_data[i] *= p_other.m_data[i];
 		}
@@ -159,7 +159,7 @@ public:
 	constexpr float Dot(VectorType const& p_other) const
 	{
 		float result = 0;
-		for (YK_uint32 i = 0; i < DimensionCount; ++i)
+		for (YK_U32 i = 0; i < DimensionCount; ++i)
 		{
 			result += m_data[i] * p_other.m_data[i];
 		}
@@ -174,7 +174,7 @@ public:
 	constexpr float SqrMagnitude() const
 	{
 		float result = 0;
-		for (YK_uint32 i = 0; i < DimensionCount; ++i)
+		for (YK_U32 i = 0; i < DimensionCount; ++i)
 		{
 			result += m_data[i] * m_data[i];
 		}
@@ -210,6 +210,6 @@ using YK_Vector2f = YK_Vector_N<float, 2>;
 using YK_Vector3f = YK_Vector_N<float, 3>;
 using YK_Vector4f = YK_Vector_N<float, 4>;
 
-using YK_Vector2i = YK_Vector_N<YK_int32, 2>;
-using YK_Vector3i = YK_Vector_N<YK_int32, 3>;
-using YK_Vector4i = YK_Vector_N<YK_int32, 4>;
+using YK_Vector2i = YK_Vector_N<YK_Int32, 2>;
+using YK_Vector3i = YK_Vector_N<YK_Int32, 3>;
+using YK_Vector4i = YK_Vector_N<YK_Int32, 4>;

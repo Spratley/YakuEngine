@@ -5,4 +5,4 @@
 #include "YKC/Math/YKC_MathUtils.h"
 
 #include "YKC/Types/YKC_Integer.h"
-#include "YKC/Types/YKC_Vector.h"
+#include "YKC/Types/YKC_Matrix.h" // Includes YKC_Vector.h
