@@ -1,5 +1,5 @@
 #include "PCH/CG_PCH.h"
-#include "CG/Mesh/CG_Mesh.h"
+#include "CG_Mesh.h"
 
 #include "CG/OpenGL/CG_GLMeshBuffer.h"
 

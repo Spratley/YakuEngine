@@ -1,3 +1,3 @@
 #include "PCH/CG_PCH.h"
-#include "CG/Renderable/CG_Renderable.h"
+#include "CG_Renderable.h"
 

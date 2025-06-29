@@ -4,7 +4,7 @@ class CG_Mesh;
 
 // TODO: Buffer ID pooling
 // ...whatever that means
-class CG_GLMeshBuffer
+struct CG_GLMeshBuffer
 {
 public:
 	CG_GLMeshBuffer() = delete;

@@ -6,6 +6,7 @@ struct GLFWwindow;
 // Temp
 class CG_Mesh;
 class CG_Shader;
+class CG_Texture;
 
 class CG_RenderModule
 {
@@ -23,4 +24,5 @@ private:
 	// TEMP
 	CG_Mesh* temp_quad;
 	CG_Shader* temp_shader;
+	CG_Texture* temp_texture;
 };

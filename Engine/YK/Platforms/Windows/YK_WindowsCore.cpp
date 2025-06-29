@@ -52,8 +52,9 @@ bool YK_WindowsCore::Init()
 		return false;
 	}
 
+	// TODO: This probably shouldn't be here
 	glViewport(0, 0, 800, 500);
-	glClearColor(0.5f, 1.0f, 0.2f, 1.0f);
+	glClearColor(0.1133f, 0.1269f, 0.1122f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 
 	return true;

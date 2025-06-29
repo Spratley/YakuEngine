@@ -3,7 +3,7 @@
 #include "CG/GPU/CG_GPUResource.h"
 
 // TODO: Decouple mesh and OpenGL
-class CG_GLMeshBuffer;
+struct CG_GLMeshBuffer;
 
 class CG_Mesh : public CG_GPUResource<CG_Mesh>
 {
@@ -11,6 +11,7 @@ class CG_Mesh : public CG_GPUResource<CG_Mesh>
 	friend class CG_GPUResource<CG_Mesh>;
 public:
 	CG_Mesh();
+	// TODO: Destructor
 
 	CG_Mesh& operator=(CG_Mesh& p_otherMesh) = delete;
 	CG_Mesh& operator=(CG_Mesh&& p_otherMesh) noexcept;
@@ -31,7 +32,7 @@ private:
 
 	void SetData(float* p_vertexBuffer, YK_U32 p_vertexBufferCount, YK_U32* p_indexBuffer, YK_U32 p_indexBufferCount);
 
-	// CG_GPUResource implementation
+	// CG_GPUResource implementations
 	bool HasDataImpl() const { return m_vertexBuffer && m_indexBuffer; }
 	bool HasGPUDataImpl() const { return m_glData; }
 

@@ -1,5 +1,5 @@
 #include "PCH/CG_PCH.h"
-#include "CG/Mesh/CG_MeshFactory.h"
+#include "CG_MeshFactory.h"
 
 CG_Mesh* CG_MeshFactory::FromData(float* p_vertexData, YK_U32 p_vertexDataCount, YK_U32* p_indexData, YK_U32 p_indexCount)
 {
