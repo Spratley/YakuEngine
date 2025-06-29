@@ -409,3 +409,5 @@ FodyWeavers.xsd
 *.vcxproj
 *.vcxproj.filters
 *.dir/
+*cmake_install.cmake
+*CMakeFiles/

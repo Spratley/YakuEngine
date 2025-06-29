@@ -22,7 +22,7 @@ bool YK_IFile::Open(const char* p_path)
 #if !YAKU_RETAIL
 	if (m_inputFileStream.is_open())
 	{
-		// Assert file is closed
+		// TODO: Assert file is closed
 	}
 #endif // !YAKU_RETAIL
 
@@ -34,7 +34,9 @@ bool YK_IFile::Open(const char* p_path)
 	}
 	catch (std::ifstream::failure /*error*/)
 	{
-		// TODO: LOG FAILED OPEN
+		// TODO: String builder
+		YK_LOG_ERROR("Failed to open file:");
+		YK_LOG_ERROR(p_path);
 		return false;
 	}
 	return true;
@@ -59,7 +61,7 @@ bool YK_IFile::GetContents(std::stringstream& p_destination) const
 		}
 		catch (std::ifstream::failure /*error*/)
 		{
-			// TODO: Log failed to read
+			YK_LOG_ERROR("Failed to read file contents!");
 		}
 	}
 
@@ -81,7 +83,7 @@ bool YK_OFile::Open(const char* p_path)
 #if !YAKU_RETAIL
 	if (m_outputFileStream.is_open())
 	{
-		// Assert file is closed
+		// TODO: Assert file is closed
 	}
 #endif // !YAKU_RETAIL
 
@@ -93,7 +95,8 @@ bool YK_OFile::Open(const char* p_path)
 	}
 	catch (std::ifstream::failure /*error*/)
 	{
-		// TODO: LOG FAILED OPEN
+		YK_LOG_ERROR("Failed to open file:");
+		YK_LOG_ERROR(p_path);
 		return false;
 	}
 	return true;

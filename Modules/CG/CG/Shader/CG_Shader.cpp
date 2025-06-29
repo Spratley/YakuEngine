@@ -3,7 +3,7 @@
 
 #include <GLAD/include/glad/glad.h>
 
-#include "YKC/IO/YKC_IOFile.h"
+#include "YKC/IO/File/YKC_IOFile.h"
 
 CG_Shader::CG_Shader(const char* p_vertexPath, const char* p_fragmentPath)
 	: m_id(0)
@@ -92,8 +92,8 @@ void CG_Shader::LogShaderErrors(YK_U32 p_shaderID, YK_U32 p_errorType) const
 	{
 		char infoLog[512];
 		glGetShaderInfoLog(p_shaderID, 512, NULL, infoLog);
-		// TODO: REPLACE WTH LOG
-		std::cout << "Shader compilation error!\n" << infoLog << "\n";
+		YK_LOG_ERROR("Shader compilation error!");
+		YK_LOG_ERROR(infoLog);
 	}
 #else
 	YK_UNUSED(p_outID);

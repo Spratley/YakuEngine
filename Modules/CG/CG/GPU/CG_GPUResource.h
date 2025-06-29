@@ -77,7 +77,7 @@ void CG_GPUResource<ResourceType>::UploadGPUData()
 #if !YAKU_RETAIL
 	if (HasGPUData())
 	{
-		// TODO: DebugLog
+		YK_LOG_ERROR("Attempting to re-upload GPU data!");
 		return;
 	}
 #endif // !YAKU_RETAIL
@@ -85,7 +85,7 @@ void CG_GPUResource<ResourceType>::UploadGPUData()
 	// TODO: Is it safe to allow uploading nothing? Should this check be in the YAKU_RETAIL above?
 	if (!HasData())
 	{
-		// TODO: DebugLog
+		YK_LOG_ERROR("Attempting to upload nothing to the GPU!");
 		return;
 	}
 

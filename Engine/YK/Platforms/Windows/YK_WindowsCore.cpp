@@ -7,12 +7,16 @@
 
 #include "YK_WindowsWindow.h"
 
-inline void loc_GLFWError(const char* /*errorMessage*/)
+inline void loc_GLFWError(const char* errorMessage)
 {
-	// TODO: LOG errorMessage
 	const char* error;
 	glfwGetError(&error);
-	// TODO: LOG error
+
+	// TODO: String builder
+	YK_LOG_ERROR("GLFW Error:");
+	YK_LOG_ERROR(errorMessage);
+	YK_LOG_ERROR(error);
+	
 	glfwTerminate();
 }
 
@@ -29,7 +33,7 @@ bool YK_WindowsCore::Init()
 #if !YAKU_RETAIL
 	if (m_mainWindow)
 	{
-		// TODO: DEBUG LOG "Attempting to re-initialize main window!"
+		YK_LOG_ERROR("Attempting to re-initialize main window!");
 		return false;
 	}
 #endif // !YAKU_RETAIL

@@ -74,9 +74,6 @@ void CG_Mesh::SetData(float* p_vertexBuffer, YK_U32 p_vertexBufferCount, YK_U32*
 	m_vertexBuffer = new float[m_vertexBufferCount];
 	m_indexBuffer = new YK_U32[m_indexBufferCount];
 
-	YK_UNUSED(p_vertexBuffer);
-	YK_UNUSED(p_indexBuffer);
-
 	memcpy(m_vertexBuffer, p_vertexBuffer, sizeof(float) * p_vertexBufferCount);
 	memcpy(m_indexBuffer, p_indexBuffer, sizeof(YK_U32) * p_indexBufferCount);
 
