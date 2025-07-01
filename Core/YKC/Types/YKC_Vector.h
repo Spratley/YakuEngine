@@ -4,6 +4,26 @@
 #include <cstring>
 #include "YKC_TypeTraits.h"
 
+// TODO: Merge with YK_Vector_N somehow so it can be used interchangibly and seamlessly with all vector operators and math functions
+// -> Ideally YK_Vector_N and YK_Vector_View should both be able to call anything in any combination of the two so long as they share a length
+// -> YK_Vector_N.Dot(YK_VectorView) and YK_Vector_N.Dot(YK_Vector_N) should both be valid ways to call
+
+// Represents a vector whose data is stored in an external interleaved array
+// Only use if you can guarantee you won't get read errors
+// Does not manage its own data, but can mutate the 
+template <typename DataType, YK_U32 DimensionCount, YK_U32 Offset>
+struct YK_VectorView
+{
+public:
+	constexpr YK_VectorView(DataType* p_start) : m_start(p_start) {}
+
+	constexpr DataType& operator[](size_t const p_index) { return *(m_start + (p_index * Offset)); }
+	constexpr DataType const& operator[](size_t const p_index) const { return *(m_start + (p_index * Offset)); }
+
+private:
+	DataType* m_start;
+};
+
 #define DECL_VECTOR_ACCESSOR(AccessorName, MinimumDimensionCount)																					\
 template <typename VectorBase, typename DataType, YK_U32 DimensionCount, typename Enable = void>														\
 struct Vector_Accessor_##AccessorName {};																											\
@@ -169,6 +189,19 @@ public:
 	static constexpr float Dot(VectorType const& p_lhs, VectorType const& p_rhs)
 	{
 		return p_lhs.Dot(p_rhs);
+	}
+
+	// Temp until I can figure out how to make this a single unified function
+	// Dot against a VectorView
+	template <YK_U32 ViewOffset>
+	constexpr float Dot(YK_VectorView<DataType const, DimensionCount, ViewOffset> const& p_other) const
+	{
+		float result = 0;
+		for (YK_U32 i = 0; i < DimensionCount; ++i)
+		{
+			result += m_data[i] * p_other[i];
+		}
+		return result;
 	}
 
 	constexpr float SqrMagnitude() const
