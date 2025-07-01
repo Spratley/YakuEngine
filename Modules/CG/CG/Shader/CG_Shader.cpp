@@ -80,9 +80,6 @@ void CG_Shader::CompileShader(YK_U32& p_outID, const char* p_shaderCode, YK_U32 
 	LogShaderErrors(p_outID, GL_COMPILE_STATUS);
 }
 
-// TEMP
-#include <iostream>
-
 void CG_Shader::LogShaderErrors(YK_U32 p_shaderID, YK_U32 p_errorType) const
 {
 #if !YAKU_RETAIL
@@ -96,7 +93,7 @@ void CG_Shader::LogShaderErrors(YK_U32 p_shaderID, YK_U32 p_errorType) const
 		YK_LOG_ERROR(infoLog);
 	}
 #else
-	YK_UNUSED(p_outID);
+	YK_UNUSED(p_shaderID);
 	YK_UNUSED(p_errorType);
 #endif // !YAKU_RETAIL
 }

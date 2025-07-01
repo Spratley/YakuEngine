@@ -20,7 +20,7 @@
 #if !YAKU_RETAIL
 #define YK_LOG_ERROR(Message) std::cerr << Message << std::endl;
 #else
-#define YK_LOG_ERROR(Message)
+#define YK_LOG_ERROR(Message) YK_UNUSED(Message);
 #endif // !YAKU_RETAIL
 
 #if !YAKU_RETAIL

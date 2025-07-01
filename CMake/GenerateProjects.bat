@@ -8,7 +8,7 @@ if not exist %OUTPUT_DIR% mkdir %OUTPUT_DIR%
 cd %OUTPUT_DIR%
 cmake -G %GENERATOR% ..\
 
-timeout /t 5 >nul
+timeout /t 1 >nul
 
 cd /d "%HOME_DIR%"
 call CleanupCMakeJunk.bat "%OUTPUT_DIR%"

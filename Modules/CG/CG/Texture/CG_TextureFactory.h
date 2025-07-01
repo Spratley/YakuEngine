@@ -2,7 +2,6 @@
 
 #include "CG/Texture/CG_Texture.h"
 
-// TODO: Factory base class for data policy
 class CG_TextureFactory
 {
 public:
