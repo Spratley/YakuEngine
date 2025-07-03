@@ -11,9 +11,9 @@
 // - Sort and hide runtime logs based on severity and location
 
 #if !YAKU_RETAIL
-#define YK_LOG(Message) std::cout << message << std::endl;
+#define YK_LOG(Message) std::cout << Message << std::endl;
 #else
-#define YK_LOG(Message)
+#define YK_LOG(Message) YK_UNUSED(Message)
 #endif // !YAKU_RETAIL
 
 

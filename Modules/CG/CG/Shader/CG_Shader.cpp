@@ -31,7 +31,7 @@ void CG_Shader::SetFloat(const char* p_name, float p_value) const
 	glUniform1f(glGetUniformLocation(m_id, p_name), p_value);
 }
 
-void CG_Shader::SetMatrix44(const char* p_name, float* p_buffer) const
+void CG_Shader::SetMatrix44(const char* p_name, float const* p_buffer) const
 {
 	const YK_U32 matrixLocation = glGetUniformLocation(m_id, p_name);
 	glUniformMatrix4fv(matrixLocation, 1, GL_FALSE, p_buffer);

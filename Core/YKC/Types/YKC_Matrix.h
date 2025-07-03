@@ -34,15 +34,15 @@ public:
 		std::memcpy(GetData(), p_other.GetData(), sizeof(DataType) * (RowCount * ColumnCount));
 	}
 
-	constexpr DataType& operator[](size_t const p_index) { return m_rows[p_index]; }
-	constexpr DataType const& operator[](size_t const p_index) const { return m_rows[p_index]; }
+	constexpr YK_Vector_N<DataType, ColumnCount>& operator[](size_t const p_index) { return m_rows[p_index]; }
+	constexpr YK_Vector_N<DataType, ColumnCount> const& operator[](size_t const p_index) const { return m_rows[p_index]; }
 
 	friend constexpr YK_Vector_N<DataType, RowCount> operator*(MatrixType const& p_matrix, YK_Vector_N<DataType, ColumnCount> const& p_vector)
 	{
 		YK_Vector_N<DataType, RowCount> result;
 		for (int i = 0; i < RowCount; ++i)
 		{
-			result[i] = p_matrix.GetRow(i).Dot(p_vector);
+			result[i] = YK_Vector::Dot(p_matrix[i], p_vector);
 		}
 		return result;
 	}
@@ -56,23 +56,29 @@ public:
 		{
 			for (int j = 0; j < OtherMatrixColumnCount; ++j)
 			{
-				result.GetRow(i)[j] = p_lhs.GetRow(i).Dot(p_rhs.GetColumn(j));
+				result[i][j] = YK_Vector::Dot(p_lhs[i], p_rhs.GetColumn(j));
 			}
 		}
 		return result;
 	}
 
-	DataType* GetData() { return m_rows[0].GetData(); }
-	constexpr DataType const* GetData() const { return m_rows[0].GetData(); }
+	DataType* GetData() { return m_rows[0].m_data; }
+	constexpr DataType const* GetData() const { return m_rows[0].m_data; }
 
-	YK_Vector_N<DataType, ColumnCount>& GetRow(int p_rowIndex) { return m_rows[p_rowIndex]; }
-	constexpr YK_Vector_N<DataType, ColumnCount> const& GetRow(int p_rowIndex) const { return m_rows[p_rowIndex]; }
-
-	constexpr YK_VectorView<DataType const, RowCount, ColumnCount> GetColumn(int p_columnIndex) const { return YK_VectorView<DataType const, RowCount, ColumnCount>(m_rows[0].GetData() + p_columnIndex); }
+	constexpr YK_VectorView<DataType const, RowCount, ColumnCount> GetColumn(int p_columnIndex) const { return YK_VectorView<DataType const, RowCount, ColumnCount>(m_rows[0].m_data + p_columnIndex); }
 
 private:
 	YK_Vector_N<DataType, ColumnCount> m_rows[RowCount];
 };
+
+namespace YK_Matrix
+{
+	template <typename DataType>
+	constexpr void Translate(YK_Matrix_R_C<DataType, 4, 4>& p_matrix, YK_Vector_N<DataType, 3> const& p_translation)
+	{
+		p_matrix[3].xyz += p_translation;
+	}
+}
 
 using YK_Matrix22 = YK_Matrix_R_C<float, 2, 2>;
 using YK_Matrix33 = YK_Matrix_R_C<float, 3, 3>;

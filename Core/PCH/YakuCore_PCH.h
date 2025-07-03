@@ -1,5 +1,8 @@
 #pragma once
 
+// STL headers to replace with custom implementations
+#include <vector>
+
 // Debug
 #include "YKC/IO/Logging/YKC_Logger.h"
 

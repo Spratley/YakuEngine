@@ -1,5 +1,7 @@
 #pragma once
 
+#include "CG/2D/CG_2DRenderer.h"
+
 // TODO: Don't couple CG and OpenGL/Windows
 struct GLFWwindow;
 
@@ -15,11 +17,13 @@ public:
 
 	void TempInit();
 
-	void Render() const;
+	void Render(YK_Matrix44 const& p_renderMatrix) const;
 
 private:
 	// TODO: REPLACE THIS WITH A GENERIC RENDER TARGET
 	GLFWwindow* m_glfwWindow;
+
+	CG_2DRenderer m_2dRenderer;
 
 	// TEMP
 	CG_Mesh* temp_quad;

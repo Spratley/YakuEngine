@@ -120,6 +120,14 @@ function(apply_configuration_settings TARGET_NAME)
 		target_link_options(${TARGET_NAME} PRIVATE
 			$<$<CONFIG:Retail>:/INCREMENTAL:NO /DEBUG:NONE>
 		)
+
+		# Set Debug options for Release
+		target_compile_options(${TARGET_NAME} PRIVATE
+			$<$<CONFIG:Release>:/Zi>
+		)
+		target_link_options(${TARGET_NAME} PRIVATE
+			$<$<CONFIG:Release>:/DEBUG>
+		)
 	endif()
 endfunction()
 

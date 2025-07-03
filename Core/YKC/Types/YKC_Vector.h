@@ -24,220 +24,267 @@ private:
 	DataType* m_start;
 };
 
-#define DECL_VECTOR_ACCESSOR(AccessorName, MinimumDimensionCount)																					\
-template <typename VectorBase, typename DataType, YK_U32 DimensionCount, typename Enable = void>														\
-struct Vector_Accessor_##AccessorName {};																											\
-template <typename VectorBase, typename DataType, YK_U32 DimensionCount>																				\
-struct Vector_Accessor_##AccessorName <VectorBase, DataType, DimensionCount, typename YK_EnableIf<(DimensionCount > MinimumDimensionCount)>::Type>	\
-{																																					\
-	constexpr inline DataType& AccessorName() { return static_cast<VectorBase*>(this)->m_data[MinimumDimensionCount]; }								\
-	constexpr inline DataType const& AccessorName() const { return static_cast<VectorBase const*>(this)->m_data[MinimumDimensionCount]; }			\
-}
-
-DECL_VECTOR_ACCESSOR(x, 0);
-DECL_VECTOR_ACCESSOR(y, 1);
-DECL_VECTOR_ACCESSOR(z, 2);
-DECL_VECTOR_ACCESSOR(w, 3);
-
-#undef DECL_VECTOR_ACCESSOR
-
-#define APPLY_VECTOR_ACCESSOR(AccessorName) public Vector_Accessor_##AccessorName<YK_Vector_N<DataType, DimensionCount>, DataType, DimensionCount>
-
-template <typename DataType, YK_U32 DimensionCount>
+template <typename DataType, int DimensionCount>
 struct YK_Vector_N
-	: APPLY_VECTOR_ACCESSOR(x)
-	, APPLY_VECTOR_ACCESSOR(y)
-	, APPLY_VECTOR_ACCESSOR(z)
-	, APPLY_VECTOR_ACCESSOR(w)
 {
 private:
 	using VectorType = YK_Vector_N<DataType, DimensionCount>;
 public:
-	static constexpr VectorType Zero() { return VectorType(0); }
-	static constexpr VectorType One() { return VectorType(1); }
+	static constexpr inline VectorType Zero() { return VectorType(0); }
+	static constexpr inline VectorType One() { return VectorType(1); }
 
-public:
 	constexpr YK_Vector_N() : m_data{} {}
-	constexpr YK_Vector_N(DataType p_defaultValue) : m_data{}
-	{
-		for (YK_U32 i = 0; i < DimensionCount; ++i)
-		{
-			m_data[i] = p_defaultValue;
-		}
-	}
-
-	template <typename... Args, typename = typename YK_EnableIf<(sizeof...(Args) == DimensionCount)>::Type>
-	constexpr YK_Vector_N(Args... args) : m_data { static_cast<DataType>(args)... } 
-	{}
-
-	// Note: Shallow copies only! If for SOME reason a vector is defined that uses a non-shallow-copy-able type, this will fail
-	YK_Vector_N(VectorType const& p_other)
-	{
-		std::memcpy(m_data, p_other.m_data, sizeof(DataType) * DimensionCount);
-	}
-
-	constexpr VectorType& operator+=(VectorType const& p_rhs)
-	{
-		for (YK_U32 i = 0; i < DimensionCount; ++i)
-		{
-			m_data[i] += p_rhs.m_data[i];
-		}
-		return *this;
-	}
-
-	constexpr VectorType& operator-=(VectorType const& p_rhs)
-	{
-		for (YK_U32 i = 0; i < DimensionCount; ++i)
-		{
-			m_data[i] -= p_rhs.m_data[i];
-		}
-		return *this;
-	}
-
-	friend constexpr VectorType operator+(VectorType p_lhs, VectorType const& p_rhs)
-	{
-		return p_lhs += p_rhs;
-	}
-
-	friend constexpr VectorType operator-(VectorType p_lhs, VectorType const& p_rhs)
-	{
-		return p_lhs -= p_rhs;
-	}
-
-	constexpr VectorType& operator*=(float const& p_scalar)
-	{
-		for (YK_U32 i = 0; i < DimensionCount; ++i)
-		{
-			m_data[i] *= p_scalar;
-		}
-		return *this;
-	}
-
-	friend constexpr VectorType operator*(VectorType p_vector, float p_scalar)
-	{
-		return p_vector *= p_scalar;
-	}
-
-	friend constexpr VectorType operator*(float p_scalar, VectorType p_vector)
-	{
-		return p_vector *= p_scalar;
-	}
-
-	constexpr VectorType& operator/=(float const& p_scalar)
-	{
-		for (YK_U32 i = 0; i < DimensionCount; ++i)
-		{
-			m_data[i] /= p_scalar;
-		}
-		return *this;
-	}
-
-	friend constexpr VectorType operator/(VectorType p_vector, float p_scalar)
-	{
-		return p_vector /= p_scalar;
-	}
-
-	friend constexpr VectorType operator/(float p_scalar, VectorType p_vector)
-	{
-		return p_vector /= p_scalar;
-	}
+	constexpr YK_Vector_N(DataType p_defaultValue) { for (YK_U32 i = 0; i < DimensionCount; ++i) { m_data[i] = p_defaultValue; } }
+	YK_Vector_N(VectorType const& p_other) { std::memcpy(m_data, p_other.m_data, sizeof(DataType) * DimensionCount); }
 
 	constexpr DataType& operator[](size_t const p_index) { return m_data[p_index]; }
 	constexpr DataType const& operator[](size_t const p_index) const { return m_data[p_index]; }
-
 public:
-	constexpr VectorType& Scale(VectorType const& p_other)
+	DataType m_data[DimensionCount];
+};
+
+// TODO: Move this to CMake so the entire project doesn't have to worry about 4201 (Ayo why is that warning even a thing)
+#pragma warning(push)
+#pragma warning(disable: 4201)
+
+template <typename DataType>
+struct YK_Vector_N<DataType, 2>
+{
+private:
+	using VectorType = YK_Vector_N<DataType, 2>;
+public:
+	static constexpr inline VectorType Zero() { return VectorType(0); }
+	static constexpr inline VectorType One() { return VectorType(1); }
+
+	constexpr YK_Vector_N() : m_data{} {}
+	constexpr YK_Vector_N(DataType p_defaultValue) : m_data{ p_defaultValue, p_defaultValue } {}
+	constexpr YK_Vector_N(VectorType const& p_other) : m_data{ p_other.x, p_other.y } {}
+	constexpr YK_Vector_N(DataType p_x, DataType p_y) : m_data{ p_x, p_y } {}
+
+	constexpr DataType& operator[](size_t const p_index) { return m_data[p_index]; }
+	constexpr DataType const& operator[](size_t const p_index) const { return m_data[p_index]; }
+public:
+	union
+	{
+		DataType m_data[2];
+		struct { DataType x, y; };
+		struct { DataType r, g; };
+	};
+};
+
+template <typename DataType>
+struct YK_Vector_N<DataType, 3>
+{
+private:
+	using VectorType = YK_Vector_N<DataType, 3>;
+public:
+	static constexpr inline VectorType Zero() { return VectorType(0); }
+	static constexpr inline VectorType One() { return VectorType(1); }
+
+	constexpr YK_Vector_N() : m_data{} {}
+	constexpr YK_Vector_N(DataType p_defaultValue) : m_data{ p_defaultValue, p_defaultValue, p_defaultValue } {}
+	constexpr YK_Vector_N(VectorType const& p_other) : m_data{ p_other.x, p_other.y, p_other.z } {}
+	constexpr YK_Vector_N(DataType p_x, DataType p_y, DataType p_z) : m_data{ p_x, p_y, p_z } {}
+
+	constexpr DataType& operator[](size_t const p_index) { return m_data[p_index]; }
+	constexpr DataType const& operator[](size_t const p_index) const { return m_data[p_index]; }
+public:
+	union
+	{
+		DataType m_data[3];
+		struct { DataType x, y, z; };
+		struct { DataType r, g, b; };
+		YK_Vector_N<DataType, 2> xy;
+		YK_Vector_N<DataType, 2> rg;
+	};
+};
+
+template <typename DataType>
+struct YK_Vector_N<DataType, 4>
+{
+private:
+	using VectorType = YK_Vector_N<DataType, 4>;
+public:
+	static constexpr inline VectorType Zero() { return VectorType(0); }
+	static constexpr inline VectorType One() { return VectorType(1); }
+
+	constexpr YK_Vector_N() : m_data{} {}
+	constexpr YK_Vector_N(DataType p_defaultValue) : m_data{ p_defaultValue, p_defaultValue, p_defaultValue, p_defaultValue } {}
+	constexpr YK_Vector_N(VectorType const& p_other) : m_data{ p_other.x, p_other.y, p_other.z, p_other.w } {}
+	constexpr YK_Vector_N(DataType p_x, DataType p_y, DataType p_z, DataType p_w) : m_data{ p_x, p_y, p_z, p_w } {}
+
+	constexpr DataType& operator[](size_t const p_index) { return m_data[p_index]; }
+	constexpr DataType const& operator[](size_t const p_index) const { return m_data[p_index]; }
+public:
+	union
+	{
+		DataType m_data[4];
+		struct { DataType x, y, z, w; };
+		struct { DataType r, g, b, a; };
+		YK_Vector_N<DataType, 2> xy;
+		YK_Vector_N<DataType, 2> rg;
+		YK_Vector_N<DataType, 3> xyz;
+		YK_Vector_N<DataType, 3> rgb;
+	};
+};
+
+#pragma warning(pop)
+
+// Free shared vector operators
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount> operator+(YK_Vector_N<DataType, DimensionCount> p_lhs, YK_Vector_N<DataType, DimensionCount> const& p_rhs)
+{
+	return p_lhs += p_rhs;
+}
+
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount> operator-(YK_Vector_N<DataType, DimensionCount> p_lhs, YK_Vector_N<DataType, DimensionCount> const& p_rhs)
+{
+	return p_lhs -= p_rhs;
+}
+
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount>& operator+=(YK_Vector_N<DataType, DimensionCount>& p_lhs, YK_Vector_N<DataType, DimensionCount> const& p_rhs)
+{
+	for (YK_U32 i = 0; i < DimensionCount; ++i)
+	{
+		p_lhs.m_data[i] += p_rhs.m_data[i];
+	}
+	return p_lhs;
+}
+
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount>& operator-=(YK_Vector_N<DataType, DimensionCount>& p_lhs, YK_Vector_N<DataType, DimensionCount> const& p_rhs)
+{
+	for (YK_U32 i = 0; i < DimensionCount; ++i)
+	{
+		p_lhs.m_data[i] -= p_rhs.m_data[i];
+	}
+	return p_lhs;
+}
+
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount>& operator*=(YK_Vector_N<DataType, DimensionCount>& p_vector, float const& p_scalar)
+{
+	for (YK_U32 i = 0; i < DimensionCount; ++i)
+	{
+		p_vector.m_data[i] *= p_scalar;
+	}
+	return p_vector;
+}
+
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount> operator*(YK_Vector_N<DataType, DimensionCount> p_vector, float p_scalar)
+{
+	return p_vector *= p_scalar;
+}
+
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount> operator*(float p_scalar, YK_Vector_N<DataType, DimensionCount> p_vector)
+{
+	return p_vector *= p_scalar;
+}
+
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount>& operator/=(YK_Vector_N<DataType, DimensionCount>& p_vector, float const& p_scalar)
+{
+	for (YK_U32 i = 0; i < DimensionCount; ++i)
+	{
+		p_vector.m_data[i] /= p_scalar;
+	}
+	return *this;
+}
+
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount> operator/(YK_Vector_N<DataType, DimensionCount> p_vector, float p_scalar)
+{
+	return p_vector /= p_scalar;
+}
+
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount> operator/(float p_scalar, YK_Vector_N<DataType, DimensionCount> p_vector)
+{
+	return p_vector /= p_scalar;
+}
+
+// Free vector manipulation functions
+namespace YK_Vector
+{
+	template <typename DataType, int DimensionCount>
+	static constexpr YK_Vector_N<DataType, DimensionCount> Scale(YK_Vector_N<DataType, DimensionCount> p_lhs, YK_Vector_N<DataType, DimensionCount> const& p_rhs)
 	{
 		for (YK_U32 i = 0; i < DimensionCount; ++i)
 		{
-			m_data[i] *= p_other.m_data[i];
+			p_lhs.m_data[i] *= p_rhs.m_data[i];
 		}
-		return *this;
+		return p_lhs;
 	}
 
-	static constexpr VectorType Scale(VectorType p_lhs, VectorType const& p_rhs)
+	// Vector3 specific
+	template <typename DataType>
+	constexpr YK_Vector_N<DataType, 3> Cross(YK_Vector_N<DataType, 3> const& p_lhs, YK_Vector_N<DataType, 3> const& p_rhs)
 	{
-		return p_lhs.Scale(p_rhs);
+		return YK_Vector_N<DataType, 3>(
+			(p_lhs.m_data[1] * p_rhs.m_data[2]) - (p_lhs.m_data[2] * p_rhs.m_data[1]),
+			(p_lhs.m_data[2] * p_rhs.m_data[0]) - (p_lhs.m_data[0] * p_rhs.m_data[2]),
+			(p_lhs.m_data[0] * p_rhs.m_data[1]) - (p_lhs.m_data[1] * p_rhs.m_data[0])
+		);
 	}
 
-	template <typename = typename YK_EnableIf<(DimensionCount == 3)>::Type>
-	constexpr VectorType Cross(VectorType const& p_other) const
-	{
-		VectorType result;
-		result.m_data[0] = (m_data[1] * p_other.m_data[2]) - (m_data[2] * p_other.m_data[1]);
-		result.m_data[1] = (m_data[2] * p_other.m_data[0]) - (m_data[0] * p_other.m_data[2]);
-		result.m_data[2] = (m_data[0] * p_other.m_data[1]) - (m_data[1] * p_other.m_data[0]);
-		return result;
-	}
-
-	template <typename = typename YK_EnableIf<(DimensionCount == 3)>::Type>
-	static constexpr VectorType Cross(VectorType const& p_lhs, VectorType const& p_rhs)
-	{
-		return p_lhs.Cross(p_rhs);
-	}
-
-	constexpr float Dot(VectorType const& p_other) const
+	template <typename DataType, int DimensionCount>
+	constexpr float Dot(YK_Vector_N<DataType, DimensionCount> const& p_lhs, YK_Vector_N<DataType, DimensionCount> const& p_rhs)
 	{
 		float result = 0;
 		for (YK_U32 i = 0; i < DimensionCount; ++i)
 		{
-			result += m_data[i] * p_other.m_data[i];
+			result += p_lhs.m_data[i] * p_rhs.m_data[i];
 		}
 		return result;
-	}
-
-	static constexpr float Dot(VectorType const& p_lhs, VectorType const& p_rhs)
-	{
-		return p_lhs.Dot(p_rhs);
 	}
 
 	// Temp until I can figure out how to make this a single unified function
 	// Dot against a VectorView
-	template <YK_U32 ViewOffset>
-	constexpr float Dot(YK_VectorView<DataType const, DimensionCount, ViewOffset> const& p_other) const
+	template <typename DataType, int DimensionCount, YK_U32 ViewOffset>
+	constexpr float Dot(YK_Vector_N<DataType, DimensionCount> const& p_vector, YK_VectorView<DataType const, DimensionCount, ViewOffset> const& p_vectorView)
 	{
 		float result = 0;
 		for (YK_U32 i = 0; i < DimensionCount; ++i)
 		{
-			result += m_data[i] * p_other[i];
+			result += p_vector[i] * p_vectorView[i];
 		}
 		return result;
 	}
 
-	constexpr float SqrMagnitude() const
+	template <typename DataType, int DimensionCount>
+	constexpr float SqrMagnitude(YK_Vector_N<DataType, DimensionCount> const& p_vector)
 	{
 		float result = 0;
 		for (YK_U32 i = 0; i < DimensionCount; ++i)
 		{
-			result += m_data[i] * m_data[i];
+			result += p_vector.m_data[i] * p_vector.m_data[i];
 		}
 		return result;
 	}
 
-	/*constexpr*/ float Magnitude() const
+	template <typename DataType, int DimensionCount>
+	/*constexpr*/ float Magnitude(YK_Vector_N<DataType, DimensionCount> const& p_vector)
 	{
-		return std::sqrt(SqrMagnitude());
+		return std::sqrt(SqrMagnitude(p_vector));
 	}
 
-	/*constexpr*/ VectorType GetNormalized() const
+	template <typename DataType, int DimensionCount>
+	/*constexpr*/ YK_Vector_N<DataType, DimensionCount> GetNormalized(YK_Vector_N<DataType, DimensionCount> const& p_vector)
 	{
-		return *this / Magnitude();
+		return p_vector / Magnitude(p_vector);
 	}
 
-	/*constexpr*/ VectorType const& Normalize()
+	template <typename DataType, int DimensionCount>
+	/*constexpr*/ YK_Vector_N<DataType, DimensionCount>& Normalize(YK_Vector_N<DataType, DimensionCount>& p_vector)
 	{
-		*this /= Magnitude();
-		return *this;
+		p_vector /= Magnitude(p_vector);
+		return p_vector;
 	}
-
-	constexpr DataType* GetData() { return m_data; }
-	constexpr DataType const* GetData() const { return m_data; }
-
-private:
-	DataType m_data[DimensionCount];
-};
-
-#undef APPLY_VECTOR_ACCESSOR
+}
 
 using YK_Vector2f = YK_Vector_N<float, 2>;
 using YK_Vector3f = YK_Vector_N<float, 3>;

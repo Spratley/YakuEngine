@@ -18,7 +18,7 @@ public:
 	void SetBool(const char* p_name, bool p_value) const;
 	void SetInt(const char* p_name, YK_Int32 p_value) const;
 	void SetFloat(const char* p_name, float p_value) const;
-	void SetMatrix44(const char* p_name, float* p_buffer) const;
+	void SetMatrix44(const char* p_name, float const* p_buffer) const;
 
 	// Alias for SetInt for readability
 	inline void SetTextureSamplerSlot(const char* p_textureSamplerName, YK_Int32 p_slot) const { SetInt(p_textureSamplerName, p_slot); }

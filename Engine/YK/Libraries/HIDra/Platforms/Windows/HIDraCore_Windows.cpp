@@ -165,6 +165,12 @@ namespace HIDra
     {
         HWND hWnd = (HWND)initData.m_mainWindowHandle;
         defaultWindowProcedure = (WNDPROC)(SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)WindowsRawInputMessageHandler));
+        
+        if (defaultWindowProcedure == 0)
+        {
+            PRINT_WINDOWS_ERROR("Failed to override window procedure!");
+            return false;
+        }
     
         if (!SubscribeToInputMessages())
         {
@@ -179,7 +185,6 @@ namespace HIDra
 
         return GatherGamepads(gamepadManager);
 #else
-        
         return true;
 #endif // HIDra_Gamepad
     }
