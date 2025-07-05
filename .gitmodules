@@ -1,0 +1,3 @@
+[submodule "Engine/YK/Libraries/HIDra"]
+	path = Engine/YK/Libraries/HIDra
+	url = https://github.com/Spratley/HIDra.git
