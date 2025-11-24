@@ -1,32 +1,26 @@
 #include "PCH/CG_PCH.h"
 #include "CG_2DRenderer.h"
 
-#include <algorithm> // TODO: Replace with custom implementation?
+// TODO: Encapsulate into rendering wrapper so that we can swap renderers
+#include <GLAD/include/glad/glad.h>
+#include <GLFW/include/glfw3.h>
 
 #include "CG/2D/Canvas/CG_Canvas.h"
 
 CG_2DRenderer::CG_2DRenderer()
-	: m_canvasesDirty(false)
-	, m_canvases()
+    : m_canvases()
+    , m_2DRShader("J:/Harbourfront/Data/Shaders/ShaderCode/2DR_Vertex.vs",
+                  "J:/Harbourfront/Data/Shaders/ShaderCode/2DR_Fragment.fs")
 {}
 
-void CG_2DRenderer::Render()
+void CG_2DRenderer::Render() const
 {
-	if (m_canvasesDirty)
-	{
-		SortCanvases();
-	}
-
-	for (CG_Canvas const& canvas : m_canvases)
-	{
-		canvas.Render();
-	}
-}
-
-void CG_2DRenderer::SortCanvases()
-{
-	// Arbitrary render order for canvases that share priorities
-	std::sort(m_canvases.begin(), m_canvases.end(), [](CG_Canvas const& p_lhs, CG_Canvas const& p_rhs){
-		return p_lhs.GetPriority() < p_rhs.GetPriority();
-	});
+    // TODO: Refactor into batched rendering
+    for (CG_Canvas const& canvas : m_canvases)
+    {
+        for (CG_CanvasTextureItem const& textureItem : canvas.GetItems())
+        {
+            // TODO: Make this not like just straight up in the renderer
+        }
+    }
 }

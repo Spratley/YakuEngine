@@ -21,6 +21,7 @@ public:
 
 private:
 	// TODO: REPLACE THIS WITH A GENERIC RENDER TARGET
+	// Not platform agnostic, and not friendly to non-screen rendering
 	GLFWwindow* m_glfwWindow;
 
 	CG_2DRenderer m_2dRenderer;
