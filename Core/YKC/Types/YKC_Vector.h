@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstring>
+#include <cmath> // std::sqrt
 
 // TODO: Merge with YK_Vector_N somehow so it can be used interchangibly and seamlessly with all vector operators and
 // math functions
@@ -11,7 +12,7 @@
 // Represents a vector whose data is stored in an external interleaved array
 // Only use if you can guarantee you won't get read errors
 // Does not manage its own data, but can mutate the
-template<typename DataType, YK_U32 DimensionCount, YK_U32 Offset>
+template <typename DataType, YK_U32 DimensionCount, YK_U32 Offset>
 struct YK_VectorView
 {
 public:
@@ -24,7 +25,7 @@ private:
     DataType* m_start;
 };
 
-template<typename DataType, int DimensionCount>
+template <typename DataType, int DimensionCount>
 struct YK_Vector_N
 {
 private:
@@ -56,7 +57,7 @@ public:
 #pragma warning(push)
 #pragma warning(disable : 4201)
 
-template<typename DataType>
+template <typename DataType>
 struct YK_Vector_N<DataType, 2>
 {
 private:
@@ -89,7 +90,7 @@ public:
     };
 };
 
-template<typename DataType>
+template <typename DataType>
 struct YK_Vector_N<DataType, 3>
 {
 private:
@@ -124,7 +125,7 @@ public:
     };
 };
 
-template<typename DataType>
+template <typename DataType>
 struct YK_Vector_N<DataType, 4>
 {
 private:
@@ -166,23 +167,24 @@ public:
 #pragma warning(pop)
 
 // Free shared vector operators
-template<typename DataType, int DimensionCount>
-constexpr YK_Vector_N<DataType, DimensionCount>
-  operator+(YK_Vector_N<DataType, DimensionCount> p_lhs, YK_Vector_N<DataType, DimensionCount> const& p_rhs)
+// Arithmatic
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount> operator+(YK_Vector_N<DataType, DimensionCount> p_lhs,
+                                                          YK_Vector_N<DataType, DimensionCount> const& p_rhs)
 {
     return p_lhs += p_rhs;
 }
 
-template<typename DataType, int DimensionCount>
-constexpr YK_Vector_N<DataType, DimensionCount>
-  operator-(YK_Vector_N<DataType, DimensionCount> p_lhs, YK_Vector_N<DataType, DimensionCount> const& p_rhs)
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount> operator-(YK_Vector_N<DataType, DimensionCount> p_lhs,
+                                                          YK_Vector_N<DataType, DimensionCount> const& p_rhs)
 {
     return p_lhs -= p_rhs;
 }
 
-template<typename DataType, int DimensionCount>
-constexpr YK_Vector_N<DataType, DimensionCount>&
-  operator+=(YK_Vector_N<DataType, DimensionCount>& p_lhs, YK_Vector_N<DataType, DimensionCount> const& p_rhs)
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount>& operator+=(YK_Vector_N<DataType, DimensionCount>& p_lhs,
+                                                            YK_Vector_N<DataType, DimensionCount> const& p_rhs)
 {
     for (YK_U32 i = 0; i < DimensionCount; ++i)
     {
@@ -191,9 +193,9 @@ constexpr YK_Vector_N<DataType, DimensionCount>&
     return p_lhs;
 }
 
-template<typename DataType, int DimensionCount>
-constexpr YK_Vector_N<DataType, DimensionCount>&
-  operator-=(YK_Vector_N<DataType, DimensionCount>& p_lhs, YK_Vector_N<DataType, DimensionCount> const& p_rhs)
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount>& operator-=(YK_Vector_N<DataType, DimensionCount>& p_lhs,
+                                                            YK_Vector_N<DataType, DimensionCount> const& p_rhs)
 {
     for (YK_U32 i = 0; i < DimensionCount; ++i)
     {
@@ -202,9 +204,9 @@ constexpr YK_Vector_N<DataType, DimensionCount>&
     return p_lhs;
 }
 
-template<typename DataType, int DimensionCount>
-constexpr YK_Vector_N<DataType, DimensionCount>&
-  operator*=(YK_Vector_N<DataType, DimensionCount>& p_vector, float const& p_scalar)
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount>& operator*=(YK_Vector_N<DataType, DimensionCount>& p_vector,
+                                                            float const& p_scalar)
 {
     for (YK_U32 i = 0; i < DimensionCount; ++i)
     {
@@ -213,23 +215,23 @@ constexpr YK_Vector_N<DataType, DimensionCount>&
     return p_vector;
 }
 
-template<typename DataType, int DimensionCount>
-constexpr YK_Vector_N<DataType, DimensionCount>
-  operator*(YK_Vector_N<DataType, DimensionCount> p_vector, float p_scalar)
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount> operator*(YK_Vector_N<DataType, DimensionCount> p_vector,
+                                                          float p_scalar)
 {
     return p_vector *= p_scalar;
 }
 
-template<typename DataType, int DimensionCount>
-constexpr YK_Vector_N<DataType, DimensionCount>
-  operator*(float p_scalar, YK_Vector_N<DataType, DimensionCount> p_vector)
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount> operator*(float p_scalar,
+                                                          YK_Vector_N<DataType, DimensionCount> p_vector)
 {
     return p_vector *= p_scalar;
 }
 
-template<typename DataType, int DimensionCount>
-constexpr YK_Vector_N<DataType, DimensionCount>&
-  operator/=(YK_Vector_N<DataType, DimensionCount>& p_vector, float const& p_scalar)
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount>& operator/=(YK_Vector_N<DataType, DimensionCount>& p_vector,
+                                                            float const& p_scalar)
 {
     for (YK_U32 i = 0; i < DimensionCount; ++i)
     {
@@ -238,24 +240,46 @@ constexpr YK_Vector_N<DataType, DimensionCount>&
     return *this;
 }
 
-template<typename DataType, int DimensionCount>
-constexpr YK_Vector_N<DataType, DimensionCount>
-  operator/(YK_Vector_N<DataType, DimensionCount> p_vector, float p_scalar)
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount> operator/(YK_Vector_N<DataType, DimensionCount> p_vector,
+                                                          float p_scalar)
 {
     return p_vector /= p_scalar;
 }
 
-template<typename DataType, int DimensionCount>
-constexpr YK_Vector_N<DataType, DimensionCount>
-  operator/(float p_scalar, YK_Vector_N<DataType, DimensionCount> p_vector)
+template <typename DataType, int DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount> operator/(float p_scalar,
+                                                          YK_Vector_N<DataType, DimensionCount> p_vector)
 {
     return p_vector /= p_scalar;
+}
+
+// Comparison
+template <typename DataType, int DimensionCount>
+constexpr bool operator==(YK_Vector_N<DataType, DimensionCount> const& p_lhs,
+                          YK_Vector_N<DataType, DimensionCount> const& p_rhs)
+{
+    for (YK_U32 i = 0; i < DimensionCount; ++i)
+    {
+        if (p_lhs[i] != p_rhs[i])
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+template <typename DataType, int DimensionCount>
+constexpr bool operator!=(YK_Vector_N<DataType, DimensionCount> const& p_lhs,
+                          YK_Vector_N<DataType, DimensionCount> const& p_rhs)
+{
+    return !(p_lhs == p_rhs);
 }
 
 // Free vector manipulation functions
 namespace YK_Vector
 {
-    template<typename DataType, int DimensionCount>
+    template <typename DataType, int DimensionCount>
     static constexpr YK_Vector_N<DataType, DimensionCount> Scale(YK_Vector_N<DataType, DimensionCount> p_lhs,
                                                                  YK_Vector_N<DataType, DimensionCount> const& p_rhs)
     {
@@ -267,7 +291,7 @@ namespace YK_Vector
     }
 
     // Vector3 specific
-    template<typename DataType>
+    template <typename DataType>
     constexpr YK_Vector_N<DataType, 3> Cross(YK_Vector_N<DataType, 3> const& p_lhs,
                                              YK_Vector_N<DataType, 3> const& p_rhs)
     {
@@ -276,7 +300,7 @@ namespace YK_Vector
                                         (p_lhs.m_data[0] * p_rhs.m_data[1]) - (p_lhs.m_data[1] * p_rhs.m_data[0]));
     }
 
-    template<typename DataType, int DimensionCount>
+    template <typename DataType, int DimensionCount>
     constexpr float Dot(YK_Vector_N<DataType, DimensionCount> const& p_lhs,
                         YK_Vector_N<DataType, DimensionCount> const& p_rhs)
     {
@@ -290,7 +314,7 @@ namespace YK_Vector
 
     // Temp until I can figure out how to make this a single unified function
     // Dot against a VectorView
-    template<typename DataType, int DimensionCount, YK_U32 ViewOffset>
+    template <typename DataType, int DimensionCount, YK_U32 ViewOffset>
     constexpr float Dot(YK_Vector_N<DataType, DimensionCount> const& p_vector,
                         YK_VectorView<DataType const, DimensionCount, ViewOffset> const& p_vectorView)
     {
@@ -302,7 +326,7 @@ namespace YK_Vector
         return result;
     }
 
-    template<typename DataType, int DimensionCount>
+    template <typename DataType, int DimensionCount>
     constexpr float SqrMagnitude(YK_Vector_N<DataType, DimensionCount> const& p_vector)
     {
         float result = 0;
@@ -313,20 +337,20 @@ namespace YK_Vector
         return result;
     }
 
-    template<typename DataType, int DimensionCount>
+    template <typename DataType, int DimensionCount>
     /*constexpr*/ float Magnitude(YK_Vector_N<DataType, DimensionCount> const& p_vector)
     {
         return std::sqrt(SqrMagnitude(p_vector));
     }
 
-    template<typename DataType, int DimensionCount>
+    template <typename DataType, int DimensionCount>
     /*constexpr*/ YK_Vector_N<DataType, DimensionCount> GetNormalized(
       YK_Vector_N<DataType, DimensionCount> const& p_vector)
     {
         return p_vector / Magnitude(p_vector);
     }
 
-    template<typename DataType, int DimensionCount>
+    template <typename DataType, int DimensionCount>
     /*constexpr*/ YK_Vector_N<DataType, DimensionCount>& Normalize(YK_Vector_N<DataType, DimensionCount>& p_vector)
     {
         p_vector /= Magnitude(p_vector);

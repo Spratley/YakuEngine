@@ -2,6 +2,8 @@
 
 class CG_Texture;
 
+// TODO: Don't do this?? Figure out a generic way to mediate this without an opengl class being directly interfaced
+
 // TODO: Buffer ID pooling
 // Again, whatever that means?
 struct CG_GLTextureBuffer

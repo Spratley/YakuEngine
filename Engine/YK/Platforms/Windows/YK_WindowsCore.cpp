@@ -38,6 +38,7 @@ bool YK_WindowsCore::Init()
 	}
 #endif // !YAKU_RETAIL
 
+	// TODO: Move the hardcoded size outta here
 	m_mainWindow = new YK_WindowsWindow(800, 500);
 
 	if (!m_mainWindow->IsValid())

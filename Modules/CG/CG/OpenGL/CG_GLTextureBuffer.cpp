@@ -23,6 +23,8 @@ CG_GLTextureBuffer::CG_GLTextureBuffer(CG_Texture const& p_texture)
 
 	// TODO: Mipmap as paramter
 	// glGenerateMipmap(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 CG_GLTextureBuffer::~CG_GLTextureBuffer()

@@ -25,6 +25,8 @@ void CG_RenderModule::TempInit()
     temp_texture = CG_TextureFactory::LoadPNG("J:/Harbourfront/Data/Textures/Test.png");
 
     g_perspective = YK_Matrix::Perspective<float>(60.0f, 1.0f, 0.0001f, 100.0f);
+
+    m_2dRenderer.Temp_Init();
 }
 
 void CG_RenderModule::Render(YK_Matrix44 const& p_renderMatrix) const
@@ -33,11 +35,11 @@ void CG_RenderModule::Render(YK_Matrix44 const& p_renderMatrix) const
     // TODO: Remove me!
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     temp_shader->Use();
-
+    
     YK_Matrix44 transform = p_renderMatrix * g_perspective;
     temp_shader->SetMatrix44("transform", transform.GetData());
-
-    temp_texture->GetGLData().Bind(1);
+    
+    temp_texture->GetGLData().Bind(0);
     temp_quad->GetGLData().Bind();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
