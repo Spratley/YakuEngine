@@ -15,6 +15,10 @@
 #include "CG/Shader/CG_Shader.h"
 #include "CG/Texture/CG_TextureFactory.h"
 
+#include "CG/Matrix/CG_MatrixExtras.h"
+
+constexpr YK_Matrix44 g_ortho = YK_Matrix::Orthographic(1.0f, 500.f/800.f, 10.0f);
+
 CG_2DRenderer::CG_2DRenderer()
     : m_canvases()
     , m_2DShader("J:/Harbourfront/Data/Shaders/ShaderCode/2DR_Vertex.vs",
@@ -66,8 +70,14 @@ void CG_2DRenderer::Render() const
         glClearBufferfv(GL_DEPTH, 0, &depthClearColor);
 
         m_2DShader.Use();
+        
         YK_Matrix44 identity(1.0f);
-        YK_Matrix::Translate(identity, YK_Vector3f(0.0f, 0.0f, 0.5f));
+        YK_Matrix::Translate(identity, YK_Vector3f(0.0f, 0.0f, 0.0f));
+
+        YK_Matrix44 scale(1.0f);
+        scale[1][1] = 1.0f / 2.416347381864623243933588761175f;
+
+        identity = scale * identity * g_ortho;
 
         m_2DShader.SetMatrix44("transform", identity.GetData());
 

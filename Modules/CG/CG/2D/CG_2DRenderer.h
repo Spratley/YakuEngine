@@ -28,7 +28,7 @@ private:
     CG_Shader m_2DShader;
     CG_Shader m_fsqShader;
 
-    CG_GLRenderTarget* m_renderTarget;
+    CG_GLRenderTarget* m_renderTarget; // I don't want this to be a pointer, it should be on board right?
 
     // Temp until I can find a better way to do this
     CG_Mesh* m_tempQuad;

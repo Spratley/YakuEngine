@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cstring>
 #include <cmath> // std::sqrt
+#include <cstring>
 
 // TODO: Merge with YK_Vector_N somehow so it can be used interchangibly and seamlessly with all vector operators and
 // math functions
@@ -43,7 +43,13 @@ public:
             m_data[i] = p_defaultValue;
         }
     }
-    YK_Vector_N(VectorType const& p_other) { std::memcpy(m_data, p_other.m_data, sizeof(DataType) * DimensionCount); }
+    constexpr YK_Vector_N(VectorType const& p_other)
+    {
+        for (YK_U32 i = 0; i < DimensionCount; ++i)
+        {
+            m_data[i] = p_other[i];
+        }
+    }
 
     constexpr DataType& operator[](size_t const p_index) { return m_data[p_index]; }
     constexpr DataType const& operator[](size_t const p_index) const { return m_data[p_index]; }

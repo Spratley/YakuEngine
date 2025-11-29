@@ -24,16 +24,31 @@ public:
     }
 
     template <typename... Args, typename = typename YK_EnableIf<(sizeof...(Args) == (RowCount * ColumnCount))>::Type>
-    YK_Matrix_R_C(Args... args) : m_rows {}
+    constexpr YK_Matrix_R_C(Args... args) : m_rows {}
     {
         DataType temp[] = {static_cast<DataType>(args)...};
-        std::memcpy(GetData(), temp, sizeof(DataType) * (RowCount * ColumnCount));
+        // Memcpy is replaced with a fixed loop because according to godbolt they get optimized to the same thing, but
+        // loops are constepxr
+        DataType* data = GetData();
+        for (int i = 0; i < RowCount * ColumnCount; ++i)
+        {
+            data[i] = temp[i];
+        }
     }
 
     // Note: Shallow copies only!
-    YK_Matrix_R_C(MatrixType const& p_other)
+    // TODO: Concept to prevent non-trivially copyable types
+    constexpr YK_Matrix_R_C(MatrixType const& p_other)
     {
-        std::memcpy(GetData(), p_other.GetData(), sizeof(DataType) * (RowCount * ColumnCount));
+        // Memcpy is replaced with a fixed loop because according to godbolt they get optimized to the same thing, but
+        // loops are constepxr
+        for (int r = 0; r < RowCount; ++r)
+        {
+            for (int c = 0; c < ColumnCount; ++c)
+            {
+                m_rows[r][c] = p_other.m_rows[r][c];
+            }
+        }
     }
 
     constexpr YK_Vector_N<DataType, ColumnCount>& operator[](size_t const p_index) { return m_rows[p_index]; }
@@ -70,7 +85,7 @@ public:
         return result;
     }
 
-    DataType* GetData() { return m_rows[0].m_data; }
+    constexpr DataType* GetData() { return m_rows[0].m_data; }
     constexpr DataType const* GetData() const { return m_rows[0].m_data; }
 
     constexpr YK_VectorView<DataType const, RowCount, ColumnCount> GetColumn(int p_columnIndex) const
