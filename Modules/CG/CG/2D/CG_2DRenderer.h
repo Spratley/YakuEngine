@@ -22,6 +22,9 @@ public:
     CG_Canvas const& GetCanvas(YK_Int8 p_priorityIndex) const { return m_canvases[p_priorityIndex]; }
 
 private:
+    void RenderToFramebuffer() const;
+
+private:
     // TODO: Replace with a formal YK_StaticArray? Move to template paramter? Do something?
     CG_Canvas m_canvases[4];
 
@@ -33,5 +36,4 @@ private:
     // Temp until I can find a better way to do this
     CG_Mesh* m_tempQuad;
     CG_Mesh* m_fsq;
-    CG_Texture* m_tempTexture;
 };

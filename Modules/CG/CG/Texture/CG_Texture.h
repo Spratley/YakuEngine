@@ -13,7 +13,7 @@ class CG_Texture : public CG_GPUResource<CG_Texture>
 	friend class CG_GPUResource<CG_Texture>;
 public:
 	CG_Texture();
-	// TODO: Destructor?
+	// TODO: Does this need a destructor? Flush GPU and RAM should be called automatically
 
 	CG_Texture& operator=(CG_Texture&) = delete;
 	CG_Texture& operator=(CG_Texture&& p_otherTexture) noexcept;

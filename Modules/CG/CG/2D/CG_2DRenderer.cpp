@@ -17,7 +17,7 @@
 
 #include "CG/Matrix/CG_MatrixExtras.h"
 
-constexpr YK_Matrix44 g_ortho = YK_Matrix::Orthographic(1.0f, 500.f/800.f, 10.0f);
+constexpr YK_Matrix44 g_ortho = YK_Matrix::Orthographic(1.0f, 500.f / 800.f, 10.0f);
 
 CG_2DRenderer::CG_2DRenderer()
     : m_canvases()
@@ -45,7 +45,8 @@ void CG_2DRenderer::Temp_Init()
 
     // Temp
     m_tempQuad = CG_MeshFactory::Quad();
-    m_tempTexture = CG_TextureFactory::LoadPNG("J:/Harbourfront/Data/Textures/Splash/YakuEn_Logo_Dark.png");
+
+    m_canvases[0].AddItem("J:/Harbourfront/Data/Textures/Splash/YakuEn_Logo_Dark.png");
 
     // Make FSQ
     {
@@ -61,39 +62,7 @@ void CG_2DRenderer::Temp_Init()
 
 void CG_2DRenderer::Render() const
 {
-    {
-        CG_GLRenderTarget::Binding renderTargetBinding = m_renderTarget->Bind();
-
-        constexpr float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-        constexpr float depthClearColor = 1.0f;
-        glClearBufferfv(GL_COLOR, 0, clearColor);
-        glClearBufferfv(GL_DEPTH, 0, &depthClearColor);
-
-        m_2DShader.Use();
-        
-        YK_Matrix44 identity(1.0f);
-        YK_Matrix::Translate(identity, YK_Vector3f(0.0f, 0.0f, 0.0f));
-
-        YK_Matrix44 scale(1.0f);
-        scale[1][1] = 1.0f / 2.416347381864623243933588761175f;
-
-        identity = scale * identity * g_ortho;
-
-        m_2DShader.SetMatrix44("transform", identity.GetData());
-
-        m_tempTexture->GetGLData().Bind(0);
-        m_tempQuad->GetGLData().Bind();
-
-        // TODO: Refactor into batched rendering
-        // for (CG_Canvas const& canvas : m_canvases)
-        //{
-        //    for (CG_CanvasTextureItem const& textureItem : canvas.GetItems()) {
-        //        //glDrawElements(GL_TRIANGLES)
-        //    }
-        //}
-
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    }
+    RenderToFramebuffer();
 
     // Draw Fullscreen Quad to overlay result
     m_fsqShader.Use();
@@ -101,4 +70,36 @@ void CG_2DRenderer::Render() const
     glBindTexture(GL_TEXTURE_2D, m_renderTarget->GetColorBufferID());
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+}
+
+void CG_2DRenderer::RenderToFramebuffer() const
+{
+    CG_GLRenderTarget::Binding renderTargetBinding = m_renderTarget->Bind();
+
+    constexpr float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+    constexpr float depthClearColor = 1.0f;
+    glClearBufferfv(GL_COLOR, 0, clearColor);
+    glClearBufferfv(GL_DEPTH, 0, &depthClearColor);
+
+    m_2DShader.Use();
+    m_tempQuad->GetGLData().Bind();
+
+    // TODO: Refactor this so it's more data oriented and not object oriented
+    // TODO: And then refactor it so we just batch render all the quads
+    for (CG_Canvas const& canvas : m_canvases)
+    {
+        for (CG_CanvasTextureItem const& textureItem : canvas.GetItems())
+        {
+            YK_Matrix44 transform(1.0f);
+            YK_Matrix::Translate(transform, YK_Vector3f(0.0f, 0.0f, 0.0f));
+            YK_Matrix44 scale(1.0f);
+            scale[1][1] = 1.0f / textureItem.GetAspectRatio();
+            transform = scale * transform * g_ortho;
+            m_2DShader.SetMatrix44("transform", transform.GetData());
+
+            textureItem.GetTexture()->GetGLData().Bind(0);
+
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        }
+    }
 }
