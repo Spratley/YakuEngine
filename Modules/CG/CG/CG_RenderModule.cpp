@@ -1,8 +1,8 @@
 #include "PCH/CG_PCH.h"
 #include "CG_RenderModule.h"
 
-#include <GLAD/include/glad/glad.h>
-#include <GLFW/include/glfw3.h>
+#include <YKC/Libraries/OpenGL/GLAD/include/glad/glad.h>
+#include <YKC/Libraries/OpenGL/GLFW/include/glfw3.h>
 
 // TEMP
 #include "CG/Mesh/CG_MeshFactory.h"

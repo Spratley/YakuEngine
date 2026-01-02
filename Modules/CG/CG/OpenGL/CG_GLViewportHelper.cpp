@@ -1,8 +1,8 @@
 #include "PCH/CG_PCH.h"
 #include "CG_GLViewportHelper.h"
 
-#include <GLAD/include/glad/glad.h>
-#include <GLFW/include/glfw3.h>
+#include <YKC/Libraries/OpenGL/GLAD/include/glad/glad.h>
+#include <YKC/Libraries/OpenGL/GLFW/include/glfw3.h>
 
 YK_Vector2i CG_GLViewportHelper::s_viewportSize = YK_Vector2i(800, 500); // TODO: Remove hardcoded
 

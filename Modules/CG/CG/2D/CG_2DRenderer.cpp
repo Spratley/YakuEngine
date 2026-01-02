@@ -2,7 +2,7 @@
 #include "CG_2DRenderer.h"
 
 // TODO: Encapsulate into rendering wrapper so that we can swap renderers
-#include <GLAD/include/glad/glad.h>
+#include <YKC/Libraries/OpenGL/GLAD/include/glad/glad.h>
 
 #include "CG/2D/Canvas/CG_Canvas.h"
 
@@ -17,17 +17,30 @@
 
 #include "CG/Matrix/CG_MatrixExtras.h"
 
-constexpr YK_Matrix44 g_ortho = YK_Matrix::Orthographic(1.0f, 500.f / 800.f, 10.0f);
+// Temp for Window resizing
+#include "YKC/Platforms/YKC_PlatformCore.h"
+#include "YKC/Platforms/Windows/YKC_WindowsWindow.h"
+
+constexpr YK_Matrix44 g_ortho = YK_Matrix::Orthographic(1.0f, 1080.f / 1920.f, 10.0f);
+
+// TODO: Don't make this locally in 2DRenderer.cpp
+YK_U32 g_nullVAO = 0;
 
 CG_2DRenderer::CG_2DRenderer()
     : m_canvases()
     , m_2DShader("J:/Harbourfront/Data/Shaders/ShaderCode/2DR_Vertex.vs",
                  "J:/Harbourfront/Data/Shaders/ShaderCode/2DR_Fragment.fs")
 
-    , m_fsqShader("J:/Harbourfront/Data/Shaders/ShaderCode/Passthrough.vs",
+    , m_fsqShader("J:/Harbourfront/Data/Shaders/ShaderCode/FSQ.vs",
                   "J:/Harbourfront/Data/Shaders/ShaderCode/SolidTexture.fs")
     , m_renderTarget(nullptr)
-{}
+{
+    // TODO: Don't do this (sob)
+    if (g_nullVAO == 0)
+    {
+        glGenVertexArrays(1, &g_nullVAO);
+    }
+}
 
 CG_2DRenderer::~CG_2DRenderer()
 {
@@ -48,15 +61,14 @@ void CG_2DRenderer::Temp_Init()
 
     m_canvases[0].AddItem("J:/Harbourfront/Data/Textures/Splash/YakuEn_Logo_Dark.png");
 
-    // Make FSQ
+    // More temp, figure this out - Initialize window stuff
+    // Add layer of indirection here so I'm not directly touching Windows files
+    // TODO: Make this more parallel safe, ensure CG_GLViewportHelper is aware that we're setting the main window size
+    // Graphics shouldn't be parallel on the CPU, but we can't guarantee that the window is resized in sync with the update cycle
+    PlatformCore& platformCore = PlatformCore::GetInstance();
+    if (YKC_WindowsWindow* window = platformCore.GetMainWindow())
     {
-        float vertices[] = {// Positions		// UVs
-                            1.0f,  1.0f,  0.0f, 1.0f, 1.0f, 1.0f,  -1.0f, 0.0f, 1.0f, 0.0f,
-                            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f,  0.0f, 0.0f, 1.0f};
-
-        unsigned int indices[] = {0, 1, 3, 1, 2, 3};
-
-        m_fsq = CG_MeshFactory::FromData(vertices, 20, indices, 6);
+        window->SetWindowResizedCallback(CG_GLViewportHelper::SetViewportSize);
     }
 }
 
@@ -66,10 +78,14 @@ void CG_2DRenderer::Render() const
 
     // Draw Fullscreen Quad to overlay result
     m_fsqShader.Use();
-    m_fsq->GetGLData().Bind();
+
+    // TODO: Don't manually call this- I'm just clearing the data so that we don't have bunk data waiting on the GPU
+    glBindVertexArray(g_nullVAO);
+
     glBindTexture(GL_TEXTURE_2D, m_renderTarget->GetColorBufferID());
 
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
 void CG_2DRenderer::RenderToFramebuffer() const
@@ -82,7 +98,7 @@ void CG_2DRenderer::RenderToFramebuffer() const
     glClearBufferfv(GL_DEPTH, 0, &depthClearColor);
 
     m_2DShader.Use();
-    m_tempQuad->GetGLData().Bind();
+    m_tempQuad->GetGLData().Bind(); // Can we skip binding a mesh? 2DR will only ever deal with quads
 
     // TODO: Refactor this so it's more data oriented and not object oriented
     // TODO: And then refactor it so we just batch render all the quads

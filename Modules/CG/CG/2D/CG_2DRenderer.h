@@ -35,5 +35,4 @@ private:
 
     // Temp until I can find a better way to do this
     CG_Mesh* m_tempQuad;
-    CG_Mesh* m_fsq;
 };

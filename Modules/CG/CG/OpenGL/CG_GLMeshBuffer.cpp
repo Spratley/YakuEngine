@@ -1,8 +1,8 @@
 #include "PCH/CG_PCH.h"
 #include "CG_GLMeshBuffer.h"
 
-#include <GLAD/include/glad/glad.h>
-#include <GLFW/include/glfw3.h>
+#include <YKC/Libraries/OpenGL/GLAD/include/glad/glad.h>
+#include <YKC/Libraries/OpenGL/GLFW/include/glfw3.h>
 
 #include "CG/Mesh/CG_Mesh.h"
 
@@ -36,6 +36,7 @@ CG_GLMeshBuffer::~CG_GLMeshBuffer()
 	glDeleteVertexArrays(1, &m_vaoID);
 }
 
+// TODO: Figure out how to manage glBindVertexArray and unbind the data
 void CG_GLMeshBuffer::Bind() const
 {
 	glBindVertexArray(m_vaoID);

@@ -8,6 +8,3 @@
 
 // External Libraries
 #include "YK/Libraries/HIDra/HIDra.h"
-
-// Platform
-#include "YK/Platforms/YK_PlatformDefines.h"

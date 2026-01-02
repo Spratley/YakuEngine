@@ -1,11 +1,11 @@
-#include "PCH/YakuEngine_PCH.h"
+#include "PCH/YakuCore_PCH.h"
 #if YK_WINDOWS
-#include "YK_WindowsCore.h"
+#include "YKC_WindowsCore.h"
 
-#include <CG/Libraries/OpenGL/GLAD/include/glad/glad.h>
-#include <CG/Libraries/OpenGL/GLFW/include/glfw3.h>
+#include <GLAD/include/glad/glad.h>
+#include <GLFW/include/glfw3.h>
 
-#include "YK_WindowsWindow.h"
+#include "YKC_WindowsWindow.h"
 
 inline void loc_GLFWError(const char* errorMessage)
 {
@@ -20,7 +20,7 @@ inline void loc_GLFWError(const char* errorMessage)
 	glfwTerminate();
 }
 
-bool YK_WindowsCore::Init()
+bool YKC_WindowsCore::Init()
 {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -39,7 +39,7 @@ bool YK_WindowsCore::Init()
 #endif // !YAKU_RETAIL
 
 	// TODO: Move the hardcoded size outta here
-	m_mainWindow = new YK_WindowsWindow(800, 500);
+	m_mainWindow = new YKC_WindowsWindow(800, 500);
 
 	if (!m_mainWindow->IsValid())
 	{
@@ -61,17 +61,17 @@ bool YK_WindowsCore::Init()
 	return true;
 }
 
-void YK_WindowsCore::ShutDown()
+void YKC_WindowsCore::ShutDown()
 {
 	glfwTerminate();
 }
 
-bool YK_WindowsCore::ShouldClose() const
+bool YKC_WindowsCore::ShouldClose() const
 {
 	return m_mainWindow->ShouldClose();
 }
 
-void YK_WindowsCore::OnFrameStart() const
+void YKC_WindowsCore::OnFrameStart() const
 {
 	glfwPollEvents();
 }

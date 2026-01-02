@@ -1,7 +1,7 @@
 #include "PCH/CG_PCH.h"
 #include "CG_GLRenderTarget.h"
 
-#include <GLAD/include/glad/glad.h>
+#include <YKC/Libraries/OpenGL/GLAD/include/glad/glad.h>
 
 #include "CG_GLViewportHelper.h"
 

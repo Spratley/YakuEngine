@@ -4,8 +4,7 @@
 #include "CG/CG_RenderModule.h"
 
 // TODO: Figure out how to make this platform agnostic at this level
-#include "YK/Platforms/Windows/YK_WindowsWindow.h"
-#include "YK/Platforms/YK_PlatformDefines.h"
+#include "YKC/Platforms/Windows/YKC_WindowsWindow.h"
 
 // Temp
 YK_Matrix44 g_modelMatrix;

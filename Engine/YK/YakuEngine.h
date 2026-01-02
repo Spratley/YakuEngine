@@ -1,6 +1,6 @@
 #pragma once
 
-#include "YK/Platforms/YK_PlatformCore.h"
+#include "YKC/Platforms/YKC_PlatformCore.h"
 
 class CG_RenderModule;
 
@@ -28,7 +28,7 @@ private:
 
 private:
 	void* m_game = nullptr;
-	PlatformCore m_platformCore;
+	PlatformCore m_platformCore; // I feel like this can be reworked to be more elegant
 
 	// Modules
 	// TODO: Replace with smart pointers
