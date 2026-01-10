@@ -100,8 +100,8 @@ void CG_2DRenderer::RenderToFramebuffer() const
     m_2DShader.Use();
     m_tempQuad->GetGLData().Bind(); // Can we skip binding a mesh? 2DR will only ever deal with quads
 
-    // TODO: Refactor this so it's more data oriented and not object oriented
     // TODO: And then refactor it so we just batch render all the quads
+    // TODO: Also like sort back to front? Opaque and transparent passes?
     for (CG_Canvas const& canvas : m_canvases)
     {
         for (CG_CanvasTextureItem const& textureItem : canvas.GetItems())

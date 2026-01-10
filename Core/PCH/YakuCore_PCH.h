@@ -16,6 +16,10 @@
 #include "YKC/Math/YKC_MathUtils.h"
 
 // Types
-#include "YKC/Types/Containers/YKC_DynamicArray.h"
 #include "YKC/Types/YKC_Integer.h"
+
+#include "YKC/Types/Containers/YKC_DynamicArray.h"
+#include "YKC/Types/Containers/YKC_PagedArray.h"
+#include "YKC/Types/Handle/YKC_HandledStorage.h"
+#include "YKC/Types/Handle/YKC_HandleBase.h"
 #include "YKC/Types/YKC_Matrix.h" // Includes YKC_Vector.h
