@@ -1,21 +1,20 @@
 #pragma once
 
+#include "YKC/Interfaces/YKC_Singleton.h"
+
 // TODO: Come back and consider the lifetime of objects in storage
 // Should handles be ref-counters to automatically clean up stored objects once they are dereferenced?
+
+// TODO: See if there's a way to remove the YKC_Singleton here without removing functionality
+// The entire program has no reason to be able to access all handled storage bases in the codebase
 
 template <typename DataType, YK_U32 PageSize>
 struct YKC_HandleBase;
 
 template <typename DataType, YK_U32 PageSize>
-struct YKC_HandledStorage
+struct YKC_HandledStorage : public YKC_Singleton<YKC_HandledStorage<DataType, PageSize>>
 {
-public:
-    // TODO: Migrate this into a singleton interface that's not JIT
-    // (Also make a separate JIT singleton since that's also useful)
-    static YKC_HandledStorage* GetInstance() { return s_instance; }
-
-private:
-    inline static YKC_HandledStorage* s_instance = nullptr;
+    using Super = YKC_Singleton<YKC_HandledStorage<DataType, PageSize>>;
 
 public:
     YKC_HandledStorage();
@@ -27,6 +26,8 @@ public:
 
     DataType* Get(YK_U32 p_index, YK_U32 p_generation);
     DataType const* Get(YK_U32 p_index, YK_U32 p_generation) const;
+
+    // TODO: Add API for freeing objects back to the handled pool
 
 private:
     struct HandledObject
@@ -40,23 +41,24 @@ private:
 template <typename DataType, YK_U32 PageSize>
 YKC_HandledStorage<DataType, PageSize>::YKC_HandledStorage() : m_storage()
 {
-    if (s_instance)
+    if (Super::s_instance)
     {
         // TODO: Assert
         YK_LOG_ERROR("Re-creating YKC_HandledStorage! Only one should exist at any time!");
     }
-    s_instance = this;
+    Super::s_instance = this;
 }
 
 template <typename DataType, YK_U32 PageSize>
 inline YKC_HandledStorage<DataType, PageSize>::~YKC_HandledStorage()
 {
-    s_instance = nullptr;
+    Super::s_instance = nullptr;
 }
 
 template <typename DataType, YK_U32 PageSize>
 YKC_HandleBase<DataType, PageSize> YKC_HandledStorage<DataType, PageSize>::EmplaceHandled(DataType&& p_object)
 {
+    // TODO: Fix this so we're not copying the data
     YK_U32 const objectIndex = m_storage.Count();
     m_storage.Push(HandledObject {p_object, 0}); // Don't push, just emplace
     return YKC_HandleBase<DataType, PageSize>(objectIndex, 0);

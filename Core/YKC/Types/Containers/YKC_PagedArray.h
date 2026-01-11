@@ -1,5 +1,7 @@
 #pragma once
 
+// TODO: Make a hybrid array? So that the first page array is guaranteed to be inline with the class and we only NEED to
+// dynamically allocate storage if we exceed the page size
 template <typename DataType, YK_U32 PageSize> // TODO: Enforce Power of 2 PageSize
 struct YKC_PagedArray
 {

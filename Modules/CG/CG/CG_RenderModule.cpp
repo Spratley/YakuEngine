@@ -20,8 +20,11 @@ void CG_RenderModule::TempInit()
     CG_TextureFactory::Init();
 
     temp_quad = CG_MeshFactory::Quad();
-    temp_shader = new CG_Shader("J:/Harbourfront/Data/Shaders/ShaderCode/vertex.vs",
-                                "J:/Harbourfront/Data/Shaders/ShaderCode/fragment.fs");
+
+    ShaderResources& shaderResources = m_cgResources.GetResourceContainer<CG_Shader>();
+    shader = shaderResources.Load("J:/Harbourfront/Data/Shaders/ShaderCode/vertex.vs",
+                                  "J:/Harbourfront/Data/Shaders/ShaderCode/fragment.fs");
+
     temp_texture = CG_TextureFactory::LoadPNG("J:/Harbourfront/Data/Textures/Test.png");
 
     g_perspective = YK_Matrix::Perspective<float>(60.0f, 1.0f, 0.0001f, 100.0f);
@@ -34,11 +37,14 @@ void CG_RenderModule::Render(YK_Matrix44 const& p_renderMatrix) const
     YK_UNUSED(p_renderMatrix);
     // TODO: Remove me!
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    CG_Shader* temp_shader = shader.Get();
+
     temp_shader->Use();
-    
+
     YK_Matrix44 transform = p_renderMatrix * g_perspective;
     temp_shader->SetMatrix44("transform", transform.GetData());
-    
+
     temp_texture->GetGLData().Bind(0);
     temp_quad->GetGLData().Bind();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
