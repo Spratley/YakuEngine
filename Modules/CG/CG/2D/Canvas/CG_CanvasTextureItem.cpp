@@ -1,7 +1,7 @@
 #include "PCH/CG_PCH.h"
 #include "CG_CanvasTextureItem.h"
 
-#include "CG/Texture/CG_TextureFactory.h"
+#include "CG/Resource/Texture/CG_TextureFactory.h"
 
 CG_CanvasTextureItem::CG_CanvasTextureItem(const char* p_texturePath)
 {

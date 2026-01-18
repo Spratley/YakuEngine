@@ -4,7 +4,7 @@
 #include <YKC/Libraries/OpenGL/GLAD/include/glad/glad.h>
 #include <YKC/Libraries/OpenGL/GLFW/include/glfw3.h>
 
-#include "CG/Mesh/CG_Mesh.h"
+#include "CG/Resource/Mesh/CG_Mesh.h"
 
 CG_GLMeshBuffer::CG_GLMeshBuffer(CG_Mesh const& p_sourceMesh)
 {

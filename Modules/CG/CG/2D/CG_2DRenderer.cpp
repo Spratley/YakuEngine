@@ -7,13 +7,13 @@
 #include "CG/2D/Canvas/CG_Canvas.h"
 
 // Temp
-#include "CG/Mesh/CG_MeshFactory.h"
+#include "CG/Resource/Mesh/CG_MeshFactory.h"
 #include "CG/OpenGL/CG_GLMeshBuffer.h"
 #include "CG/OpenGL/CG_GLRenderTarget.h"
 #include "CG/OpenGL/CG_GLTextureBuffer.h"
 #include "CG/OpenGL/CG_GLViewportHelper.h"
-#include "CG/Shader/CG_Shader.h"
-#include "CG/Texture/CG_TextureFactory.h"
+#include "CG/Resource/Shader/CG_Shader.h"
+#include "CG/Resource/Texture/CG_TextureFactory.h"
 
 #include "CG/Matrix/CG_MatrixExtras.h"
 

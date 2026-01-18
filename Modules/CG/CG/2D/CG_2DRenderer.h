@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CG/2D/Canvas/CG_Canvas.h"
-#include "CG/Shader/CG_Shader.h"
+#include "CG/Resource/Shader/CG_Shader.h"
 
 // Temp
 class CG_Mesh;

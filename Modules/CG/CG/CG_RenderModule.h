@@ -3,7 +3,7 @@
 #include "CG/2D/CG_2DRenderer.h"
 #include "YKC/Resource/YKC_ResourceManager.h"
 
-#include "CG/Resource/CG_ShaderResource.h"
+#include "CG/Resource/Shader/CG_ShaderResource.h"
 
 // TODO: Don't couple CG and OpenGL/Windows
 struct GLFWwindow;

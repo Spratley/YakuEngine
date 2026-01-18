@@ -5,11 +5,11 @@
 #include <YKC/Libraries/OpenGL/GLFW/include/glfw3.h>
 
 // TEMP
-#include "CG/Mesh/CG_MeshFactory.h"
+#include "CG/Resource/Mesh/CG_MeshFactory.h"
 #include "CG/OpenGL/CG_GLMeshBuffer.h"
 #include "CG/OpenGL/CG_GLTextureBuffer.h"
-#include "CG/Shader/CG_Shader.h"
-#include "CG/Texture/CG_TextureFactory.h"
+#include "CG/Resource/Shader/CG_Shader.h"
+#include "CG/Resource/Texture/CG_TextureFactory.h"
 
 #include "CG/Matrix/CG_MatrixExtras.h"
 

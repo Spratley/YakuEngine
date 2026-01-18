@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CG/Mesh/CG_Mesh.h"
+#include "CG/Resource/Mesh/CG_Mesh.h"
 
 class CG_MeshFactory
 {

@@ -4,7 +4,7 @@
 #include <YKC/Libraries/OpenGL/GLAD/include/glad/glad.h>
 #include <YKC/Libraries/OpenGL/GLFW/include/glfw3.h>
 
-#include "CG/Texture/CG_Texture.h"
+#include "CG/Resource/Texture/CG_Texture.h"
 
 CG_GLTextureBuffer::CG_GLTextureBuffer(CG_Texture const& p_texture)
 {

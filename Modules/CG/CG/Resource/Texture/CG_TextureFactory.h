@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CG/Texture/CG_Texture.h"
+#include "CG/Resource/Texture/CG_Texture.h"
 
 class CG_TextureFactory
 {
