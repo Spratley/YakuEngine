@@ -243,7 +243,7 @@ constexpr YK_Vector_N<DataType, DimensionCount>& operator/=(YK_Vector_N<DataType
     {
         p_vector.m_data[i] /= p_scalar;
     }
-    return *this;
+    return p_vector;
 }
 
 template <typename DataType, int DimensionCount>

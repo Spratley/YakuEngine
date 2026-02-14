@@ -17,12 +17,16 @@ function(yaku_pch TARGET_NAME PCH_NAME)
 	set(PCH_HEADER "${PCH_NAME}.h")
 	set(PCH_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/PCH/${PCH_NAME}.cpp")
 	set(PCH_OUTPUT "${CMAKE_BINARY_DIR}/PCH/${PCH_NAME}.pch")
-	set_source_files_properties(${PCH_SOURCE} PROPERTIES COMPILE_FLAGS "/Yc${PCH_HEADER} /Fp${PCH_OUTPUT}")
-	target_compile_options(${TARGET_NAME} PRIVATE "/YuPCH/${PCH_HEADER}" "/Fp${PCH_OUTPUT}")
+	if (MSVC)
+		# Disable precompiled headers for WebAssembly builds, since it's just straight building the content anyway right?
+		set_source_files_properties(${PCH_SOURCE} PROPERTIES COMPILE_FLAGS "/Yc${PCH_HEADER} /Fp${PCH_OUTPUT}")
+		target_compile_options(${TARGET_NAME} PRIVATE "/YuPCH/${PCH_HEADER}" "/Fp${PCH_OUTPUT}")
+	endif()
 	target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/PCH)
 endfunction()
 
 function(yaku_pch_exclude TARGET_NAME)
+	if (MSVC) # Disable PCH for WebAssembly builds
 	foreach(EXCLUDE_FOLDER IN LISTS ARGN)
 		# Normalize to absolute path
 		get_filename_component(ABS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${EXCLUDE_FOLDER}" ABSOLUTE)
@@ -37,6 +41,7 @@ function(yaku_pch_exclude TARGET_NAME)
 			message(WARNING "PCH exclusion skipped: Folder '${ABS_PATH}' does not exist.")
 		endif()
 	endforeach()
+	endif()
 endfunction()
 
 function(yaku_set_output_dirs TARGET_NAME)
