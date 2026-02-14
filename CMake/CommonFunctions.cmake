@@ -1,3 +1,7 @@
+# -=-=-= Required YakuEn Functions =-=-=-
+
+# yaku_clang_copy
+# Ensures the user has YakuEn's .clang-format in their project root 
 function(yaku_clang_copy)
 	# Delete existing .clang-format 
 	file(GLOB CLANG_FILES ${CMAKE_SOURCE_DIR}/.clang-format)
@@ -6,6 +10,8 @@ function(yaku_clang_copy)
 	# Copy .clang-format from YakuEngine to project root
 	file(COPY ${CMAKE_SOURCE_DIR}/YakuEngine/.clang-format DESTINATION ${CMAKE_SOURCE_DIR})
 endfunction()
+
+# -=-=-= UNSORTED =-=-=-
 
 function(yaku_pch TARGET_NAME PCH_NAME)
 	set(PCH_HEADER "${PCH_NAME}.h")
@@ -155,8 +161,8 @@ function(yaku_add_include_dir TARGET_NAME INCLUDE_PATH)
 endfunction()
 
 function(yaku_post_generation)
-	execute_process(
-		COMMAND ${CMAKE_SOURCE_DIR}/YakuEngine/CMake/CleanupCMakeJunk.bat
-		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-	)
+	# execute_process(
+	# 	COMMAND ${CMAKE_SOURCE_DIR}/YakuEngine/CMake/CleanupCMakeJunk.bat
+	# 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	# )
 endfunction()
