@@ -11,4 +11,4 @@
 #endif // __EMSCRIPTEN__
 
 // Not the biggest fan of this, but it's needed to stop heap allocation in platform objects
-#define YKC_PLATFORM_INCLUDE(Folder, File) YKC_Stringify(Folder## / ##YK_PLATFORM## / ##File)
+#define YKC_PLATFORM_INCLUDE(Folder, File) YKC_STRINGIFY(Folder\\YK_PLATFORM\\File)

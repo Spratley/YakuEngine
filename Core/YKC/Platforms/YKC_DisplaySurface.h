@@ -1,7 +1,7 @@
 #pragma once
 
 // Platform specific data to store directly in DisplaySurfaec
-#include YKC_PLATFORM_INCLUDE(YKC/Platforms, YKC_DisplaySurfaceContents.h)
+#include YKC_PLATFORM_INCLUDE(YKC\\Platforms, YKC_DisplaySurfaceContents.h)
 
 // YKC_DisplaySurface is the platform agnostic window class
 // Just dont' want to call it a window because not everything uses windows

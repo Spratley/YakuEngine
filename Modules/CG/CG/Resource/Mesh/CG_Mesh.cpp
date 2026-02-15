@@ -63,7 +63,7 @@ void CG_Mesh::SetData(float* p_vertexBuffer, YK_U32 p_vertexBufferCount, YK_U32*
 	// TODO: Assert when vertex data exists
 	if (m_vertexBuffer)
 	{
-		__debugbreak();
+		// __debugbreak();
 		return;
 	}
 

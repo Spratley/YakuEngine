@@ -69,7 +69,7 @@ public:
     }
 
     // TODO: Compiler intrinsics SIMD?
-    template <int OtherMatrixRowCount, int OtherMatrixColumnCount,
+    template <YK_U32 OtherMatrixRowCount, YK_U32 OtherMatrixColumnCount,
               typename = typename YK_EnableIf<OtherMatrixRowCount == ColumnCount>::Type>
     friend constexpr YK_Matrix_R_C<DataType, RowCount, OtherMatrixColumnCount> operator*(
       MatrixType const& p_lhs, YK_Matrix_R_C<DataType, OtherMatrixRowCount, OtherMatrixColumnCount> const& p_rhs)

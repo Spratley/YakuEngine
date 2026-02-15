@@ -108,7 +108,9 @@ DataType& YKC_PagedArray<DataType, PageSize>::operator[](YK_U32 p_index)
     {
         YK_LOG_ERROR("Accessing YKC_PagedArray out of bounds!");
         // TODO: Assert
-        return *static_cast<DataType*>(nullptr);
+        static DataType dummy{};
+        return dummy;
+        // return *static_cast<DataType*>(nullptr);
     }
     PageIndex pageIndex = GetPageIndex(p_index);
     return m_pages[pageIndex.m_pageIndex][pageIndex.m_itemIndex];
@@ -121,7 +123,9 @@ DataType const& YKC_PagedArray<DataType, PageSize>::operator[](YK_U32 p_index) c
     {
         YK_LOG_ERROR("Accessing YKC_PagedArray out of bounds!");
         // TODO: Assert
-        return *static_cast<DataType*>(nullptr);
+        static DataType dummy{};
+        return dummy;
+        //return *static_cast<DataType*>(nullptr);
     }
     PageIndex pageIndex = GetPageIndex(p_index);
     return m_pages[pageIndex.m_pageIndex][pageIndex.m_itemIndex];

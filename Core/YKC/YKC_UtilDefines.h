@@ -1,4 +1,4 @@
 #pragma once
 
-#define YKC_StringifyImpl(X) #X
-#define YKC_Stringify(X) YKC_StringifyImpl(X)
+#define YKC_STRINGIFYIMPL(X) #X
+#define YKC_STRINGIFY(X) YKC_STRINGIFYIMPL(X)

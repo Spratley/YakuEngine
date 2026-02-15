@@ -71,5 +71,6 @@ SpaceAfterTemplateKeyword: 'true'
 ColumnLimit: 120
 
 WhitespaceSensitiveMacros: ['YKC_PLATFORM_INCLUDE']
+SkipMacroDefinitionBody: 'true'
 
 ...
