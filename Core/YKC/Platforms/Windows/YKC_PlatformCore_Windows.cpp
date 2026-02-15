@@ -62,6 +62,14 @@ bool YKC_PlatformCore::Init()
 
 void YKC_PlatformCore::ShutDown() { glfwTerminate(); }
 
+void YKC_PlatformCore::LaunchCoreLoop(void (*p_coreLoop)(void*), void* p_contextData) const
+{
+    while (!m_displaySurface.ShouldClose())
+    {
+        p_coreLoop(p_contextData);
+    }
+}
+
 void YKC_PlatformCore::OnFrameStart() const { glfwPollEvents(); }
 
 #endif // YK_WINDOWS

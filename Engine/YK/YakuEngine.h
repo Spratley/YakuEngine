@@ -60,7 +60,12 @@ void YakuEngine::Run()
         return;
     }
 
-    EngineLoop();
+    // TODO: Come back to this. WebAssembly requires that we don't manually loop,
+    // and so this ugly back and forth needs to be here to support it.
+    // However, it takes up a callstack frame that wouldn't need to be if we were directly looping ourselves
+    // Since most platforms DON'T have an asynchronous loop,
+    // we can probably figure out a more elegant way to get that stack memory back
+    m_platformCore.LaunchCoreLoop([](void* p_context) { static_cast<YakuEngine*>(p_context)->EngineLoop(); }, this);
 
     // Shut Down
     GetGame<Game>().ShutDown();

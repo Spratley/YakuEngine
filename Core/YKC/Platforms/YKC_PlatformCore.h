@@ -19,8 +19,9 @@ public:
 
     bool Init();
     void ShutDown();
+    void LaunchCoreLoop(void (*p_coreLoop)(void*), void* p_contextData) const; // TODO: Strongly define callback type
 
-    // TODO: Find a better home for this
+    // TODO: Find a better home for this?
     void OnFrameStart() const;
 
     YKC_DisplaySurface& GetMainDisplaySurface() { return m_displaySurface; }

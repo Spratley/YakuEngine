@@ -48,6 +48,15 @@ ConstructorInitializerIndentWidth: 4
 BreakBeforeTernaryOperators: 'false'
 FixNamespaceComments: 'true'
 IncludeBlocks: Preserve
+IncludeCategories:
+  - Regex: ^"PCH.*
+    Priority: -1
+  - Regex: ^".*
+    Priority: 3
+  - Regex: ^<.*
+    Priority: 2
+IncludeIsMainRegex: (Test)?$
+IncludeIsMainSourceRegex: ""
 IndentCaseBlocks: 'true'
 IndentCaseLabels: 'true'
 IndentExternBlock: AfterExternBlock
