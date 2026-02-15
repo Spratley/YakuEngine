@@ -11,6 +11,7 @@
 
 // Global Macros
 #include "YKC/YKC_MemoryDefines.h"
+#include "YKC/YKC_UtilDefines.h"
 
 // Math
 #include "YKC/Math/YKC_MathUtils.h"

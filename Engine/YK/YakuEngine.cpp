@@ -3,9 +3,6 @@
 
 #include "CG/CG_RenderModule.h"
 
-// TODO: Figure out how to make this platform agnostic at this level
-#include "YKC/Platforms/Windows/YKC_WindowsWindow.h"
-
 // Temp
 YK_Matrix44 g_modelMatrix;
 
@@ -16,11 +13,16 @@ bool YakuEngine::Init()
         return false;
     }
 
+    // TODO: Make this platform agnostic
     HIDra::PlatformCoreInitData_Windows initData;
-    initData.m_mainWindowHandle = m_platformCore.GetMainWindow()->GetHWND();
+    initData.m_mainWindowHandle = m_platformCore.GetMainDisplaySurface().GetNativeHandle();
     HIDra::Init(initData);
 
-    m_renderModule = new CG_RenderModule(m_platformCore.GetMainWindow()->GetGLFWWindow()); // TODO: Don't do this
+    // Also make THIS platform agnostic
+    m_renderModule = new CG_RenderModule(m_platformCore.GetMainDisplaySurface().GetContents().m_glfwWindow); // TODO: Don't do this
+
+    // Temp
+    YK_Matrix::Translate(g_modelMatrix, YK_Vector3f(0.0f, 0.0f, -1.0f));
 
     return true;
 }
@@ -37,7 +39,7 @@ void YakuEngine::ShutDown()
 void YakuEngine::EngineLoop()
 {
     // Run Game Loop
-    while (!m_platformCore.ShouldClose())
+    while (!m_platformCore.GetMainDisplaySurface().ShouldClose())
     {
         BeginFrame();
 

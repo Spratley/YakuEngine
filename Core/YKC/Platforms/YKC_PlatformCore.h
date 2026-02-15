@@ -1,10 +1,31 @@
 #pragma once
-#include "YKC_PlatformDefines.h"
 
-// TODO: Migrate platform wrapper to YKC, it should be lower in the architecture
+#include "YKC/Interfaces/YKC_Singleton.h"
+#include "YKC/Platforms/YKC_DisplaySurface.h"
 
-#if YK_WINDOWS
-#include "YKC/Platforms/Windows/YKC_WindowsCore.h"
-#else
-#error No Platform Selected!
-#endif
+// Does this need to be a singleton? Can we just rely on requesting access via the main engine object?
+class YKC_PlatformCore : public YKC_Singleton<YKC_PlatformCore>
+{
+public:
+    YKC_PlatformCore()
+    {
+        if (s_instance)
+        {
+            YK_LOG_ERROR("Re-creating platform core instance! Something is VERY wrong!");
+            return;
+        }
+        s_instance = this;
+    }
+
+    bool Init();
+    void ShutDown();
+
+    // TODO: Find a better home for this
+    void OnFrameStart() const;
+
+    YKC_DisplaySurface& GetMainDisplaySurface() { return m_displaySurface; }
+    YKC_DisplaySurface const& GetMainDisplaySurface() const { return m_displaySurface; }
+
+private:
+    YKC_DisplaySurface m_displaySurface;
+};

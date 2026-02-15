@@ -7,56 +7,62 @@ class CG_RenderModule;
 class YakuEngine
 {
 public:
-	YakuEngine() = default;
-	~YakuEngine() {}
+    YakuEngine() = default;
+    ~YakuEngine() {}
 
-	template <class Game>
-	void Run();
+    template <class Game>
+    void Run();
 
-	template <class Game>
-	Game& GetGame() { return *static_cast<Game*>(m_game); }
-	template <class Game>
-	Game const& GetGame() const { return *static_cast<Game*>(m_game); }
-
-private:
-	bool Init();
-	void ShutDown();
-	void EngineLoop();
-
-	void BeginFrame();
-	void EndFrame();
+    template <class Game>
+    Game& GetGame()
+    {
+        return *static_cast<Game*>(m_game);
+    }
+    template <class Game>
+    Game const& GetGame() const
+    {
+        return *static_cast<Game*>(m_game);
+    }
 
 private:
-	void* m_game = nullptr;
-	PlatformCore m_platformCore; // I feel like this can be reworked to be more elegant
+    bool Init();
+    void ShutDown();
+    void EngineLoop();
 
-	// Modules
-	// TODO: Replace with smart pointers
-	CG_RenderModule* m_renderModule;
+    void BeginFrame();
+    void EndFrame();
+
+private:
+    void* m_game = nullptr;
+    YKC_PlatformCore m_platformCore;
+
+    // Modules
+    // TODO: Move to separate implementation struct so we can have linear packing and no header exposure
+    CG_RenderModule* m_renderModule;
 };
 
 template <class Game>
 void YakuEngine::Run()
 {
-	// Init Engine
-	if (!Init())
-	{
-		ShutDown();
-		return;
-	}
+    // Init Engine
+    if (!Init())
+    {
+        ShutDown();
+        return;
+    }
 
-	// Init Game
-	m_game = new Game();
-	if (!GetGame<Game>().Init())
-	{
-		GetGame<Game>().ShutDown();
-		ShutDown();
-		return;
-	}
+    // Init Game
+    m_game = new Game();
+    if (!GetGame<Game>().Init())
+    {
+        GetGame<Game>().ShutDown();
+        ShutDown();
+        return;
+    }
 
-	EngineLoop();
+    EngineLoop();
 
-	// Shut Down
-	GetGame<Game>().ShutDown();
-	ShutDown();
+    // Shut Down
+    GetGame<Game>().ShutDown();
+    ShutDown();
 }
