@@ -1,3 +1,5 @@
+#include "YKC/Platforms/YKC_PlatformDefines.h" // Needed for YK_WINDOWS, etc.
+
 // Platform
 #if YK_WINDOWS
 #define HIDra_Platform HIDra_Platform_Windows
