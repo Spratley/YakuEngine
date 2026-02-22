@@ -13,6 +13,12 @@ endfunction()
 
 # -=-=-= UNSORTED =-=-=-
 
+function(yaku_include_path TARGET_NAME ACCESSOR LOCAL_INCLUDE_PATH)
+	get_filename_component(ABS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${LOCAL_INCLUDE_PATH}" ABSOLUTE)
+	target_include_directories(${TARGET_NAME} ${ACCESSOR} ${ABS_PATH})
+	message(STATUS "${TARGET_NAME} - Adding custom include directory: ${ABS_PATH}")
+endfunction()
+
 function(yaku_pch TARGET_NAME PCH_NAME)
 	set(PCH_HEADER "${PCH_NAME}.h")
 	set(PCH_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/PCH/${PCH_NAME}.cpp")
