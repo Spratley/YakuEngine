@@ -1,8 +1,8 @@
 #pragma once
 
 #if !YAKU_RETAIL
-#include <iostream>
 #include <print>
+#include <cstdio>
 #endif // !YAKU_RETAIL
 
 // TODO: Log Improvements
@@ -12,15 +12,19 @@
 // - Sort and hide runtime logs based on severity and location
 
 #if !YAKU_RETAIL
-#define YK_LOG(Message) std::println(Message);
+#define YK_LOG(Message) std::println("{}", Message)
+#define YK_LOG_PARAM(Message, Param) std::println(Message, Param)
 #else
 #define YK_LOG(Message) YK_UNUSED(Message)
+#define YK_LOG_PARAM(Message, Param) YK_UNUSED(Message); YK_UNUSED(Param)
 #endif // !YAKU_RETAIL
 
 #if !YAKU_RETAIL
-#define YK_LOG_ERROR(Message) std::cerr << Message << std::endl;
+#define YK_LOG_ERROR(Message) std::println(stderr, "Error: {}", Message)
+#define YK_LOG_ERROR_PARAM(Message, Param) std::println(stderr, "Error: " Message, Param)
 #else
-#define YK_LOG_ERROR(Message) YK_UNUSED(Message);
+#define YK_LOG_ERROR(Message) YK_UNUSED(Message)
+#define YK_LOG_ERROR_PARAM(Message, Param) YK_UNUSED(Message); YK_UNUSED(Param)
 #endif // !YAKU_RETAIL
 
 #if !YAKU_RETAIL
