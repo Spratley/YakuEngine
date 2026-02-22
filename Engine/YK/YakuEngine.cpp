@@ -14,8 +14,13 @@ bool YakuEngine::Init()
     }
 
     // TODO: Make this platform agnostic
+    #if YK_WINDOWS
     HIDra::PlatformCoreInitData_Windows initData;
     initData.m_mainWindowHandle = m_platformCore.GetMainDisplaySurface().GetNativeHandle();
+    #elif YK_WEB_ASSEMBLY
+    HIDra::PlatformCoreInitData_WASM initData;
+    #endif
+
     HIDra::Init(initData);
 
     // Also make THIS platform agnostic

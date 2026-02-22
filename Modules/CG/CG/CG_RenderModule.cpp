@@ -1,13 +1,20 @@
 #include "PCH/CG_PCH.h"
 #include "CG_RenderModule.h"
 
+#if YK_WEB_ASSEMBLY
+// Emscripten specific GL headers
+#include <GLES3/gl3.h>
+#include <GLFW/glfw3.h>
+#include <emscripten.h>
+#else
 #include <YKC/Libraries/OpenGL/GLAD/include/glad/glad.h>
 #include <YKC/Libraries/OpenGL/GLFW/include/glfw3.h>
+#endif
 
 // TEMP
-#include "CG/Resource/Mesh/CG_MeshFactory.h"
 #include "CG/OpenGL/CG_GLMeshBuffer.h"
 #include "CG/OpenGL/CG_GLTextureBuffer.h"
+#include "CG/Resource/Mesh/CG_MeshFactory.h"
 #include "CG/Resource/Shader/CG_Shader.h"
 #include "CG/Resource/Texture/CG_TextureFactory.h"
 
@@ -22,8 +29,13 @@ void CG_RenderModule::TempInit()
     temp_quad = CG_MeshFactory::Quad();
 
     ShaderResources& shaderResources = m_cgResources.GetResourceContainer<CG_Shader>();
-    shader = shaderResources.Load("J:/Harbourfront/Data/Shaders/ShaderCode/vertex.vs",
-                                  "J:/Harbourfront/Data/Shaders/ShaderCode/fragment.fs");
+#if YK_WEB_ASSEMBLY
+    shader = shaderResources.Load("J:/Harbourfront/Data/Shaders/ShaderCode/WASM/Vertex_WASM.vs",
+                                  "J:/Harbourfront/Data/Shaders/ShaderCode/WASM/Fragment_WASM.fs");
+#else
+    shader = shaderResources.Load("J:/Harbourfront/Data/Shaders/ShaderCode/Vertex.vs",
+                                  "J:/Harbourfront/Data/Shaders/ShaderCode/Fragment.fs");
+#endif // WEB_ASSEMBLY
 
     temp_texture = CG_TextureFactory::LoadPNG("J:/Harbourfront/Data/Textures/Test.png");
 

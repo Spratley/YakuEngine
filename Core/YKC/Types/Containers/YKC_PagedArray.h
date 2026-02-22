@@ -71,7 +71,7 @@ inline YKC_PagedArray<DataType, PageSize>& YKC_PagedArray<DataType, PageSize>::o
     m_pages = std::move(p_other.m_pages);
     m_count = p_other.m_count;
 
-    p_other.m_pages.clear();
+    // Don't clear p_other.m_pages, std::move has done that for us
     p_other.m_count = 0;
     return *this;
 }

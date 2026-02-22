@@ -1,7 +1,14 @@
 #include "PCH/CG_PCH.h"
 #include "CG_GLRenderTarget.h"
 
+#if YK_WEB_ASSEMBLY
+// Emscripten specific GL headers
+#include <GLES3/gl3.h>
+#include <GLFW/glfw3.h>
+#include <emscripten.h>
+#else
 #include <YKC/Libraries/OpenGL/GLAD/include/glad/glad.h>
+#endif
 
 #include "CG_GLViewportHelper.h"
 
@@ -19,7 +26,7 @@ CG_GLRenderTarget::CG_GLRenderTarget(YK_Vector2i p_size)
     glGenTextures(1, &m_colorBufferID);
     glBindTexture(GL_TEXTURE_2D, m_colorBufferID);
     // Don't assume alpha is wanted!
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p_size.x, p_size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, p_size.x, p_size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -29,7 +36,7 @@ CG_GLRenderTarget::CG_GLRenderTarget(YK_Vector2i p_size)
     // TODO: Move render buffer generation to render buffer class
     glGenRenderbuffers(1, &m_depthBufferID);
     glBindRenderbuffer(GL_RENDERBUFFER, m_depthBufferID);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, p_size.x, p_size.y);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, p_size.x, p_size.y);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthBufferID);
 

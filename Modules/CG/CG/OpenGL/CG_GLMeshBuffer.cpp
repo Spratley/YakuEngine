@@ -1,8 +1,15 @@
 #include "PCH/CG_PCH.h"
 #include "CG_GLMeshBuffer.h"
 
+#if YK_WEB_ASSEMBLY
+// Emscripten specific GL headers
+#include <GLES3/gl3.h>
+#include <GLFW/glfw3.h>
+#include <emscripten.h>
+#else
 #include <YKC/Libraries/OpenGL/GLAD/include/glad/glad.h>
 #include <YKC/Libraries/OpenGL/GLFW/include/glfw3.h>
+#endif
 
 #include "CG/Resource/Mesh/CG_Mesh.h"
 

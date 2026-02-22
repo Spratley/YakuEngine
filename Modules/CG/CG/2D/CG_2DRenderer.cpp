@@ -2,7 +2,15 @@
 #include "CG_2DRenderer.h"
 
 // TODO: Encapsulate into rendering wrapper so that we can swap renderers
+// Time has come, this has to be done. For now, hack
+#if YK_WEB_ASSEMBLY
+// Emscripten specific GL headers
+#include <GLES3/gl3.h>
+#include <GLFW/glfw3.h>
+#include <emscripten.h>
+#else
 #include <YKC/Libraries/OpenGL/GLAD/include/glad/glad.h>
+#endif
 
 #include "CG/2D/Canvas/CG_Canvas.h"
 
@@ -27,11 +35,21 @@ YK_U32 g_nullVAO = 0;
 
 CG_2DRenderer::CG_2DRenderer()
     : m_canvases()
+#if YK_WEB_ASSEMBLY // TODO: Don't do this
+    , m_2DShader("J:/Harbourfront/Data/Shaders/ShaderCode/WASM/2DR_Vertex_WASM.vs",
+                 "J:/Harbourfront/Data/Shaders/ShaderCode/WASM/2DR_Fragment_WASM.fs")
+#else
     , m_2DShader("J:/Harbourfront/Data/Shaders/ShaderCode/2DR_Vertex.vs",
                  "J:/Harbourfront/Data/Shaders/ShaderCode/2DR_Fragment.fs")
+#endif // YK_WEB_ASSEMBLY
 
+#if YK_WEB_ASSEMBLY
+    , m_fsqShader("J:/Harbourfront/Data/Shaders/ShaderCode/WASM/FSQ_WASM.vs",
+                  "J:/Harbourfront/Data/Shaders/ShaderCode/WASM/SolidTexture_WASM.fs")
+#else
     , m_fsqShader("J:/Harbourfront/Data/Shaders/ShaderCode/FSQ.vs",
                   "J:/Harbourfront/Data/Shaders/ShaderCode/SolidTexture.fs")
+#endif // YK_WEB_ASSEMBLY
     , m_renderTarget(nullptr)
 {
     // TODO: Don't do this (sob)

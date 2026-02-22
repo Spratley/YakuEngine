@@ -23,8 +23,12 @@ bool YK_IFile::Open(const char* p_path)
     if (m_inputFileStream.is_open())
     {
         // TODO: Assert file is closed
+        YK_LOG_ERROR_PARAM("Attempting to re-open a file!", p_path);
+        return false;
     }
 #endif // !YAKU_RETAIL
+
+    YK_LOG_PARAM("Opening {}", p_path);
 
     m_inputFileStream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
@@ -46,6 +50,7 @@ void YK_IFile::Close()
 {
     if (m_inputFileStream.is_open())
     {
+        YK_LOG("Closing some file");
         m_inputFileStream.close();
     }
 }

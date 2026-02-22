@@ -19,6 +19,11 @@
         https://glad.dav1d.de/#profile=core&language=c&specification=gl&loader=on&api=gl%3D4.6
 */
 
+// TODO: Come back and make a more robust way of disabling
+// For now, just manually remove all of glad.c when making a WASM build
+#include "YKC/Platforms/YKC_PlatformDefines.h"
+#if !YK_WEB_ASSEMBLY
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1831,3 +1836,4 @@ int gladLoadGLLoader(GLADloadproc load) {
 	return GLVersion.major != 0 || GLVersion.minor != 0;
 }
 
+#endif // !YK_WEB_ASSEMBLY

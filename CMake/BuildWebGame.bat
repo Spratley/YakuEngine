@@ -13,6 +13,8 @@ set "EMSDK_PATH=C:\Users\Offic\Documents\Repos\emsdk"
 
 :: Script Constants
 set BUILD_CONFIG_TYPE=Retail
+set OPTIMIZATION_LEVEL=-O3
+set ASSERTION_LEVEL=1
 set CMAKE_GENERATOR="Ninja"
 
 :: Script Logic Begin
@@ -30,8 +32,11 @@ if exist "%BUILD_DIRECTORY%" (
 mkdir "%BUILD_DIRECTORY%"
 
 pushd "%BUILD_ROOT_DIRECTORY%"
-    echo Starting WebAssembly Build...
-    call emcmake cmake -S . -B "%BUILD_DIRECTORY%" -G "%CMAKE_GENERATOR%"
+    echo Starting WebAssembly Build (%BUILD_CONFIG_TYPE%)...
+    call emcmake cmake -S . -B "%BUILD_DIRECTORY%" -G "%CMAKE_GENERATOR%" ^
+        -DCMAKE_BUILD_TYPE=%BUILD_CONFIG_TYPE% ^
+        -DCMAKE_CXX_FLAGS="%OPTIMIZATION_LEVEL%" ^
+        -DCMAKE_EXE_LINKER_FLAGS="%OPTIMIZATION_LEVEL% -s MAX_WEBGL_VERSION=2 -s MIN_WEBGL_VERSION=2 -s USE_GLFW=3 -s ASSERTIONS=%ASSERTION_LEVEL% --preload-file J:/Harbourfront/Data@J:/Harbourfront/Data"
     if %ERRORLEVEL% neq 0 (echo Build generation failed! & pause & exit /b 1)
     
     pushd %BUILD_DIRECTORY%
@@ -42,7 +47,9 @@ pushd "%BUILD_ROOT_DIRECTORY%"
             if not "%%~xi"==".js" (
                 if not "%%~xi"==".wasm" (
                     if not "%%~xi"==".html" (
-                        del /q "%%i"
+                        if not "%%~xi"==".data" (
+                            del /q "%%i"
+                        )
                     )
                 )
             )
