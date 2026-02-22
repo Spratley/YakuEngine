@@ -22,7 +22,7 @@ function(yaku_pch TARGET_NAME PCH_NAME)
 		set_source_files_properties(${PCH_SOURCE} PROPERTIES COMPILE_FLAGS "/Yc${PCH_HEADER} /Fp${PCH_OUTPUT}")
 		target_compile_options(${TARGET_NAME} PRIVATE "/YuPCH/${PCH_HEADER}" "/Fp${PCH_OUTPUT}")
 	endif()
-	target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/PCH)
+	#target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/PCH)
 endfunction()
 
 function(yaku_pch_exclude TARGET_NAME)
