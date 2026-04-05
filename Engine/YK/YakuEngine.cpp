@@ -6,6 +6,9 @@
 // Temp
 YK_Matrix44 g_modelMatrix;
 
+// Temp 2x
+HIDra::Core g_hidraCore;
+
 bool YakuEngine::Init()
 {
     if (!m_platformCore.Init())
@@ -14,14 +17,12 @@ bool YakuEngine::Init()
     }
 
 // TODO: Make this platform agnostic
+    HIDra::Core_PlatformInitData initData;
 #if YK_WINDOWS
-    HIDra::PlatformCoreInitData_Windows initData;
     initData.m_mainWindowHandle = m_platformCore.GetMainDisplaySurface().GetNativeHandle();
-#elif YK_WEB_ASSEMBLY
-    HIDra::PlatformCoreInitData_WASM initData;
 #endif
 
-    HIDra::Init(initData);
+    g_hidraCore.Init(initData);
 
     // Also make THIS platform agnostic
     m_renderModule =
@@ -47,8 +48,7 @@ void YakuEngine::EngineLoop()
     // Run Game Loop
     BeginFrame();
 
-    // HIDra::Vec2f input = HIDra::GetAxis2D(HIDra::GamepadAxisID::AID_STICK_L);
-    HIDra::Vec2f input;
+    HIDra::Vec2f input = HIDra::GetAxis2D(HIDra::GamepadAxisID::AID_STICK_L);
     if (HIDra::GetKey(HIDra::KEYCODE_S))
     {
         input.m_y = -1;

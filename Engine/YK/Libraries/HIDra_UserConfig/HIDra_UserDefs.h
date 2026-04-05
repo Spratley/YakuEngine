@@ -10,7 +10,7 @@
 // Features
 #define HIDra_Gamepad HIDra_Enable
 #define HIDra_GP_Generic HIDra_Enable
-#define HIDra_GP_Multiple HIDra_Disable
+#define HIDra_GP_Multiple HIDra_Enable
 
 #define HIDra_Keyboard HIDra_Enable
 #define HIDra_Mouse HIDra_Enable
