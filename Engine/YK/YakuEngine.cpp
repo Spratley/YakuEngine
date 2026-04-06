@@ -16,7 +16,7 @@ bool YakuEngine::Init()
         return false;
     }
 
-// TODO: Make this platform agnostic
+    // TODO: Make this platform agnostic
     HIDra::Core_PlatformInitData initData;
 #if YK_WINDOWS
     initData.m_mainWindowHandle = m_platformCore.GetMainDisplaySurface().GetNativeHandle();
@@ -36,8 +36,6 @@ bool YakuEngine::Init()
 
 void YakuEngine::ShutDown()
 {
-    YK_SAFE_DELETE(m_game);
-
     YK_SAFE_DELETE(m_renderModule);
 
     m_platformCore.ShutDown();

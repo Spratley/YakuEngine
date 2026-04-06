@@ -176,4 +176,5 @@ function(yaku_post_generation)
 	# 	COMMAND ${CMAKE_SOURCE_DIR}/YakuEngine/CMake/CleanupCMakeJunk.bat
 	# 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 	# )
+	set(CMAKE_SUPPRESS_REGENERATION ON)
 endfunction()

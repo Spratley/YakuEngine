@@ -10,15 +10,15 @@ public:
     YakuEngine() = default;
     ~YakuEngine() {}
 
-    template <class Game>
+    template <typename Game>
     void Run();
 
-    template <class Game>
+    template <typename Game>
     Game& GetGame()
     {
         return *static_cast<Game*>(m_game);
     }
-    template <class Game>
+    template <typename Game>
     Game const& GetGame() const
     {
         return *static_cast<Game*>(m_game);
@@ -32,6 +32,15 @@ private:
     void BeginFrame();
     void EndFrame();
 
+    // TODO: This doesn't seem good
+    // I'm doing this because Game's concrete type is from a higher level project and cannot be known by YakuEngine
+    // Since we're storing the game as a void*, we can't safely delete it without access to it's destructor
+    // Yeah technically it doesn't matter that much since
+    // Not the biggest fan of the void* m_game anyway, I should probably find a better way to do all of this
+    // Composition with an abstract templated type? Make Game derive YakuEngine? Who knows
+    template <typename Game>
+    void DeleteGame();
+
 private:
     void* m_game = nullptr;
     YKC_PlatformCore m_platformCore;
@@ -41,7 +50,7 @@ private:
     CG_RenderModule* m_renderModule;
 };
 
-template <class Game>
+template <typename Game>
 void YakuEngine::Run()
 {
     // Init Engine
@@ -56,6 +65,7 @@ void YakuEngine::Run()
     if (!GetGame<Game>().Init())
     {
         GetGame<Game>().ShutDown();
+        DeleteGame<Game>();
         ShutDown();
         return;
     }
@@ -70,4 +80,11 @@ void YakuEngine::Run()
     // Shut Down
     GetGame<Game>().ShutDown();
     ShutDown();
+}
+
+template <typename Game>
+void YakuEngine::DeleteGame()
+{
+    delete static_cast<Game*>(m_game);
+    m_game = nullptr;
 }
