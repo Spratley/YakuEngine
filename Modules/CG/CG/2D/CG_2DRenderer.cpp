@@ -68,7 +68,7 @@ void CG_2DRenderer::Temp_Init()
     glGetIntegerv(GL_VIEWPORT, currentViewport);
     CG_GLViewportHelper::SetViewportSize(YK_Vector2i(currentViewport[2], currentViewport[3]));
 
-    m_renderTarget = new CG_GLRenderTarget(YK_Vector2i(800, 500));
+    m_renderTarget = new CG_GLRenderTarget(YK_Vector2i(1920/2, 1080/2));
 
     // Temp
     m_tempQuad = CG_MeshFactory::Quad();

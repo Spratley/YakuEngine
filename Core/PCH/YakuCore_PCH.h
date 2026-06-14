@@ -8,6 +8,7 @@
 
 // Debug
 #include "YKC/IO/Logging/YKC_Logger.h"
+#include "YKC/Utils/YKC_Assert.h"
 
 // Global Macros
 #include "YKC/YKC_MemoryDefines.h"

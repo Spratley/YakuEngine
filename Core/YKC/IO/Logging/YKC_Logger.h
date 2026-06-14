@@ -13,18 +13,18 @@
 
 #if !YAKU_RETAIL
 #define YK_LOG(Message) std::println("{}", Message)
-#define YK_LOG_PARAM(Message, Param) std::println(Message, Param)
+#define YK_LOG_PARAM(Message, ...) std::println(Message, __VA_ARGS__)
 #else
-#define YK_LOG(Message) YK_UNUSED(Message)
-#define YK_LOG_PARAM(Message, Param) YK_UNUSED(Message); YK_UNUSED(Param)
+#define YK_LOG(Message) YK_Unused(Message)
+#define YK_LOG_PARAM(Message, ...) YK_Unused(Message, __VA_ARGS__)
 #endif // !YAKU_RETAIL
 
 #if !YAKU_RETAIL
 #define YK_LOG_ERROR(Message) std::println(stderr, "Error: {}", Message)
-#define YK_LOG_ERROR_PARAM(Message, Param) std::println(stderr, "Error: " Message, Param)
+#define YK_LOG_ERROR_PARAM(Message, ...) std::println(stderr, "Error: " Message, __VA_ARGS__)
 #else
-#define YK_LOG_ERROR(Message) YK_UNUSED(Message)
-#define YK_LOG_ERROR_PARAM(Message, Param) YK_UNUSED(Message); YK_UNUSED(Param)
+#define YK_LOG_ERROR(Message) YK_Unused(Message)
+#define YK_LOG_ERROR_PARAM(Message, ...) YK_Unused(Message, __VA_ARGS__)
 #endif // !YAKU_RETAIL
 
 #if !YAKU_RETAIL

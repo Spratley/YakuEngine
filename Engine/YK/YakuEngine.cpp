@@ -29,7 +29,7 @@ bool YakuEngine::Init()
       new CG_RenderModule(m_platformCore.GetMainDisplaySurface().GetContents().m_glfwWindow); // TODO: Don't do this
 
     // Temp
-    YK_Matrix::Translate(g_modelMatrix, YK_Vector3f(0.0f, 0.0f, -1.0f));
+    YK_Matrix::Translate(g_modelMatrix, YK_Vector3f(0.0f, -0.5f, -1.0f));
 
     return true;
 }
@@ -62,6 +62,40 @@ void YakuEngine::EngineLoop()
     YK_Matrix::Translate(g_modelMatrix, frameDelta);
 
     m_renderModule->Render(g_modelMatrix);
+
+    if (HIDra::GetButtonDown(HIDra::BID_SOUTH))
+    {
+        YK_LOG("Hit south!");
+    }
+    if (HIDra::GetButtonDown(HIDra::BID_NORTH))
+    {
+        YK_LOG("Hit north!");
+    }
+    if (HIDra::GetButtonDown(HIDra::BID_EAST))
+    {
+        YK_LOG("Hit east!");
+    }
+    if (HIDra::GetButtonDown(HIDra::BID_WEST))
+    {
+        YK_LOG("Hit west!");
+    }
+
+    if (HIDra::GetButtonDown(HIDra::BID_DPAD_SOUTH))
+    {
+        YK_LOG("Hit dpad south!");
+    }
+    if (HIDra::GetButtonDown(HIDra::BID_DPAD_NORTH))
+    {
+        YK_LOG("Hit dpad north!");
+    }
+    if (HIDra::GetButtonDown(HIDra::BID_DPAD_EAST))
+    {
+        YK_LOG("Hit dpad east!");
+    }
+    if (HIDra::GetButtonDown(HIDra::BID_DPAD_WEST))
+    {
+        YK_LOG("Hit dpad west!");
+    }
 
     EndFrame();
 }

@@ -109,7 +109,7 @@ void CG_Shader::LogShaderErrors(YK_U32 p_shaderID, YK_U32 p_errorType) const
         YK_LOG_ERROR(infoLog);
     }
 #else
-    YK_UNUSED(p_shaderID);
-    YK_UNUSED(p_errorType);
+    YK_Unused(p_shaderID);
+    YK_Unused(p_errorType);
 #endif // !YAKU_RETAIL
 }

@@ -28,7 +28,7 @@ bool YK_IFile::Open(const char* p_path)
     }
 #endif // !YAKU_RETAIL
 
-    YK_LOG_PARAM("Opening {}", p_path);
+    // YK_LOG_PARAM("Opening {}", p_path);
 
     m_inputFileStream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
@@ -50,7 +50,7 @@ void YK_IFile::Close()
 {
     if (m_inputFileStream.is_open())
     {
-        YK_LOG("Closing some file");
+        // YK_LOG("Closing some file");
         m_inputFileStream.close();
     }
 }

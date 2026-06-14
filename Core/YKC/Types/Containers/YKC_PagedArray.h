@@ -2,6 +2,8 @@
 
 // TODO: Make a hybrid array? So that the first page array is guaranteed to be inline with the class and we only NEED to
 // dynamically allocate storage if we exceed the page size
+
+// TODO: Add an iterator that is aware of page size and jumps to the next page on its own without doing any math
 template <typename DataType, YK_U32 PageSize> // TODO: Enforce Power of 2 PageSize
 struct YKC_PagedArray
 {

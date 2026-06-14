@@ -26,7 +26,7 @@ void CG_RenderModule::TempInit()
 {
     CG_TextureFactory::Init();
 
-    temp_quad = CG_MeshFactory::Quad();
+    temp_quad = CG_MeshFactory::LoadOBJ("J:/Harbourfront/Data/Models/HeartTest.obj");
 
     ShaderResources& shaderResources = m_cgResources.GetResourceContainer<CG_Shader>();
 #if YK_WEB_ASSEMBLY
@@ -37,17 +37,19 @@ void CG_RenderModule::TempInit()
                                   "J:/Harbourfront/Data/Shaders/ShaderCode/Fragment.fs");
 #endif // WEB_ASSEMBLY
 
-    temp_texture = CG_TextureFactory::LoadPNG("J:/Harbourfront/Data/Textures/Test.png");
+    temp_texture = CG_TextureFactory::LoadPNG("J:/Harbourfront/Data/Textures/HeartTest.png");
 
-    g_perspective = YK_Matrix::Perspective<float>(60.0f, 1.0f, 0.0001f, 100.0f);
+    g_perspective = YK_Matrix::Perspective<float>(60.0f, 1920.0f / 1080.0f, 0.0001f, 100.0f);
 
     m_2dRenderer.Temp_Init();
+
+    // Should this have a better home?
+    glEnable(GL_CULL_FACE);
 }
 
 void CG_RenderModule::Render(YK_Matrix44 const& p_renderMatrix) const
 {
-    YK_UNUSED(p_renderMatrix);
-    // TODO: Remove me!
+    // TODO: Remove me! ??? Why?? Isn't clearing important??
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     CG_Shader* temp_shader = shader.Get();
@@ -59,7 +61,7 @@ void CG_RenderModule::Render(YK_Matrix44 const& p_renderMatrix) const
 
     temp_texture->GetGLData().Bind(0);
     temp_quad->GetGLData().Bind();
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, 1496 * 3, GL_UNSIGNED_INT, 0);
 
     m_2dRenderer.Render();
 

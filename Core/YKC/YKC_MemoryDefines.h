@@ -1,6 +1,9 @@
 #pragma once
 
-#define YK_UNUSED(X) do { static_cast<void>(X); } while(false)
+// TODO: Maybe rename this file since it's not all defines anymore?
+template <typename... Args>
+constexpr void YK_Unused(Args&&...)
+{}
 
 #define YK_SAFE_DELETE(ptr) do { delete ptr; ptr = nullptr; } while(false)
 #define YK_SAFE_DELETE_ARRAY(X) { delete[] X; X = nullptr; }
