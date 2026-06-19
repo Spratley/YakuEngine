@@ -1,3 +1,6 @@
 [submodule "Engine/YK/Libraries/HIDra"]
 	path = Engine/YK/Libraries/HIDra
 	url = https://github.com/Spratley/HIDra.git
+[submodule "Core/YKC/Libraries/Zen"]
+	path = Core/YKC/Libraries/Zen
+	url = https://github.com/Spratley/Zen.git
