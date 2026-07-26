@@ -4,7 +4,7 @@
 #include "CG/CG_RenderModule.h"
 
 // Temp
-YK_Matrix44 g_modelMatrix;
+Zen::Entity g_entity;
 
 // Temp 2x
 HIDra::Core g_hidraCore;
@@ -24,12 +24,25 @@ bool YakuEngine::Init()
 
     g_hidraCore.Init(initData);
 
+    m_zenGarden.Initialize(1024);
+
     // Also make THIS platform agnostic
     m_renderModule =
       new CG_RenderModule(m_platformCore.GetMainDisplaySurface().GetContents().m_glfwWindow); // TODO: Don't do this
 
     // Temp
-    YK_Matrix::Translate(g_modelMatrix, YK_Vector3f(0.0f, -0.5f, -1.0f));
+    g_entity = m_zenGarden.Spawn<TransformComponent>({});
+
+    TransformComponent* modelTransform = g_entity.GetComponent<TransformComponent>();
+    YK_Matrix::Translate(modelTransform->m_transform, YK_Vector3f(0.0f, -0.5f, -1.0f));
+
+    Zen::Entity entityTwo = m_zenGarden.Spawn<TransformComponent>({});
+    TransformComponent* e2T = entityTwo.GetComponent<TransformComponent>();
+    YK_Matrix::Translate(e2T->m_transform, YK_Vector3f(1.0f, -0.5f, -3.0f));
+
+    Zen::Entity entityThree = m_zenGarden.Spawn<TransformComponent>({});
+    TransformComponent* e3 = entityThree.GetComponent<TransformComponent>();
+    YK_Matrix::Translate(e3->m_transform, YK_Vector3f(-1.0f, -0.5f, -2.0f));
 
     return true;
 }
@@ -45,6 +58,7 @@ void YakuEngine::EngineLoop()
 {
     // Run Game Loop
     BeginFrame();
+    m_zenGarden.Tick();
 
     HIDra::Vec2f input = HIDra::GetAxis2D(HIDra::GamepadAxisID::AID_STICK_L);
     if (HIDra::GetKey(HIDra::KEYCODE_S))
@@ -59,9 +73,13 @@ void YakuEngine::EngineLoop()
     // TODO: Converter function
     YK_Vector3f frameDelta(input.m_x, 0.0f, input.m_y);
     frameDelta *= (1.0f / 500.0f);
-    YK_Matrix::Translate(g_modelMatrix, frameDelta);
 
-    m_renderModule->Render(g_modelMatrix);
+    TransformComponent* modelTransform = g_entity.GetComponent<TransformComponent>();
+    YK_Matrix44& modelMatrix = modelTransform->m_transform;
+    YK_Matrix::Translate(modelMatrix, frameDelta);
+
+    m_renderModule->Render(m_zenGarden);
+
 
     if (HIDra::GetButtonDown(HIDra::BID_SOUTH))
     {

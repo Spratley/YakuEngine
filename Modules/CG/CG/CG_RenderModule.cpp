@@ -20,6 +20,10 @@
 
 #include "CG/Matrix/CG_MatrixExtras.h"
 
+// EVEN MORE TEMP
+#include "YKC/ECS/YKC_TEMP_TransformComponent.h"
+#include "YKC/Libraries/Zen/Zen_Garden.h"
+
 YK_Matrix44 g_perspective;
 
 void CG_RenderModule::TempInit()
@@ -39,7 +43,7 @@ void CG_RenderModule::TempInit()
 
     temp_texture = CG_TextureFactory::LoadPNG("J:/Harbourfront/Data/Textures/HeartTest.png");
 
-    g_perspective = YK_Matrix::Perspective<float>(60.0f, 1920.0f / 1080.0f, 0.0001f, 100.0f);
+    g_perspective = YK_Matrix::Perspective<float>(60.0f, 1920.0f / 1080.0f, 0.1f, 100.0f);
 
     m_2dRenderer.Temp_Init();
 
@@ -47,21 +51,24 @@ void CG_RenderModule::TempInit()
     glEnable(GL_CULL_FACE);
 }
 
-void CG_RenderModule::Render(YK_Matrix44 const& p_renderMatrix) const
+void CG_RenderModule::Render(Zen::Garden const& p_entityGarden) const
 {
-    // TODO: Remove me! ??? Why?? Isn't clearing important??
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     CG_Shader* temp_shader = shader.Get();
 
     temp_shader->Use();
 
-    YK_Matrix44 transform = p_renderMatrix * g_perspective;
-    temp_shader->SetMatrix44("transform", transform.GetData());
-
     temp_texture->GetGLData().Bind(0);
     temp_quad->GetGLData().Bind();
-    glDrawElements(GL_TRIANGLES, 1496 * 3, GL_UNSIGNED_INT, 0);
+    
+    Zen::EntityView view = p_entityGarden.ViewComponents<TransformComponent>();
+    for (auto [transform] : view)
+    {
+        YK_Matrix44 perspectiveTransform = transform.m_transform * g_perspective;
+        temp_shader->SetMatrix44("transform", perspectiveTransform.GetData());
+        glDrawElements(GL_TRIANGLES, 1496 * 3, GL_UNSIGNED_INT, 0);
+    }
 
     m_2dRenderer.Render();
 

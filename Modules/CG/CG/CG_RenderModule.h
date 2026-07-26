@@ -5,6 +5,9 @@
 
 #include "CG/Resource/Shader/CG_ShaderResource.h"
 
+// Temp
+#include "YKC/Libraries/Zen/Zen_Garden.h"
+
 // TODO: Don't couple CG and OpenGL/Windows
 struct GLFWwindow;
 
@@ -19,7 +22,7 @@ public:
 
     void TempInit();
 
-    void Render(YK_Matrix44 const& p_renderMatrix) const;
+    void Render(Zen::Garden const& p_entityGarden) const;
 
 private:
     // TODO: REPLACE THIS WITH A GENERIC RENDER TARGET

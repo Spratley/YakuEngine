@@ -14,7 +14,8 @@ public:
 public:
     constexpr YK_Matrix_R_C() { *this = Identity(); }
 
-    constexpr YK_Matrix_R_C(DataType p_diagonal) : m_rows {}
+    constexpr YK_Matrix_R_C(DataType p_diagonal)
+        : m_rows{}
     {
         YK_U32 lowestDimension = YK_Min(RowCount, ColumnCount);
         for (YK_U32 i = 0; i < lowestDimension; ++i)
@@ -24,9 +25,10 @@ public:
     }
 
     template <typename... Args, typename = typename YK_EnableIf<(sizeof...(Args) == (RowCount * ColumnCount))>::Type>
-    constexpr YK_Matrix_R_C(Args... args) : m_rows {}
+    constexpr YK_Matrix_R_C(Args... args)
+        : m_rows{}
     {
-        DataType temp[] = {static_cast<DataType>(args)...};
+        DataType temp[] = { static_cast<DataType>(args)... };
         // Memcpy is replaced with a fixed loop because according to godbolt they get optimized to the same thing, but
         // loops are constepxr
         DataType* data = GetData();
@@ -69,10 +71,12 @@ public:
     }
 
     // TODO: Compiler intrinsics SIMD?
-    template <YK_U32 OtherMatrixRowCount, YK_U32 OtherMatrixColumnCount,
+    template <YK_U32 OtherMatrixRowCount,
+              YK_U32 OtherMatrixColumnCount,
               typename = typename YK_EnableIf<OtherMatrixRowCount == ColumnCount>::Type>
     friend constexpr YK_Matrix_R_C<DataType, RowCount, OtherMatrixColumnCount> operator*(
-      MatrixType const& p_lhs, YK_Matrix_R_C<DataType, OtherMatrixRowCount, OtherMatrixColumnCount> const& p_rhs)
+      MatrixType const& p_lhs,
+      YK_Matrix_R_C<DataType, OtherMatrixRowCount, OtherMatrixColumnCount> const& p_rhs)
     {
         YK_Matrix_R_C<DataType, RowCount, OtherMatrixColumnCount> result;
         for (int i = 0; i < RowCount; ++i)
@@ -103,6 +107,13 @@ namespace YK_Matrix
     constexpr void Translate(YK_Matrix_R_C<DataType, 4, 4>& p_matrix, YK_Vector_N<DataType, 3> const& p_translation)
     {
         p_matrix[3].xyz += p_translation;
+    }
+
+    template <typename DataType>
+    constexpr void Rotate(YK_Matrix_R_C<DataType, 4, 4>& p_matrix, YK_Vector_N<DataType, 3> const& p_eulerAngles)
+    {
+        // This is not true
+        p_matrix[0].xyz += p_eulerAngles;
     }
 } // namespace YK_Matrix
 

@@ -10,9 +10,7 @@ using YK_U16 = unsigned short;
 using YK_U32 = unsigned int;
 using YK_U64 = unsigned long long;
 
-// TODO: Validate that this is correct
-// Needs support for non-64 bit platforms?
-using YK_SizeT = YK_U64;
+using YK_SizeT = decltype(sizeof(0));
 
 constexpr inline YK_Int8 YK_Int8_Max = 0x7F;
 constexpr inline YK_Int16 YK_Int16_Max = 0x7FFF;
