@@ -3,6 +3,8 @@
 
 #include "CG/CG_RenderModule.h"
 
+#include "YKC/Time/YKC_Time.h"
+
 // Temp
 Zen::Entity g_entity;
 
@@ -72,7 +74,7 @@ void YakuEngine::EngineLoop()
 
     // TODO: Converter function
     YK_Vector3f frameDelta(input.m_x, 0.0f, input.m_y);
-    frameDelta *= (1.0f / 500.0f);
+    frameDelta *= YKC_Time::DeltaTime();
 
     TransformComponent* modelTransform = g_entity.GetComponent<TransformComponent>();
     YK_Matrix44& modelMatrix = modelTransform->m_transform;
@@ -80,44 +82,13 @@ void YakuEngine::EngineLoop()
 
     m_renderModule->Render(m_zenGarden);
 
-
-    if (HIDra::GetButtonDown(HIDra::BID_SOUTH))
-    {
-        YK_LOG("Hit south!");
-    }
-    if (HIDra::GetButtonDown(HIDra::BID_NORTH))
-    {
-        YK_LOG("Hit north!");
-    }
-    if (HIDra::GetButtonDown(HIDra::BID_EAST))
-    {
-        YK_LOG("Hit east!");
-    }
-    if (HIDra::GetButtonDown(HIDra::BID_WEST))
-    {
-        YK_LOG("Hit west!");
-    }
-
-    if (HIDra::GetButtonDown(HIDra::BID_DPAD_SOUTH))
-    {
-        YK_LOG("Hit dpad south!");
-    }
-    if (HIDra::GetButtonDown(HIDra::BID_DPAD_NORTH))
-    {
-        YK_LOG("Hit dpad north!");
-    }
-    if (HIDra::GetButtonDown(HIDra::BID_DPAD_EAST))
-    {
-        YK_LOG("Hit dpad east!");
-    }
-    if (HIDra::GetButtonDown(HIDra::BID_DPAD_WEST))
-    {
-        YK_LOG("Hit dpad west!");
-    }
-
     EndFrame();
 }
 
 void YakuEngine::BeginFrame() { m_platformCore.OnFrameStart(); }
 
-void YakuEngine::EndFrame() { HIDra::Flush(); }
+void YakuEngine::EndFrame()
+{
+    HIDra::Flush();
+    YKC_Time::OnFrameEnd();
+}
