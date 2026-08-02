@@ -2,6 +2,7 @@
 
 #include <cmath> // std::sqrt
 #include <cstring>
+#include <type_traits>
 
 // TODO: Merge with YK_Vector_N somehow so it can be used interchangibly and seamlessly with all vector operators and
 // math functions
@@ -186,6 +187,20 @@ constexpr YK_Vector_N<DataType, DimensionCount> operator-(YK_Vector_N<DataType, 
                                                           YK_Vector_N<DataType, DimensionCount> const& p_rhs)
 {
     return p_lhs -= p_rhs;
+}
+
+// Negation
+template <typename DataType, YK_U32 DimensionCount>
+constexpr YK_Vector_N<DataType, DimensionCount> operator-(YK_Vector_N<DataType, DimensionCount> const& p_lhs)
+{
+    static_assert(std::is_signed_v<DataType>, "Unary negation operator not supported for unsigned types!");
+    YK_Vector_N<DataType, DimensionCount> result(p_lhs);
+    for (YK_U32 i = 0; i < DimensionCount; ++i)
+    {
+        result.m_data[i] *= static_cast<DataType>(-1);
+    }
+    return result;
+
 }
 
 template <typename DataType, YK_U32 DimensionCount>

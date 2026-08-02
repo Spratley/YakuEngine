@@ -51,7 +51,7 @@ void CG_RenderModule::TempInit()
     glEnable(GL_CULL_FACE);
 }
 
-void CG_RenderModule::Render(Zen::Garden const& p_entityGarden) const
+void CG_RenderModule::Render(YK_Matrix44 const& p_viewMatrix, Zen::Garden const& p_entityGarden) const
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -62,10 +62,11 @@ void CG_RenderModule::Render(Zen::Garden const& p_entityGarden) const
     temp_texture->GetGLData().Bind(0);
     temp_quad->GetGLData().Bind();
     
-    Zen::EntityView view = p_entityGarden.ViewComponents<TransformComponent>();
-    for (auto [transform] : view)
+    Zen::EntityView view = p_entityGarden.ViewComponents<TransformComponent, RenderableComponent>();
+    for (auto [transform, _] : view)
     {
-        YK_Matrix44 perspectiveTransform = transform.m_transform * g_perspective;
+        YK_Unused(_);
+        YK_Matrix44 perspectiveTransform = transform.m_transform * p_viewMatrix * g_perspective;
         temp_shader->SetMatrix44("transform", perspectiveTransform.GetData());
         glDrawElements(GL_TRIANGLES, 1496 * 3, GL_UNSIGNED_INT, 0);
     }

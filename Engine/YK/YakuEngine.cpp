@@ -6,7 +6,17 @@
 #include "YKC/Time/YKC_Time.h"
 
 // Temp
-Zen::Entity g_entity;
+#include "ECS/YK_TEST_BobbingComponent.h"
+
+#include "CG/Camera/CG_Camera.h"
+
+#include <cstdlib>
+#include <ctime>
+
+// Temp
+Zen::Entity g_camera;
+
+YK_Matrix44 g_viewMatrix;
 
 // Temp 2x
 HIDra::Core g_hidraCore;
@@ -26,25 +36,35 @@ bool YakuEngine::Init()
 
     g_hidraCore.Init(initData);
 
-    m_zenGarden.Initialize(1024);
-
     // Also make THIS platform agnostic
     m_renderModule =
       new CG_RenderModule(m_platformCore.GetMainDisplaySurface().GetContents().m_glfwWindow); // TODO: Don't do this
 
     // Temp
-    g_entity = m_zenGarden.Spawn<TransformComponent>({});
+    g_camera = m_zenGarden.Spawn<TransformComponent, CG_CameraComponent>({}, {});
 
-    TransformComponent* modelTransform = g_entity.GetComponent<TransformComponent>();
-    YK_Matrix::Translate(modelTransform->m_transform, YK_Vector3f(0.0f, -0.5f, -1.0f));
 
-    Zen::Entity entityTwo = m_zenGarden.Spawn<TransformComponent>({});
-    TransformComponent* e2T = entityTwo.GetComponent<TransformComponent>();
-    YK_Matrix::Translate(e2T->m_transform, YK_Vector3f(1.0f, -0.5f, -3.0f));
+    std::srand(static_cast<unsigned int>(time(NULL)));
+    auto GetRandomFloat = [](float p_max) {
+        auto randomValue = std::rand() % 10000;
+        return static_cast<float>(randomValue) / 10000.0f * p_max;
+    };
 
-    Zen::Entity entityThree = m_zenGarden.Spawn<TransformComponent>({});
-    TransformComponent* e3 = entityThree.GetComponent<TransformComponent>();
-    YK_Matrix::Translate(e3->m_transform, YK_Vector3f(-1.0f, -0.5f, -2.0f));
+    for (auto i : Zen::LoopUtils::CountTo(5))
+    {
+        YK_Unused(i);
+
+        Zen::Entity bobber = m_zenGarden.Spawn<TransformComponent, RenderableComponent, BobbingComponent>({}, {}, {});
+        TransformComponent* bobberTransform = bobber.GetComponent<TransformComponent>();
+
+        float x = GetRandomFloat(10.0f) - 5.0f;
+        float y = GetRandomFloat(10.0f) - 5.0f;
+        float z = GetRandomFloat(10.0f) - 5.0f;
+        YK_Matrix::Translate(bobberTransform->m_transform, YK_Vector3f(x, y, z));
+
+        float bobOffset = GetRandomFloat(10.0f);
+        bobber.GetComponent<BobbingComponent>()->m_phase = bobOffset;
+    }
 
     return true;
 }
@@ -60,7 +80,6 @@ void YakuEngine::EngineLoop()
 {
     // Run Game Loop
     BeginFrame();
-    m_zenGarden.Tick();
 
     HIDra::Vec2f input = HIDra::GetAxis2D(HIDra::GamepadAxisID::AID_STICK_L);
     if (HIDra::GetKey(HIDra::KEYCODE_S))
@@ -72,15 +91,29 @@ void YakuEngine::EngineLoop()
         input.m_y = 1;
     }
 
+    if (HIDra::GetKey(HIDra::KEYCODE_A))
+    {
+        input.m_x = -1;
+    }
+    else if (HIDra::GetKey(HIDra::KEYCODE_D))
+    {
+        input.m_x = 1;
+    }
+
     // TODO: Converter function
-    YK_Vector3f frameDelta(input.m_x, 0.0f, input.m_y);
+    YK_Vector3f frameDelta(input.m_x, 0.0f, -input.m_y);
     frameDelta *= YKC_Time::DeltaTime();
 
-    TransformComponent* modelTransform = g_entity.GetComponent<TransformComponent>();
-    YK_Matrix44& modelMatrix = modelTransform->m_transform;
-    YK_Matrix::Translate(modelMatrix, frameDelta);
+    TransformComponent* cameraTransform = g_camera.GetComponent<TransformComponent>();
+    YK_Matrix44& cameraWorldMatrix = cameraTransform->m_transform;
+    YK_Matrix::Translate(cameraWorldMatrix, frameDelta);
 
-    m_renderModule->Render(m_zenGarden);
+    m_zenGarden.Tick();
+
+    CG_CameraComponent* cameraComponent = g_camera.GetComponent<CG_CameraComponent>();
+    YK_Matrix44 const& viewMatrix = cameraComponent->m_viewMatrix;
+
+    m_renderModule->Render(viewMatrix, m_zenGarden);
 
     EndFrame();
 }

@@ -2,6 +2,7 @@
 
 #include "YKC/Types/YKC_TypeTraits.h"
 #include "YKC/Types/YKC_Vector.h"
+#include "YKC/Utils/YKC_AlgorithmUtils.h"
 
 template <typename DataType, YK_U32 RowCount, YK_U32 ColumnCount>
 struct YK_Matrix_R_C
@@ -110,10 +111,60 @@ namespace YK_Matrix
     }
 
     template <typename DataType>
+    constexpr YK_Vector_N<DataType, 3> const& GetPosition(YK_Matrix_R_C<DataType, 4, 4> const& p_matrix)
+    {
+        return p_matrix[3].xyz;
+    }
+
+    template <typename DataType>
+    constexpr void SetPosition(YK_Matrix_R_C<DataType, 4, 4>& p_matrix, YK_Vector_N<DataType, 3> const& p_position)
+    {
+        p_matrix[3].xyz = p_position;
+    }
+
+    template <typename DataType>
     constexpr void Rotate(YK_Matrix_R_C<DataType, 4, 4>& p_matrix, YK_Vector_N<DataType, 3> const& p_eulerAngles)
     {
         // This is not true
         p_matrix[0].xyz += p_eulerAngles;
+    }
+
+    template <typename DataType>
+    constexpr YK_Matrix_R_C<DataType, 4, 4> Inverse(YK_Matrix_R_C<DataType, 4, 4> const& p_matrix)
+    {
+        // Affine transformation matrix
+        // Data is stored as a transposed row major matrix
+        // Technically the same as a column major matrix...
+        // Maybe I should rename it?
+        // Inverse of the rotation 3x3 is the same as the transpose
+        // We can then multiply the negative of that into the translation
+
+        // | [0, 0] [1, 0] [2, 0] | [3, 0]
+        // | [0, 1] [1, 1] [2, 1] | [3, 1]
+        // | [0, 2] [1. 2] [2, 2] | [3, 2]
+        // ( [0, 3] [1, 3] [2, 3] ) {3, 3}
+
+        YK_Matrix_R_C<DataType, 4, 4> result = p_matrix;
+
+        // Transpose rotation matrix
+        YK_Swap(result[0][1], result[1][0]);
+        YK_Swap(result[0][2], result[2][0]);
+        YK_Swap(result[1][2], result[2][1]);
+
+        // Combine into translation
+        // Should this be combined into a matrix view so we're not creating a temporary?
+        YK_Matrix_R_C<DataType, 3, 3> rotationMatrix(result[0][0],
+                                                     result[0][1],
+                                                     result[0][2],
+                                                     result[1][0],
+                                                     result[1][1],
+                                                     result[1][2],
+                                                     result[2][0],
+                                                     result[2][1],
+                                                     result[2][2]);
+
+        result[3].xyz = rotationMatrix * -(result[3].xyz);
+        return result;
     }
 } // namespace YK_Matrix
 

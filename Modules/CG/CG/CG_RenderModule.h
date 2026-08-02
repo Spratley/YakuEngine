@@ -22,7 +22,7 @@ public:
 
     void TempInit();
 
-    void Render(Zen::Garden const& p_entityGarden) const;
+    void Render(YK_Matrix44 const& p_viewMatrix, Zen::Garden const& p_entityGarden) const;
 
 private:
     // TODO: REPLACE THIS WITH A GENERIC RENDER TARGET

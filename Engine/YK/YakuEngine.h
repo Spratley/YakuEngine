@@ -1,11 +1,11 @@
 #pragma once
 
-#include "YKC/Platforms/YKC_PlatformCore.h"
-
-#include "YKC/Libraries/Zen/Zen_Garden.h"
+#include "YKC/Core/YKC_Core.h"
 
 // TEMP
 #include "YKC/ECS/YKC_TEMP_TransformComponent.h"
+#include "YKC/Libraries/Zen/Zen_Garden.h"
+#include "YKC/Platforms/YKC_PlatformCore.h"
 
 // Temp
 struct VelocityComponent
@@ -26,10 +26,14 @@ struct TestSystem : public Zen::SystemBase<TestSystem, TransformComponent, Veloc
 
 class CG_RenderModule;
 
-class YakuEngine
+class YakuEngine : YKC_Core
 {
 public:
-    YakuEngine() = default;
+    template <typename ComponentTypes, typename SystemTypes>
+    YakuEngine(ComponentTypes p_componentTypes, SystemTypes p_systemTypes)
+        : YKC_Core(p_componentTypes, p_systemTypes)
+    {}
+
     ~YakuEngine() {}
 
     template <typename Game>
@@ -70,9 +74,6 @@ private:
     // Modules
     // TODO: Move to separate implementation struct so we can have linear packing and no header exposure
     CG_RenderModule* m_renderModule = nullptr;
-
-    // ECS
-    Zen::Garden m_zenGarden = Zen::Garden(Zen::TypeList<TransformComponent>{}, Zen::TypeList<TestSystem>{});
 };
 
 template <typename Game>
