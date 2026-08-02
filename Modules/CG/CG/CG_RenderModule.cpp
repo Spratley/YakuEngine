@@ -66,7 +66,7 @@ void CG_RenderModule::Render(YK_Matrix44 const& p_viewMatrix, Zen::Garden const&
     for (auto [transform, _] : view)
     {
         YK_Unused(_);
-        YK_Matrix44 perspectiveTransform = transform.m_transform * p_viewMatrix * g_perspective;
+        YK_Matrix44 perspectiveTransform = g_perspective * p_viewMatrix * transform.m_transform;
         temp_shader->SetMatrix44("transform", perspectiveTransform.GetData());
         glDrawElements(GL_TRIANGLES, 1496 * 3, GL_UNSIGNED_INT, 0);
     }
