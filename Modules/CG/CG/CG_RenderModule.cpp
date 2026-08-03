@@ -14,6 +14,7 @@
 // TEMP
 #include "CG/OpenGL/CG_GLMeshBuffer.h"
 #include "CG/OpenGL/CG_GLTextureBuffer.h"
+#include "CG/Renderable/CG_Renderable.h"
 #include "CG/Resource/Mesh/CG_MeshFactory.h"
 #include "CG/Resource/Shader/CG_Shader.h"
 #include "CG/Resource/Texture/CG_TextureFactory.h"
@@ -30,8 +31,6 @@ void CG_RenderModule::TempInit()
 {
     CG_TextureFactory::Init();
 
-    temp_quad = CG_MeshFactory::LoadOBJ("J:/Harbourfront/Data/Models/HeartTest.obj");
-
     ShaderResources& shaderResources = m_cgResources.GetResourceContainer<CG_Shader>();
 #if YK_WEB_ASSEMBLY
     shader = shaderResources.Load("J:/Harbourfront/Data/Shaders/ShaderCode/WASM/Vertex_WASM.vs",
@@ -40,8 +39,6 @@ void CG_RenderModule::TempInit()
     shader = shaderResources.Load("J:/Harbourfront/Data/Shaders/ShaderCode/Vertex.vs",
                                   "J:/Harbourfront/Data/Shaders/ShaderCode/Fragment.fs");
 #endif // WEB_ASSEMBLY
-
-    temp_texture = CG_TextureFactory::LoadPNG("J:/Harbourfront/Data/Textures/HeartTest.png");
 
     g_perspective = YK_Matrix::Perspective<float>(60.0f, 1920.0f / 1080.0f, 0.1f, 100.0f);
 
@@ -59,16 +56,16 @@ void CG_RenderModule::Render(YK_Matrix44 const& p_viewMatrix, Zen::Garden const&
 
     temp_shader->Use();
 
-    temp_texture->GetGLData().Bind(0);
-    temp_quad->GetGLData().Bind();
-    
-    Zen::EntityView view = p_entityGarden.ViewComponents<TransformComponent, RenderableComponent>();
-    for (auto [transform, _] : view)
+    // TODO: Sort by mesh?
+    Zen::EntityView view = p_entityGarden.ViewComponents<TransformComponent, CG_MeshComponent, CG_RendererComponent>();
+    for (auto [transform, meshComponent, rendererComponent] : view)
     {
-        YK_Unused(_);
-        YK_Matrix44 perspectiveTransform = g_perspective * p_viewMatrix * transform.m_transform;
+        meshComponent.m_mesh->GetGLData().Bind();
+        rendererComponent.m_texture->GetGLData().Bind(0);
+
+        YK_Matrix44 perspectiveTransform = g_perspective * p_viewMatrix * YK_Matrix::Construct(transform.m_position, transform.m_orientation, transform.m_scale);
         temp_shader->SetMatrix44("transform", perspectiveTransform.GetData());
-        glDrawElements(GL_TRIANGLES, 1496 * 3, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, meshComponent.m_mesh->GetIndexBufferSize(), GL_UNSIGNED_INT, 0);
     }
 
     m_2dRenderer.Render();

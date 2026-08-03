@@ -15,7 +15,7 @@ struct CG_CameraUpdateSystem : public Zen::SystemBase<CG_CameraUpdateSystem, CG_
     {
         for (auto [camera, transform] : p_components) 
         {
-            camera.m_viewMatrix = YK_Matrix::Inverse(transform.m_transform);
+            camera.m_viewMatrix = YK_Matrix::Inverse(YK_Matrix::Construct(transform.m_position, transform.m_orientation, transform.m_scale));
         }
     }
 };

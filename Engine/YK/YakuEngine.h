@@ -7,23 +7,6 @@
 #include "YKC/Libraries/Zen/Zen_Garden.h"
 #include "YKC/Platforms/YKC_PlatformCore.h"
 
-// Temp
-struct VelocityComponent
-{
-    YK_Vector3f m_velocity = YK_Vector3f::Zero();
-};
-
-struct TestSystem : public Zen::SystemBase<TestSystem, TransformComponent, VelocityComponent>
-{
-    static void Tick(ComponentView const& p_components)
-    {
-        for (auto [transform, velocity] : p_components)
-        {
-            YK_Matrix::Translate(transform.m_transform, velocity.m_velocity);
-        }
-    }
-};
-
 class CG_RenderModule;
 
 class YakuEngine : YKC_Core

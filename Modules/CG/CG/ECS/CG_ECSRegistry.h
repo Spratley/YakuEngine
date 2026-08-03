@@ -3,10 +3,11 @@
 #include "YKC/ECS/YKC_ECSRegistry.h"
 
 #include "CG/Camera/CG_Camera.h"
+#include "CG/Renderable/CG_Renderable.h"
 
 namespace CG_ECSRegistry
 {
-    using ComponentTypes = Zen::TypeList<CG_CameraComponent>;
+    using ComponentTypes = Zen::TypeList<CG_CameraComponent, CG_MeshComponent, CG_RendererComponent>;
     using SystemTypes = Zen::TypeList<CG_CameraUpdateSystem>;
 } // namespace CG_ECSRegistry
 

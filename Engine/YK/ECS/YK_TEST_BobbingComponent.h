@@ -18,9 +18,7 @@ struct BobbingSystem : public Zen::SystemBase<BobbingSystem, TransformComponent,
         float elapsedTime = YKC_Time::ElapsedTime();
         for (auto [transform, bobbing] : p_components)
         {
-            YK_Vector3f position = YK_Matrix::GetPosition(transform.m_transform);
-            position.y = (std::sin(elapsedTime * 10.0f + bobbing.m_phase) * 0.25f) - 0.5f;
-            YK_Matrix::SetPosition(transform.m_transform, position);
+            transform.m_position.y = (std::sin(elapsedTime * 10.0f + bobbing.m_phase) * 0.25f) + 0.25f;
         }
     }
 };

@@ -4,6 +4,14 @@
 #include <cstring>
 #include <type_traits>
 
+// TODO: Come back and re-evaluate the scalar parameter support, technically it's not correct to only expect a scalar of
+// DataType
+
+// TODO: Move this to CMake so the entire project doesn't have to worry about 4201 (Ayo why is that warning even a
+// thing)
+#pragma warning(push)
+#pragma warning(disable : 4201)
+
 // TODO: Merge with YK_Vector_N somehow so it can be used interchangibly and seamlessly with all vector operators and
 // math functions
 // -> Ideally YK_Vector_N and YK_Vector_View should both be able to call anything in any combination of the two so long
@@ -17,7 +25,9 @@ template <typename DataType, YK_U32 DimensionCount, YK_U32 Offset>
 struct YK_VectorView
 {
 public:
-    constexpr YK_VectorView(DataType* p_start) : m_start(p_start) {}
+    constexpr YK_VectorView(DataType* p_start)
+        : m_start(p_start)
+    {}
 
     constexpr DataType& operator[](size_t const p_index) { return *(m_start + (p_index * Offset)); }
     constexpr DataType const& operator[](size_t const p_index) const { return *(m_start + (p_index * Offset)); }
@@ -29,22 +39,25 @@ private:
 template <typename DataType, YK_U32 DimensionCount>
 struct YK_Vector_N
 {
-private:
-    using VectorType = YK_Vector_N<DataType, DimensionCount>;
-
 public:
-    static constexpr inline VectorType Zero() { return VectorType(0); }
-    static constexpr inline VectorType One() { return VectorType(1); }
+    static constexpr inline YK_Vector_N Zero() { return YK_Vector_N(0); }
+    static constexpr inline YK_Vector_N One() { return YK_Vector_N(1); }
 
-    constexpr YK_Vector_N() : m_data {} {}
+    constexpr YK_Vector_N()
+        : m_data{}
+    {}
+
     constexpr YK_Vector_N(DataType p_defaultValue)
+        : m_data{}
     {
         for (YK_U32 i = 0; i < DimensionCount; ++i)
         {
             m_data[i] = p_defaultValue;
         }
     }
-    constexpr YK_Vector_N(VectorType const& p_other)
+
+    constexpr YK_Vector_N(YK_Vector_N const& p_other)
+        : m_data{}
     {
         for (YK_U32 i = 0; i < DimensionCount; ++i)
         {
@@ -59,25 +72,25 @@ public:
     DataType m_data[DimensionCount];
 };
 
-// TODO: Move this to CMake so the entire project doesn't have to worry about 4201 (Ayo why is that warning even a
-// thing)
-#pragma warning(push)
-#pragma warning(disable : 4201)
-
 template <typename DataType>
 struct YK_Vector_N<DataType, 2>
 {
-private:
-    using VectorType = YK_Vector_N<DataType, 2>;
-
 public:
-    static constexpr inline VectorType Zero() { return VectorType(0); }
-    static constexpr inline VectorType One() { return VectorType(1); }
+    static constexpr inline YK_Vector_N Zero() { return YK_Vector_N(0); }
+    static constexpr inline YK_Vector_N One() { return YK_Vector_N(1); }
 
-    constexpr YK_Vector_N() : m_data {} {}
-    constexpr YK_Vector_N(DataType p_defaultValue) : m_data {p_defaultValue, p_defaultValue} {}
-    constexpr YK_Vector_N(VectorType const& p_other) : m_data {p_other.x, p_other.y} {}
-    constexpr YK_Vector_N(DataType p_x, DataType p_y) : m_data {p_x, p_y} {}
+    constexpr YK_Vector_N()
+        : m_data{}
+    {}
+    constexpr YK_Vector_N(DataType p_defaultValue)
+        : m_data{ p_defaultValue, p_defaultValue }
+    {}
+    constexpr YK_Vector_N(YK_Vector_N const& p_other)
+        : m_data{ p_other.m_data[0], p_other.m_data[1] }
+    {}
+    constexpr YK_Vector_N(DataType p_x, DataType p_y)
+        : m_data{ p_x, p_y }
+    {}
 
     constexpr DataType& operator[](size_t const p_index) { return m_data[p_index]; }
     constexpr DataType const& operator[](size_t const p_index) const { return m_data[p_index]; }
@@ -100,17 +113,27 @@ public:
 template <typename DataType>
 struct YK_Vector_N<DataType, 3>
 {
-private:
-    using VectorType = YK_Vector_N<DataType, 3>;
-
 public:
-    static constexpr inline VectorType Zero() { return VectorType(0); }
-    static constexpr inline VectorType One() { return VectorType(1); }
+    static constexpr inline YK_Vector_N Zero() { return YK_Vector_N(0); }
+    static constexpr inline YK_Vector_N One() { return YK_Vector_N(1); }
 
-    constexpr YK_Vector_N() : m_data {} {}
-    constexpr YK_Vector_N(DataType p_defaultValue) : m_data {p_defaultValue, p_defaultValue, p_defaultValue} {}
-    constexpr YK_Vector_N(VectorType const& p_other) : m_data {p_other.x, p_other.y, p_other.z} {}
-    constexpr YK_Vector_N(DataType p_x, DataType p_y, DataType p_z) : m_data {p_x, p_y, p_z} {}
+    // Basis Vectors
+    static constexpr YK_Vector_N Right() { return YK_Vector_N{ 1, 0, 0 }; }
+    static constexpr YK_Vector_N Up() { return YK_Vector_N{ 0, 1, 0 }; }
+    static constexpr YK_Vector_N Forward() { return YK_Vector_N{ 0, 0, 1 }; }
+
+    constexpr YK_Vector_N()
+        : m_data{}
+    {}
+    constexpr YK_Vector_N(DataType p_defaultValue)
+        : m_data{ p_defaultValue, p_defaultValue, p_defaultValue }
+    {}
+    constexpr YK_Vector_N(YK_Vector_N const& p_other)
+        : m_data{ p_other.m_data[0], p_other.m_data[1], p_other.m_data[2] }
+    {}
+    constexpr YK_Vector_N(DataType p_x, DataType p_y, DataType p_z)
+        : m_data{ p_x, p_y, p_z }
+    {}
 
     constexpr DataType& operator[](size_t const p_index) { return m_data[p_index]; }
     constexpr DataType const& operator[](size_t const p_index) const { return m_data[p_index]; }
@@ -135,19 +158,22 @@ public:
 template <typename DataType>
 struct YK_Vector_N<DataType, 4>
 {
-private:
-    using VectorType = YK_Vector_N<DataType, 4>;
-
 public:
-    static constexpr inline VectorType Zero() { return VectorType(0); }
-    static constexpr inline VectorType One() { return VectorType(1); }
+    static constexpr inline YK_Vector_N Zero() { return YK_Vector_N(0); }
+    static constexpr inline YK_Vector_N One() { return YK_Vector_N(1); }
 
-    constexpr YK_Vector_N() : m_data {} {}
-    constexpr YK_Vector_N(DataType p_defaultValue)
-        : m_data {p_defaultValue, p_defaultValue, p_defaultValue, p_defaultValue}
+    constexpr YK_Vector_N()
+        : m_data{}
     {}
-    constexpr YK_Vector_N(VectorType const& p_other) : m_data {p_other.x, p_other.y, p_other.z, p_other.w} {}
-    constexpr YK_Vector_N(DataType p_x, DataType p_y, DataType p_z, DataType p_w) : m_data {p_x, p_y, p_z, p_w} {}
+    constexpr YK_Vector_N(DataType p_defaultValue)
+        : m_data{ p_defaultValue, p_defaultValue, p_defaultValue, p_defaultValue }
+    {}
+    constexpr YK_Vector_N(YK_Vector_N const& p_other)
+        : m_data{ p_other.m_data[0], p_other.m_data[1], p_other.m_data[2], p_other.m_data[3] }
+    {}
+    constexpr YK_Vector_N(DataType p_x, DataType p_y, DataType p_z, DataType p_w)
+        : m_data{ p_x, p_y, p_z, p_w }
+    {}
 
     constexpr DataType& operator[](size_t const p_index) { return m_data[p_index]; }
     constexpr DataType const& operator[](size_t const p_index) const { return m_data[p_index]; }
@@ -170,8 +196,6 @@ public:
         YK_Vector_N<DataType, 3> rgb;
     };
 };
-
-#pragma warning(pop)
 
 // Free shared vector operators
 // Arithmatic
@@ -200,7 +224,6 @@ constexpr YK_Vector_N<DataType, DimensionCount> operator-(YK_Vector_N<DataType, 
         result.m_data[i] *= static_cast<DataType>(-1);
     }
     return result;
-
 }
 
 template <typename DataType, YK_U32 DimensionCount>
@@ -227,7 +250,7 @@ constexpr YK_Vector_N<DataType, DimensionCount>& operator-=(YK_Vector_N<DataType
 
 template <typename DataType, YK_U32 DimensionCount>
 constexpr YK_Vector_N<DataType, DimensionCount>& operator*=(YK_Vector_N<DataType, DimensionCount>& p_vector,
-                                                            float const& p_scalar)
+                                                            DataType const& p_scalar)
 {
     for (YK_U32 i = 0; i < DimensionCount; ++i)
     {
@@ -238,13 +261,13 @@ constexpr YK_Vector_N<DataType, DimensionCount>& operator*=(YK_Vector_N<DataType
 
 template <typename DataType, YK_U32 DimensionCount>
 constexpr YK_Vector_N<DataType, DimensionCount> operator*(YK_Vector_N<DataType, DimensionCount> p_vector,
-                                                          float p_scalar)
+                                                          DataType p_scalar)
 {
     return p_vector *= p_scalar;
 }
 
 template <typename DataType, YK_U32 DimensionCount>
-constexpr YK_Vector_N<DataType, DimensionCount> operator*(float p_scalar,
+constexpr YK_Vector_N<DataType, DimensionCount> operator*(DataType p_scalar,
                                                           YK_Vector_N<DataType, DimensionCount> p_vector)
 {
     return p_vector *= p_scalar;
@@ -252,7 +275,7 @@ constexpr YK_Vector_N<DataType, DimensionCount> operator*(float p_scalar,
 
 template <typename DataType, YK_U32 DimensionCount>
 constexpr YK_Vector_N<DataType, DimensionCount>& operator/=(YK_Vector_N<DataType, DimensionCount>& p_vector,
-                                                            float const& p_scalar)
+                                                            DataType const& p_scalar)
 {
     for (YK_U32 i = 0; i < DimensionCount; ++i)
     {
@@ -263,13 +286,13 @@ constexpr YK_Vector_N<DataType, DimensionCount>& operator/=(YK_Vector_N<DataType
 
 template <typename DataType, YK_U32 DimensionCount>
 constexpr YK_Vector_N<DataType, DimensionCount> operator/(YK_Vector_N<DataType, DimensionCount> p_vector,
-                                                          float p_scalar)
+                                                          DataType p_scalar)
 {
     return p_vector /= p_scalar;
 }
 
 template <typename DataType, YK_U32 DimensionCount>
-constexpr YK_Vector_N<DataType, DimensionCount> operator/(float p_scalar,
+constexpr YK_Vector_N<DataType, DimensionCount> operator/(DataType p_scalar,
                                                           YK_Vector_N<DataType, DimensionCount> p_vector)
 {
     return p_vector /= p_scalar;
@@ -322,10 +345,10 @@ namespace YK_Vector
     }
 
     template <typename DataType, YK_U32 DimensionCount>
-    constexpr float Dot(YK_Vector_N<DataType, DimensionCount> const& p_lhs,
-                        YK_Vector_N<DataType, DimensionCount> const& p_rhs)
+    constexpr DataType Dot(YK_Vector_N<DataType, DimensionCount> const& p_lhs,
+                           YK_Vector_N<DataType, DimensionCount> const& p_rhs)
     {
-        float result = 0;
+        DataType result = 0;
         for (YK_U32 i = 0; i < DimensionCount; ++i)
         {
             result += p_lhs.m_data[i] * p_rhs.m_data[i];
@@ -336,10 +359,10 @@ namespace YK_Vector
     // Temp until I can figure out how to make this a single unified function
     // Dot against a VectorView
     template <typename DataType, YK_U32 DimensionCount, YK_U32 ViewOffset>
-    constexpr float Dot(YK_Vector_N<DataType, DimensionCount> const& p_vector,
-                        YK_VectorView<DataType const, DimensionCount, ViewOffset> const& p_vectorView)
+    constexpr DataType Dot(YK_Vector_N<DataType, DimensionCount> const& p_vector,
+                           YK_VectorView<DataType const, DimensionCount, ViewOffset> const& p_vectorView)
     {
-        float result = 0;
+        DataType result = 0;
         for (YK_U32 i = 0; i < DimensionCount; ++i)
         {
             result += p_vector[i] * p_vectorView[i];
@@ -386,3 +409,5 @@ using YK_Vector4f = YK_Vector_N<float, 4>;
 using YK_Vector2i = YK_Vector_N<YK_Int32, 2>;
 using YK_Vector3i = YK_Vector_N<YK_Int32, 3>;
 using YK_Vector4i = YK_Vector_N<YK_Int32, 4>;
+
+#pragma warning(pop)
