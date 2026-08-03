@@ -116,20 +116,20 @@ void YakuEngine::EngineLoop()
     BeginFrame();
 
     HIDra::Vec2f input = HIDra::GetAxis2D(HIDra::GamepadAxisID::AID_STICK_L);
-    if (HIDra::GetKey(HIDra::KEYCODE_S))
+    if (HIDra::GetKey(HIDra::KEYCODE_S) || HIDra::GetButton(HIDra::BID_DPAD_SOUTH))
     {
         input.m_y = -1;
     }
-    else if (HIDra::GetKey(HIDra::KEYCODE_W))
+    else if (HIDra::GetKey(HIDra::KEYCODE_W) || HIDra::GetButton(HIDra::BID_DPAD_NORTH))
     {
         input.m_y = 1;
     }
 
-    if (HIDra::GetKey(HIDra::KEYCODE_A))
+    if (HIDra::GetKey(HIDra::KEYCODE_A) || HIDra::GetButton(HIDra::BID_DPAD_WEST))
     {
         input.m_x = -1;
     }
-    else if (HIDra::GetKey(HIDra::KEYCODE_D))
+    else if (HIDra::GetKey(HIDra::KEYCODE_D) || HIDra::GetButton(HIDra::BID_DPAD_EAST))
     {
         input.m_x = 1;
     }
