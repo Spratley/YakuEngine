@@ -1,6 +1,6 @@
 #include "PCH/YakuCore_PCH.h"
 
-#if YK_WINDOWS
+#if YK_PLATFORM == YK_WINDOWS
 #include "YKC/Platforms/YKC_DisplaySurface.h"
 
 #include <GLAD/include/glad/glad.h>
@@ -45,4 +45,4 @@ bool YKC_DisplaySurface::IsValid() const { return m_contents.m_glfwWindow != nul
 bool YKC_DisplaySurface::ShouldClose() const { return glfwWindowShouldClose(m_contents.m_glfwWindow); }
 void YKC_DisplaySurface::SwapBuffers() const { glfwSwapBuffers(m_contents.m_glfwWindow); }
 
-#endif // YK_WINDOWS
+#endif // YK_PLATFORM == YK_WINDOWS

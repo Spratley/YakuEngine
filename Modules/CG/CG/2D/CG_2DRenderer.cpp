@@ -3,7 +3,7 @@
 
 // TODO: Encapsulate into rendering wrapper so that we can swap renderers
 // Time has come, this has to be done. For now, hack
-#if YK_WEB_ASSEMBLY
+#if YK_PLATFORM == YK_WASM
 // Emscripten specific GL headers
 #include <GLES3/gl3.h>
 #include <GLFW/glfw3.h>
@@ -24,6 +24,7 @@
 #include "CG/Resource/Texture/CG_TextureFactory.h"
 
 #include "CG/Matrix/CG_MatrixExtras.h"
+#include "YKC/Math/YKC_MatrixMath.h"
 
 // Temp for Window resizing
 #include "YKC/Platforms/YKC_PlatformCore.h"
@@ -35,21 +36,21 @@ YK_U32 g_nullVAO = 0;
 
 CG_2DRenderer::CG_2DRenderer()
     : m_canvases()
-#if YK_WEB_ASSEMBLY // TODO: Don't do this
+#if YK_PLATFORM == YK_WASM // TODO: Don't do this
     , m_2DShader("J:/Harbourfront/Data/Shaders/ShaderCode/WASM/2DR_Vertex_WASM.vs",
                  "J:/Harbourfront/Data/Shaders/ShaderCode/WASM/2DR_Fragment_WASM.fs")
 #else
     , m_2DShader("J:/Harbourfront/Data/Shaders/ShaderCode/2DR_Vertex.vs",
                  "J:/Harbourfront/Data/Shaders/ShaderCode/2DR_Fragment.fs")
-#endif // YK_WEB_ASSEMBLY
+#endif // YK_PLATFORM == YK_WASM
 
-#if YK_WEB_ASSEMBLY
+#if YK_PLATFORM == YK_WASM
     , m_fsqShader("J:/Harbourfront/Data/Shaders/ShaderCode/WASM/FSQ_WASM.vs",
                   "J:/Harbourfront/Data/Shaders/ShaderCode/WASM/SolidTexture_WASM.fs")
 #else
     , m_fsqShader("J:/Harbourfront/Data/Shaders/ShaderCode/FSQ.vs",
                   "J:/Harbourfront/Data/Shaders/ShaderCode/SolidTexture.fs")
-#endif // YK_WEB_ASSEMBLY
+#endif // YK_PLATFORM == YK_WASM
     , m_renderTarget(nullptr)
 {
     // TODO: Don't do this (sob)

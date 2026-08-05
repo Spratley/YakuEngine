@@ -1,4 +1,0 @@
-#pragma once
-
-#define YKC_STRINGIFYIMPL(X) #X
-#define YKC_STRINGIFY(X) YKC_STRINGIFYIMPL(X)

@@ -34,7 +34,7 @@ private:
     };
     PageIndex GetPageIndex(YK_U32 p_linearIndex)
     {
-        return PageIndex {p_linearIndex / PageSize, p_linearIndex % PageSize};
+        return PageIndex{ p_linearIndex / PageSize, p_linearIndex % PageSize };
     }
 
     void AllocatePage();
@@ -127,7 +127,7 @@ DataType const& YKC_PagedArray<DataType, PageSize>::operator[](YK_U32 p_index) c
         // TODO: Assert
         static DataType dummy{};
         return dummy;
-        //return *static_cast<DataType*>(nullptr);
+        // return *static_cast<DataType*>(nullptr);
     }
     PageIndex pageIndex = GetPageIndex(p_index);
     return m_pages[pageIndex.m_pageIndex][pageIndex.m_itemIndex];

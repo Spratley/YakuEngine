@@ -1,7 +1,7 @@
 #include "PCH/CG_PCH.h"
 #include "CG_GLMeshBuffer.h"
 
-#if YK_WEB_ASSEMBLY
+#if YK_PLATFORM == YK_WASM
 // Emscripten specific GL headers
 #include <GLES3/gl3.h>
 #include <GLFW/glfw3.h>

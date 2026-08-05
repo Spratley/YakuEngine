@@ -11,10 +11,10 @@ public:
     }
 };
 
-template <>
-struct YKC_ResourceTraits<CG_Shader>
-{
-    using Loader = CG_ShaderLoader;
-};
-
-using ShaderResources = YKC_ResourceContainer<CG_Shader>;
+//template <>
+//struct YKC_ResourceTraits<CG_Shader>
+//{
+//    using Loader = CG_ShaderLoader;
+//};
+//
+//using ShaderResources = YKC_ResourceContainer<CG_Shader>;

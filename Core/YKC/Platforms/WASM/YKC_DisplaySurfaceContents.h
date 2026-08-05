@@ -1,6 +1,6 @@
 #pragma once
 
-#if YK_WEB_ASSEMBLY
+#if YK_PLATFORM == YK_WASM
 
 class GLFWwindow;
 
@@ -9,4 +9,4 @@ struct YKC_DisplaySurfaceContents
     GLFWwindow* m_glfwWindow;
 };
 
-#endif // YK_WEB_ASSEMBLY
+#endif // YK_PLATFORM == YK_WASM

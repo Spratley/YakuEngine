@@ -7,15 +7,9 @@ void YK_IFile::GetFileContents(const char* p_path, std::stringstream& p_outDesti
     file.GetContents(p_outDestination);
 }
 
-YK_IFile::YK_IFile(const char* p_path)
-{
-    Open(p_path);
-}
+YK_IFile::YK_IFile(const char* p_path) { Open(p_path); }
 
-YK_IFile::~YK_IFile()
-{
-    Close();
-}
+YK_IFile::~YK_IFile() { Close(); }
 
 bool YK_IFile::Open(const char* p_path)
 {
@@ -73,15 +67,9 @@ bool YK_IFile::GetContents(std::stringstream& p_destination) const
     return false;
 }
 
-YK_OFile::YK_OFile(const char* p_path)
-{
-    Open(p_path);
-}
+YK_OFile::YK_OFile(const char* p_path) { Open(p_path); }
 
-YK_OFile::~YK_OFile()
-{
-    Close();
-}
+YK_OFile::~YK_OFile() { Close(); }
 
 bool YK_OFile::Open(const char* p_path)
 {
@@ -115,7 +103,4 @@ void YK_OFile::Close()
     }
 }
 
-void YK_OFile::Write(std::string const& p_line)
-{
-    m_outputFileStream << p_line;
-}
+void YK_OFile::Write(std::string const& p_line) { m_outputFileStream << p_line; }

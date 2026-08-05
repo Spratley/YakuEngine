@@ -2,5 +2,3 @@
 
 // Inherit PCH from core
 #include "PCH/YakuCore_PCH.h"
-
-#include "CG/CG_Handles.h"

@@ -1,24 +1,30 @@
 #pragma once
 
 #include "CG/2D/CG_2DRenderer.h"
-#include "YKC/Resource/YKC_ResourceManager.h"
-
 #include "CG/Resource/Shader/CG_ShaderResource.h"
-
-// Temp
-#include "YKC/Libraries/Zen/Zen_Garden.h"
 
 // TODO: Don't couple CG and OpenGL/Windows
 struct GLFWwindow;
 
 // Temp
 class CG_Mesh;
+class CG_Shader;
 class CG_Texture;
+
+// Temp
+namespace Zen
+{
+    class Garden;
+}
 
 class CG_RenderModule
 {
 public:
-    CG_RenderModule(GLFWwindow* p_glfwWindow) : m_glfwWindow(p_glfwWindow) { TempInit(); }
+    CG_RenderModule(GLFWwindow* p_glfwWindow)
+        : m_glfwWindow(p_glfwWindow)
+    {
+        TempInit();
+    }
 
     void TempInit();
 
@@ -32,11 +38,8 @@ private:
     CG_2DRenderer m_2dRenderer;
 
 private:
-    using MeshResources = YKC_ResourceContainer<CG_Mesh>;
-    YKC_ResourceManager</*MeshResources,*/ ShaderResources> m_cgResources;
-
     // TEMP
     CG_Mesh* temp_quad;
-    CG_ShaderHandle shader;
+    CG_Shader* shader;
     CG_Texture* temp_texture;
 };

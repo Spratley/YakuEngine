@@ -1,5 +1,5 @@
 #include "PCH/YakuCore_PCH.h"
-#if YK_WINDOWS
+#if YK_PLATFORM == YK_WINDOWS
 #include "YKC/Platforms/YKC_PlatformCore.h"
 
 #include <GLAD/include/glad/glad.h>
@@ -72,4 +72,4 @@ void YKC_PlatformCore::LaunchCoreLoop(void (*p_coreLoop)(void*), void* p_context
 
 void YKC_PlatformCore::OnFrameStart() const { glfwPollEvents(); }
 
-#endif // YK_WINDOWS
+#endif // YK_PLATFORM == YK_WINDOWS

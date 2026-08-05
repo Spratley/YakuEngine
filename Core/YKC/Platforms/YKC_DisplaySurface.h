@@ -1,7 +1,13 @@
 #pragma once
 
+#include "YKC/Types/Math/YKC_Vector.h"
+
 // Platform specific data to store directly in DisplaySurfaec
-#include YKC_PLATFORM_INCLUDE(YKC\\Platforms, YKC_DisplaySurfaceContents.h)
+#if YK_PLATFORM == YK_WINDOWS
+#include "YKC/Platforms/Windows/YKC_DisplaySurfaceContents.h"
+#elif YK_PLATFORM == YK_WASM
+#include "YKC/Platforms/WASM/YKC_DisplaySurfaceContents.h"
+#endif
 
 // YKC_DisplaySurface is the platform agnostic window class
 // Just dont' want to call it a window because not everything uses windows

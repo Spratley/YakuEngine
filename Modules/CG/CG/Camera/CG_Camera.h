@@ -2,7 +2,8 @@
 
 #include "YKC/ECS/YKC_TEMP_TransformComponent.h"
 #include "YKC/Libraries/Zen/System/Zen_System.h"
-#include "YKC/Types/YKC_Matrix.h"
+#include "YKC/Math/YKC_MatrixMath.h"
+#include "YKC/Types/Math/YKC_Matrix.h"
 
 struct CG_CameraComponent
 {
@@ -13,9 +14,10 @@ struct CG_CameraUpdateSystem : public Zen::SystemBase<CG_CameraUpdateSystem, CG_
 {
     static void Tick(ComponentView const& p_components)
     {
-        for (auto [camera, transform] : p_components) 
+        for (auto [camera, transform] : p_components)
         {
-            camera.m_viewMatrix = YK_Matrix::Inverse(YK_Matrix::Construct(transform.m_position, transform.m_orientation, transform.m_scale));
+            camera.m_viewMatrix = YK_Matrix::Inverse(
+              YK_Matrix::Construct(transform.m_position, transform.m_orientation, transform.m_scale));
         }
     }
 };

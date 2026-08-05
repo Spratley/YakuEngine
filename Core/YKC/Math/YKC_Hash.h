@@ -1,5 +1,7 @@
 #pragma once
 
+#include "YKC/Types/Math/YKC_Integer.h"
+
 namespace YK_Hash
 {
     constexpr inline YK_U32 FNV32_Base = 0x811C9DC5;

@@ -1,6 +1,6 @@
 #include "PCH/YakuCore_PCH.h"
 
-#if YK_WINDOWS
+#if YK_PLATFORM == YK_WINDOWS
 #include "YKC/Platforms/YKC_DisplaySurface.h"
 
 #define GLFW_EXPOSE_NATIVE_WIN32
@@ -9,4 +9,4 @@
 
 void* YKC_DisplaySurface::GetNativeHandle() const { return glfwGetWin32Window(m_contents.m_glfwWindow); }
 
-#endif // YK_WINDOWS
+#endif // YK_PLATFORM == YK_WINDOWS

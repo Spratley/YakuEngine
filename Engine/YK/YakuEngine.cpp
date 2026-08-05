@@ -12,6 +12,7 @@
 #include "CG/Renderable/CG_Renderable.h"
 #include "CG/Resource/Mesh/CG_MeshFactory.h"
 #include "CG/Resource/Texture/CG_TextureFactory.h"
+#include "YKC/Math/YKC_MatrixMath.h"
 
 #include <cstdlib>
 #include <ctime>
@@ -40,9 +41,9 @@ bool YakuEngine::Init()
 
     // TODO: Make this platform agnostic
     HIDra::Core_PlatformInitData initData;
-#if YK_WINDOWS
+#if YK_PLATFORM == YK_WINDOWS
     initData.m_mainWindowHandle = m_platformCore.GetMainDisplaySurface().GetNativeHandle();
-#endif
+#endif // YK_PLATFORM == YK_WINDOWS
 
     g_hidraCore.Init(initData);
 

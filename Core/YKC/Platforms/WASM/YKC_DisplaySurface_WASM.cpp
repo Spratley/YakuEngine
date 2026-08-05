@@ -1,6 +1,6 @@
 #include "PCH/YakuCore_PCH.h"
 
-#if YK_WEB_ASSEMBLY
+#if YK_PLATFORM == YK_WASM
 #include "YKC/Platforms/YKC_DisplaySurface.h"
 
 // Emscripten specific GL headers
@@ -47,4 +47,4 @@ bool YKC_DisplaySurface::IsValid() const { return m_contents.m_glfwWindow != nul
 bool YKC_DisplaySurface::ShouldClose() const { return glfwWindowShouldClose(m_contents.m_glfwWindow); }
 void YKC_DisplaySurface::SwapBuffers() const { glfwSwapBuffers(m_contents.m_glfwWindow); }
 
-#endif // YK_WEB_ASSEMBLY
+#endif // YK_PLATFORM == YK_WASM

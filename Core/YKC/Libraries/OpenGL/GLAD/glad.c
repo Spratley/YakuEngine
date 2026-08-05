@@ -22,7 +22,7 @@
 // TODO: Come back and make a more robust way of disabling
 // For now, just manually remove all of glad.c when making a WASM build
 #include "YKC/Platforms/YKC_PlatformDefines.h"
-#if !YK_WEB_ASSEMBLY
+#if YK_PLATFORM != YK_WASM
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -1836,4 +1836,4 @@ int gladLoadGLLoader(GLADloadproc load) {
 	return GLVersion.major != 0 || GLVersion.minor != 0;
 }
 
-#endif // !YK_WEB_ASSEMBLY
+#endif // YK_PLATFORM != YK_WASM

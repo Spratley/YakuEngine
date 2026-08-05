@@ -1,7 +1,7 @@
 #pragma once
 
-#include "YKC/Types/YKC_Quaternion.h"
-#include "YKC/Types/YKC_Vector.h"
+#include "YKC/Types/Math/YKC_Quaternion.h"
+#include "YKC/Types/Math/YKC_Vector.h"
 
 struct TransformComponent
 {

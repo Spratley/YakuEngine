@@ -1,5 +1,5 @@
 #include "PCH/YakuCore_PCH.h"
-#if YK_WEB_ASSEMBLY
+#if YK_PLATFORM == YK_WASM
 #include "YKC/Platforms/YKC_PlatformCore.h"
 
 // Emscripten specific GL headers
@@ -65,4 +65,4 @@ void YKC_PlatformCore::LaunchCoreLoop(void (*p_coreLoop)(void*), void* p_context
 
 void YKC_PlatformCore::OnFrameStart() const { glfwPollEvents(); }
 
-#endif // YK_WEB_ASSEMBLY
+#endif // YK_PLATFORM == YK_WASM

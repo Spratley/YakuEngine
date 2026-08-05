@@ -11,3 +11,9 @@ inline constexpr Type const& YK_Max(Type const& p_lhs, Type const& p_rhs)
 {
     return (p_lhs > p_rhs) ? p_lhs : p_rhs;
 }
+
+template <typename Type>
+inline constexpr Type YK_Square(Type const& p_value)
+{
+    return p_value * p_value;
+}

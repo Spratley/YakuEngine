@@ -1,9 +1,9 @@
 #include "YKC/Platforms/YKC_PlatformDefines.h" // Needed for YK_WINDOWS, etc.
 
 // Platform
-#if YK_WINDOWS
+#if YK_PLATFORM == YK_WINDOWS
 #define HIDra_Platform HIDra_Platform_Windows
-#elif YK_WEB_ASSEMBLY
+#elif YK_PLATFORM == YK_WASM
 #define HIDra_Platform HIDra_Platform_WebAssembly
 #endif
 

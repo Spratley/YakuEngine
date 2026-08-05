@@ -10,13 +10,7 @@ private:
 public:
     static float DeltaTime() { return s_deltaTime; }
 
-    static void OnFrameEnd()
-    {
-        Clock::time_point now = Clock::now();
-        std::chrono::duration<float> delta = now - s_lastFrameEnd;
-        s_lastFrameEnd = now;
-        s_deltaTime = delta.count();
-    }
+    static void OnFrameEnd();
 
     // Note: This is frame constant
     static float ElapsedTime() { return std::chrono::duration<float>(s_lastFrameEnd - s_programStart).count(); }

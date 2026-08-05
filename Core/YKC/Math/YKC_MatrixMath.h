@@ -1,157 +1,16 @@
 #pragma once
 
-#include "YKC/Types/YKC_Quaternion.h"
-#include "YKC/Types/YKC_TypeTraits.h"
-#include "YKC/Types/YKC_Vector.h"
-#include "YKC/Utils/YKC_AlgorithmUtils.h"
-#include "YKC/Utils/YKC_MathUtils.h"
-
-#include <cmath>
-
-template <typename DataType, YK_U32 RowCount, YK_U32 ColumnCount>
-struct YK_Matrix_R_C
-{
-public:
-    static constexpr YK_Matrix_R_C Identity() { return YK_Matrix_R_C(1); }
-
-public:
-    constexpr YK_Matrix_R_C() { *this = Identity(); }
-
-    constexpr YK_Matrix_R_C(DataType p_diagonal)
-        : m_columns{}
-    {
-        constexpr YK_U32 lowestDimension = YK_Min(RowCount, ColumnCount);
-        for (YK_U32 i = 0; i < lowestDimension; ++i)
-        {
-            m_columns[i][i] = p_diagonal;
-        }
-    }
-
-    template <typename... Args, typename = typename YK_EnableIf<(sizeof...(Args) == (RowCount * ColumnCount))>::Type>
-    constexpr YK_Matrix_R_C(Args... args)
-        : m_columns{}
-    {
-        DataType temp[] = { static_cast<DataType>(args)... };
-        // Memcpy is replaced with a fixed loop because according to godbolt they get optimized to the same thing, but
-        // loops are constepxr
-        DataType* data = GetData();
-        for (int i = 0; i < RowCount * ColumnCount; ++i)
-        {
-            data[i] = temp[i];
-        }
-    }
-
-    // Note: Shallow copies only!
-    // TODO: Concept to prevent non-trivially copyable types
-    constexpr YK_Matrix_R_C(YK_Matrix_R_C const& p_other)
-    {
-        // Memcpy is replaced with a fixed loop because according to godbolt they get optimized to the same thing, but
-        // loops are constepxr
-        for (int c = 0; c < ColumnCount; ++c)
-        {
-            for (int r = 0; r < RowCount; ++r)
-            {
-                m_columns[c][r] = p_other.m_columns[c][r];
-            }
-        }
-    }
-
-    constexpr YK_Vector_N<DataType, RowCount>& operator[](size_t const p_index) { return m_columns[p_index]; }
-    constexpr YK_Vector_N<DataType, RowCount> const& operator[](size_t const p_index) const
-    {
-        return m_columns[p_index];
-    }
-
-    friend constexpr YK_Vector_N<DataType, RowCount> operator*(YK_Matrix_R_C const& p_matrix,
-                                                               YK_Vector_N<DataType, ColumnCount> const& p_vector)
-    {
-        YK_Vector_N<DataType, RowCount> result;
-        for (int i = 0; i < RowCount; ++i)
-        {
-            result[i] = YK_Vector::Dot(p_vector, p_matrix.GetRow(i));
-        }
-        return result;
-    }
-
-    // TODO: Compiler intrinsics SIMD?
-    template <YK_U32 OtherRowCount,
-              YK_U32 OtherColumnCount,
-              typename = typename YK_EnableIf<OtherRowCount == ColumnCount>::Type>
-    friend constexpr YK_Matrix_R_C<DataType, RowCount, OtherColumnCount> operator*(
-      YK_Matrix_R_C const& p_lhs,
-      YK_Matrix_R_C<DataType, OtherRowCount, OtherColumnCount> const& p_rhs)
-    {
-        YK_Matrix_R_C<DataType, RowCount, OtherColumnCount> result;
-        for (int c = 0; c < OtherColumnCount; ++c)
-        {
-            for (int r = 0; r < RowCount; ++r)
-            {
-                result[c][r] = YK_Vector::Dot(p_rhs[c], p_lhs.GetRow(r));
-            }
-        }
-        return result;
-    }
-
-    constexpr DataType* GetData() { return m_columns[0].m_data; }
-    constexpr DataType const* GetData() const { return m_columns[0].m_data; }
-
-    constexpr YK_VectorView<DataType const, ColumnCount, RowCount> GetRow(int p_rowIndex) const
-    {
-        return YK_VectorView<DataType const, ColumnCount, RowCount>(m_columns[0].m_data + p_rowIndex);
-    }
-
-private:
-    YK_Vector_N<DataType, RowCount> m_columns[ColumnCount];
-};
+#include "YKC/Types/Math/YKC_Matrix.h"
+#include "YKC/Math/YKC_MathUtils.h"
 
 namespace YK_Matrix
 {
+    // Affine Transformation Matrices
     template <typename DataType>
     constexpr void Translate(YK_Matrix_R_C<DataType, 4, 4>& p_matrix, YK_Vector_N<DataType, 3> const& p_translation)
     {
         p_matrix[3].xyz += p_translation;
     }
-
-    template <typename DataType>
-    constexpr YK_Vector_N<DataType, 3> const& GetPosition(YK_Matrix_R_C<DataType, 4, 4> const& p_matrix)
-    {
-        return p_matrix[3].xyz;
-    }
-
-    template <typename DataType>
-    constexpr void SetPosition(YK_Matrix_R_C<DataType, 4, 4>& p_matrix, YK_Vector_N<DataType, 3> const& p_position)
-    {
-        p_matrix[3].xyz = p_position;
-    }
-
-    // TODO: Come back and figure this out
-    // template <typename DataType>
-    // constexpr void Rotate(YK_Matrix_R_C<DataType, 4, 4>& p_matrix, YK_Vector_N<DataType, 3> const& p_eulerAngles)
-    //{
-    //    float const cosPitch = std::cos(p_eulerAngles.x);
-    //    float const sinPitch = std::sin(p_eulerAngles.x);
-
-    //    float const cosYaw = std::cos(p_eulerAngles.y);
-    //    float const sinYaw = std::sin(p_eulerAngles.y);
-
-    //    float const cosRoll = std::cos(p_eulerAngles.z);
-    //    float const sinRoll = std::sin(p_eulerAngles.z);
-
-    //    YK_Matrix_R_C<DataType, 3, 3> roll{ cosRoll, sinRoll, 0, -sinRoll, cosRoll, 0, 0, 0, 1 };
-    //    YK_Matrix_R_C<DataType, 3, 3> pitch{ 1, 0, 0, 0, cosPitch, sinPitch, 0, -sinPitch, cosPitch };
-    //    YK_Matrix_R_C<DataType, 3, 3> yaw{ cosYaw, 0, -sinYaw, 0, 1, 0, sinYaw, 0, cosYaw };
-
-    //    YK_Matrix_R_C<DataType, 3, 3> rotationMatrix;
-    //    rotationMatrix[0] = p_matrix[0].xyz;
-    //    rotationMatrix[1] = p_matrix[1].xyz;
-    //    rotationMatrix[2] = p_matrix[2].xyz;
-
-    //    rotationMatrix = yaw * rotationMatrix * pitch * roll;
-
-    //    p_matrix[0].xyz = rotationMatrix[0];
-    //    p_matrix[1].xyz = rotationMatrix[1];
-    //    p_matrix[2].xyz = rotationMatrix[2];
-    //}
 
     template <typename DataType>
     constexpr YK_Matrix_R_C<DataType, 4, 4> Inverse(YK_Matrix_R_C<DataType, 4, 4> const& p_matrix)
@@ -312,7 +171,3 @@ namespace YK_Matrix
         return result;
     }
 } // namespace YK_Matrix
-
-using YK_Matrix22 = YK_Matrix_R_C<float, 2, 2>;
-using YK_Matrix33 = YK_Matrix_R_C<float, 3, 3>;
-using YK_Matrix44 = YK_Matrix_R_C<float, 4, 4>;
