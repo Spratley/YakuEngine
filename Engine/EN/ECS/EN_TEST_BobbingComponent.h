@@ -1,8 +1,8 @@
 #pragma once
 
-#include "YKC/ECS/Components/YKC_TransformComponent.h"
-#include "YKC/Libraries/Zen/System/Zen_System.h"
-#include "YKC/Time/YKC_Time.h"
+#include "YK/ECS/Components/YK_TransformComponent.h"
+#include "YK/Libraries/Zen/System/Zen_System.h"
+#include "YK/Time/YK_Time.h"
 
 #include <cmath>
 
@@ -15,7 +15,7 @@ struct BobbingSystem : public Zen::SystemBase<BobbingSystem, YK_TransformCompone
 {
     static void Tick(ComponentView const& p_components)
     {
-        float elapsedTime = YKC_Time::ElapsedTime();
+        float elapsedTime = YK_Time::ElapsedTime();
         for (auto [transform, bobbing] : p_components)
         {
             transform.m_position.y = (std::sin(elapsedTime * 10.0f + bobbing.m_phase) * 0.25f) + 0.25f;

@@ -1,4 +1,4 @@
-#include "YKC/Platforms/YKC_PlatformDefines.h" // Needed for YK_WINDOWS, etc.
+#include "YK/Platforms/YK_PlatformDefines.h" // Needed for YK_WINDOWS, etc.
 
 // Platform
 #if YK_PLATFORM == YK_WINDOWS

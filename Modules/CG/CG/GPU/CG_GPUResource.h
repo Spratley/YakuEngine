@@ -1,6 +1,6 @@
 #pragma once
 #include "CG/GPU/CG_GPUDataPolicy.h"
-#include "YKC/Utils/YKC_TemplateUtils.h"
+#include "YK/Utils/YK_TemplateUtils.h"
 
 // TODO: Evaluate if this is the right approach and how well it synergizes with the rest of the engine
 // This was an old implementaiton that's rolling over from Yakuman

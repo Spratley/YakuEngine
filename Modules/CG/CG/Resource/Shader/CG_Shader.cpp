@@ -7,10 +7,10 @@
 #include <GLFW/glfw3.h>
 #include <emscripten.h>
 #else
-#include <YKC/Libraries/OpenGL/GLAD/include/glad/glad.h>
+#include <YK/Libraries/OpenGL/GLAD/include/glad/glad.h>
 #endif
 
-#include "YKC/IO/File/YKC_IOFile.h"
+#include "YK/IO/File/YK_IOFile.h"
 
 CG_Shader::CG_Shader(const char* p_vertexPath, const char* p_fragmentPath)
     : m_id(0)

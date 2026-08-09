@@ -9,7 +9,7 @@
 #include <GLFW/glfw3.h>
 #include <emscripten.h>
 #else
-#include <YKC/Libraries/OpenGL/GLAD/include/glad/glad.h>
+#include <YK/Libraries/OpenGL/GLAD/include/glad/glad.h>
 #endif
 
 #include "CG/2D/Canvas/CG_Canvas.h"
@@ -24,10 +24,10 @@
 #include "CG/Resource/Texture/CG_TextureFactory.h"
 
 #include "CG/Matrix/CG_MatrixExtras.h"
-#include "YKC/Math/YKC_MatrixMath.h"
+#include "YK/Math/YK_MatrixMath.h"
 
 // Temp for Window resizing
-#include "YKC/Platforms/YKC_PlatformCore.h"
+#include "YK/Platforms/YK_PlatformCore.h"
 
 constexpr YK_Matrix44 g_ortho = YK_Matrix::Orthographic(1.0f, 1080.f / 1920.f, 10.0f);
 
@@ -81,7 +81,7 @@ void CG_2DRenderer::Temp_Init()
     // TODO: Make this more parallel safe, ensure CG_GLViewportHelper is aware that we're setting the main window size
     // Graphics shouldn't be parallel on the CPU, but we can't guarantee that the window is resized in sync with the
     // update cycle
-    YKC_PlatformCore& platformCore = *YKC_PlatformCore::GetInstance();
+    YK_PlatformCore& platformCore = *YK_PlatformCore::GetInstance();
     YK_DisplaySurface& mainDisplaySurface = platformCore.GetMainDisplaySurface();
     if (mainDisplaySurface.IsValid())
     {

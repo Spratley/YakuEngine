@@ -7,8 +7,8 @@
 #include <GLFW/glfw3.h>
 #include <emscripten.h>
 #else
-#include <YKC/Libraries/OpenGL/GLAD/include/glad/glad.h>
-#include <YKC/Libraries/OpenGL/GLFW/include/glfw3.h>
+#include <YK/Libraries/OpenGL/GLAD/include/glad/glad.h>
+#include <YK/Libraries/OpenGL/GLFW/include/glfw3.h>
 #endif
 
 #include "CG/Resource/Texture/CG_Texture.h"

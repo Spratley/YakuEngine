@@ -7,7 +7,7 @@
 #include <GLFW/glfw3.h>
 #include <emscripten.h>
 #else
-#include <YKC/Libraries/OpenGL/GLAD/include/glad/glad.h>
+#include <YK/Libraries/OpenGL/GLAD/include/glad/glad.h>
 #endif
 
 #include "CG_GLViewportHelper.h"

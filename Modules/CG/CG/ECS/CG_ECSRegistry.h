@@ -1,6 +1,6 @@
 #pragma once
 
-#include "YKC/ECS/YKC_ECSRegistry.h"
+#include "YK/ECS/YK_ECSRegistry.h"
 
 #include "CG/Camera/CG_Camera.h"
 #include "CG/Renderable/CG_Renderable.h"
@@ -11,5 +11,5 @@ namespace CG_ECSRegistry
     using SystemTypes = Zen::TypeList<CG_CameraUpdateSystem>;
 } // namespace CG_ECSRegistry
 
-using CG_ComponentTypes = Zen::TypeListUtils::Concat_T<YKC_ComponentTypes, CG_ECSRegistry::ComponentTypes>;
-using CG_SystemTypes = Zen::TypeListUtils::Concat_T<YKC_SystemTypes, CG_ECSRegistry::SystemTypes>;
+using CG_ComponentTypes = Zen::TypeListUtils::Concat_T<YK_ComponentTypes, CG_ECSRegistry::ComponentTypes>;
+using CG_SystemTypes = Zen::TypeListUtils::Concat_T<YK_SystemTypes, CG_ECSRegistry::SystemTypes>;

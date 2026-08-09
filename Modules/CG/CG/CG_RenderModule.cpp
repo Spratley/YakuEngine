@@ -7,11 +7,11 @@
 #include <GLFW/glfw3.h>
 #include <emscripten.h>
 #else
-#include <YKC/Libraries/OpenGL/GLAD/include/glad/glad.h>
-#include <YKC/Libraries/OpenGL/GLFW/include/glfw3.h>
+#include <YK/Libraries/OpenGL/GLAD/include/glad/glad.h>
+#include <YK/Libraries/OpenGL/GLFW/include/glfw3.h>
 #endif
 
-#include "YKC/IO/Display/YKC_DisplaySurface.h"
+#include "YK/IO/Display/YK_DisplaySurface.h"
 
 // TEMP
 #include "CG/Matrix/CG_MatrixExtras.h"
@@ -22,16 +22,16 @@
 #include "CG/Resource/Shader/CG_Shader.h"
 #include "CG/Resource/Texture/CG_TextureFactory.h"
 
-#include "YKC/Math/YKC_MatrixMath.h"
-#include "YKC/Platforms/YKC_PlatformDefines.h"
-#include "YKC/Platforms/YKC_PlatformCore.h"
-#include "YKC/Types/Math/YKC_Matrix.h"
+#include "YK/Math/YK_MatrixMath.h"
+#include "YK/Platforms/YK_PlatformDefines.h"
+#include "YK/Platforms/YK_PlatformCore.h"
+#include "YK/Types/Math/YK_Matrix.h"
 
 
 // EVEN MORE TEMP
 #include "CG/Resource/Shader/CG_ShaderResource.h"
-#include "YKC/ECS/Components/YKC_TransformComponent.h"
-#include "YKC/Libraries/Zen/Zen_Garden.h"
+#include "YK/ECS/Components/YK_TransformComponent.h"
+#include "YK/Libraries/Zen/Zen_Garden.h"
 
 YK_Matrix44 g_perspective;
 
@@ -58,7 +58,7 @@ void CG_RenderModule::TempInit()
 
     // Super temp
     RecalculatePerspectiveMatrix(YK_Vector2i(1920, 1080));
-    YKC_PlatformCore& platformCore = *YKC_PlatformCore::GetInstance();
+    YK_PlatformCore& platformCore = *YK_PlatformCore::GetInstance();
     YK_DisplaySurface& mainDisplaySurface = platformCore.GetMainDisplaySurface();
     if (mainDisplaySurface.IsValid())
     {

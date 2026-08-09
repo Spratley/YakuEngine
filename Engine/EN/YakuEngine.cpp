@@ -3,7 +3,7 @@
 
 #include "CG/CG_RenderModule.h"
 
-#include "YKC/Time/YKC_Time.h"
+#include "YK/Time/YK_Time.h"
 
 // Temp
 #include "ECS/EN_TEST_BobbingComponent.h"
@@ -13,9 +13,9 @@
 #include "CG/Resource/Mesh/CG_MeshFactory.h"
 #include "CG/Resource/Texture/CG_TextureFactory.h"
 
-#include "YKC/ECS/Components/YKC_TransformComponent.h"
-#include "YKC/Math/YKC_MatrixMath.h"
-#include "YKC/Types/Containers/YKC_PagedArray.h"
+#include "YK/ECS/Components/YK_TransformComponent.h"
+#include "YK/Math/YK_MatrixMath.h"
+#include "YK/Types/Containers/YK_PagedArray.h"
 
 #include <cstdlib>
 #include <ctime>
@@ -150,13 +150,13 @@ void YakuEngine::EngineLoop()
     YK_Vector3f const right = YK_Vector::Cross(YK_Vector3f::Up(), flatForward);
 
     YK_Vector3f frameDelta = (right * input.m_x) + (flatForward * -input.m_y) + (YK_Vector3f(0.0f, raise, 0.0f));
-    frameDelta *= YKC_Time::DeltaTime() * 2.0f;
+    frameDelta *= YK_Time::DeltaTime() * 2.0f;
     cameraTransform->m_position += frameDelta;
     cameraTransform->m_position += frameDelta;
 
     HIDra::Vec2f leftRight = HIDra::GetAxis2D(HIDra::GamepadAxisID::AID_STICK_R);
     YK_Vector3f newLookTarget = -flatForward + cameraTransform->m_position;
-    newLookTarget += (right * leftRight.m_x) * YKC_Time::DeltaTime();
+    newLookTarget += (right * leftRight.m_x) * YK_Time::DeltaTime();
     cameraTransform->m_orientation = YK_Matrix::LookAt(cameraTransform->m_position, newLookTarget);
 
     m_zenGarden.Tick();
@@ -174,5 +174,5 @@ void YakuEngine::BeginFrame() { m_platformCore.OnFrameStart(); }
 void YakuEngine::EndFrame()
 {
     HIDra::Flush();
-    YKC_Time::OnFrameEnd();
+    YK_Time::OnFrameEnd();
 }

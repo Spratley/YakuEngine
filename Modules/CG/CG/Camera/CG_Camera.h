@@ -1,9 +1,9 @@
 #pragma once
 
-#include "YKC/ECS/Components/YKC_TransformComponent.h"
-#include "YKC/Libraries/Zen/System/Zen_System.h"
-#include "YKC/Math/YKC_MatrixMath.h"
-#include "YKC/Types/Math/YKC_Matrix.h"
+#include "YK/ECS/Components/YK_TransformComponent.h"
+#include "YK/Libraries/Zen/System/Zen_System.h"
+#include "YK/Math/YK_MatrixMath.h"
+#include "YK/Types/Math/YK_Matrix.h"
 
 struct CG_CameraComponent
 {

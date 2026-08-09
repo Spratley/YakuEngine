@@ -1,9 +1,9 @@
 #pragma once
 
-#include "YKC/Core/YKC_Core.h"
+#include "YK/Core/YK_Core.h"
 
 // TEMP
-#include "YKC/Platforms/YKC_PlatformCore.h"
+#include "YK/Platforms/YK_PlatformCore.h"
 
 class CG_RenderModule;
 
@@ -50,7 +50,7 @@ private:
 
 private:
     void* m_game = nullptr;
-    YKC_PlatformCore m_platformCore;
+    YK_PlatformCore m_platformCore;
 
     // Modules
     // TODO: Move to separate implementation struct so we can have linear packing and no header exposure

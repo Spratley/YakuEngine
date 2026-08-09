@@ -12,9 +12,9 @@ public:
 };
 
 //template <>
-//struct YKC_ResourceTraits<CG_Shader>
+//struct YK_ResourceTraits<CG_Shader>
 //{
 //    using Loader = CG_ShaderLoader;
 //};
 //
-//using ShaderResources = YKC_ResourceContainer<CG_Shader>;
+//using ShaderResources = YK_ResourceContainer<CG_Shader>;
