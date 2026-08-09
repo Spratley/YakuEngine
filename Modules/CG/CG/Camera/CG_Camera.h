@@ -1,6 +1,6 @@
 #pragma once
 
-#include "YKC/ECS/YKC_TEMP_TransformComponent.h"
+#include "YKC/ECS/Components/YKC_TransformComponent.h"
 #include "YKC/Libraries/Zen/System/Zen_System.h"
 #include "YKC/Math/YKC_MatrixMath.h"
 #include "YKC/Types/Math/YKC_Matrix.h"
@@ -10,7 +10,7 @@ struct CG_CameraComponent
     YK_Matrix44 m_viewMatrix;
 };
 
-struct CG_CameraUpdateSystem : public Zen::SystemBase<CG_CameraUpdateSystem, CG_CameraComponent, TransformComponent>
+struct CG_CameraUpdateSystem : public Zen::SystemBase<CG_CameraUpdateSystem, CG_CameraComponent, YK_TransformComponent>
 {
     static void Tick(ComponentView const& p_components)
     {

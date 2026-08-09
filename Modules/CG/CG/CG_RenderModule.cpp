@@ -11,6 +11,8 @@
 #include <YKC/Libraries/OpenGL/GLFW/include/glfw3.h>
 #endif
 
+#include "YKC/IO/Display/YKC_DisplaySurface.h"
+
 // TEMP
 #include "CG/Matrix/CG_MatrixExtras.h"
 #include "CG/OpenGL/CG_GLMeshBuffer.h"
@@ -22,14 +24,25 @@
 
 #include "YKC/Math/YKC_MatrixMath.h"
 #include "YKC/Platforms/YKC_PlatformDefines.h"
+#include "YKC/Platforms/YKC_PlatformCore.h"
 #include "YKC/Types/Math/YKC_Matrix.h"
+
 
 // EVEN MORE TEMP
 #include "CG/Resource/Shader/CG_ShaderResource.h"
-#include "YKC/ECS/YKC_TEMP_TransformComponent.h"
+#include "YKC/ECS/Components/YKC_TransformComponent.h"
 #include "YKC/Libraries/Zen/Zen_Garden.h"
 
 YK_Matrix44 g_perspective;
+
+void RecalculatePerspectiveMatrix(YK_Vector2i p_viewportDimensions)
+{
+    g_perspective = YK_Matrix::Perspective<float>(60.0f,
+                                                  static_cast<float>(p_viewportDimensions.x)
+                                                    / static_cast<float>(p_viewportDimensions.y),
+                                                  0.1f,
+                                                  100.0f);
+}
 
 void CG_RenderModule::TempInit()
 {
@@ -43,7 +56,14 @@ void CG_RenderModule::TempInit()
                                                  "J:/Harbourfront/Data/Shaders/ShaderCode/Fragment.fs"));
 #endif // YK_PLATFORM == YK_WASM
 
-    g_perspective = YK_Matrix::Perspective<float>(60.0f, 1920.0f / 1080.0f, 0.1f, 100.0f);
+    // Super temp
+    RecalculatePerspectiveMatrix(YK_Vector2i(1920, 1080));
+    YKC_PlatformCore& platformCore = *YKC_PlatformCore::GetInstance();
+    YK_DisplaySurface& mainDisplaySurface = platformCore.GetMainDisplaySurface();
+    if (mainDisplaySurface.IsValid())
+    {
+        mainDisplaySurface.GetResizedCallback().Attach(RecalculatePerspectiveMatrix);
+    }
 
     m_2dRenderer.Temp_Init();
 
@@ -58,7 +78,8 @@ void CG_RenderModule::Render(YK_Matrix44 const& p_viewMatrix, Zen::Garden const&
     shader->Use();
 
     // TODO: Sort by mesh?
-    Zen::EntityView view = p_entityGarden.ViewComponents<TransformComponent, CG_MeshComponent, CG_RendererComponent>();
+    Zen::EntityView view =
+      p_entityGarden.ViewComponents<YK_TransformComponent, CG_MeshComponent, CG_RendererComponent>();
     for (auto [transform, meshComponent, rendererComponent] : view)
     {
         meshComponent.m_mesh->GetGLData().Bind();
@@ -73,5 +94,5 @@ void CG_RenderModule::Render(YK_Matrix44 const& p_viewMatrix, Zen::Garden const&
 
     m_2dRenderer.Render();
 
-    glfwSwapBuffers(m_glfwWindow);
+    m_display->SwapBuffers();
 }

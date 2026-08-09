@@ -3,18 +3,16 @@
 #include "YKC/Core/YKC_Core.h"
 
 // TEMP
-#include "YKC/ECS/YKC_TEMP_TransformComponent.h"
-#include "YKC/Libraries/Zen/Zen_Garden.h"
 #include "YKC/Platforms/YKC_PlatformCore.h"
 
 class CG_RenderModule;
 
-class YakuEngine : YKC_Core
+class YakuEngine : YK_Core
 {
 public:
     template <typename ComponentTypes, typename SystemTypes>
     YakuEngine(ComponentTypes p_componentTypes, SystemTypes p_systemTypes)
-        : YKC_Core(p_componentTypes, p_systemTypes)
+        : YK_Core(p_componentTypes, p_systemTypes)
     {}
 
     ~YakuEngine() {}

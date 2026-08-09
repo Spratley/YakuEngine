@@ -1,8 +1,8 @@
 #pragma once
 
 #if !YAKU_RETAIL
-#include <print>
-#include <cstdio>
+#include <format>
+#include <string_view>
 #endif // !YAKU_RETAIL
 
 // TODO: Log Improvements
@@ -12,16 +12,24 @@
 // - Sort and hide runtime logs based on severity and location
 
 #if !YAKU_RETAIL
-#define YK_LOG(Message) std::println("{}", Message)
-#define YK_LOG_PARAM(Message, ...) std::println(Message, __VA_ARGS__)
+#define YK_LOG(Message) YK_Logger::Log(YK_Logger::ErrorLevel::Log, std::format("{}", Message).c_str())
+#define YK_LOG_PARAM(Message, ...) YK_Logger::Log(YK_Logger::ErrorLevel::Log, std::format(Message, __VA_ARGS__).c_str())
 #else
 #define YK_LOG(Message) YK_Unused(Message)
 #define YK_LOG_PARAM(Message, ...) YK_Unused(Message, __VA_ARGS__)
 #endif // !YAKU_RETAIL
 
 #if !YAKU_RETAIL
-#define YK_LOG_ERROR(Message) std::println(stderr, "Error: {}", Message)
-#define YK_LOG_ERROR_PARAM(Message, ...) std::println(stderr, "Error: " Message, __VA_ARGS__)
+#define YK_LOG_WARNING(Message) YK_Logger::Log(YK_Logger::ErrorLevel::Warning, std::format("{}", Message).c_str())
+#define YK_LOG_WARNING_PARAM(Message, ...) YK_Logger::Log(YK_Logger::ErrorLevel::Warning, std::format(Message, __VA_ARGS__).c_str())
+#else
+#define YK_LOG_WARNING(Message) YK_Unused(Message)
+#define YK_LOG_WARNING_PARAM(Message, ...) YK_Unused(Message, __VA_ARGS__)
+#endif // !YAKU_RETAIL
+
+#if !YAKU_RETAIL
+#define YK_LOG_ERROR(Message) YK_Logger::Log(YK_Logger::ErrorLevel::Error, std::format("{}", Message).c_str())
+#define YK_LOG_ERROR_PARAM(Message, ...) YK_Logger::Log(YK_Logger::ErrorLevel::Error, std::format(Message, __VA_ARGS__).c_str())
 #else
 #define YK_LOG_ERROR(Message) YK_Unused(Message)
 #define YK_LOG_ERROR_PARAM(Message, ...) YK_Unused(Message, __VA_ARGS__)
@@ -30,6 +38,14 @@
 #if !YAKU_RETAIL
 class YK_Logger
 {
-    // Get logger service...
+public:
+    enum class ErrorLevel
+    {
+        Log,
+        Warning,
+        Error
+    };
+
+    static void Log(ErrorLevel p_errorLevel, const char* message);
 };
 #endif // !YAKU_RETAIL

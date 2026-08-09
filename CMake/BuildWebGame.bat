@@ -13,10 +13,25 @@ set "BUILD_DIRECTORY=%BUILD_ROOT_DIRECTORY%\_WebBuild"
 set "EMSDK_PATH=C:\Users\Offic\Documents\Repos\emsdk"
 
 :: Script Constants
-set BUILD_CONFIG_TYPE=Retail
 set OPTIMIZATION_LEVEL=-O3
 set ASSERTION_LEVEL=1
 set CMAKE_GENERATOR="Ninja"
+
+:: Commandline Args
+if "%~1"=="" (
+    set "BUILD_CONFIG_TYPE=Retail"
+) else (
+    set "BUILD_CONFIG_TYPE="
+    if /i "%~1"=="release" set "BUILD_CONFIG_TYPE=Release"
+    if /i "%~1"=="retail" set "BUILD_CONFIG_TYPE=Retail"
+    
+    if not defined BUILD_CONFIG_TYPE (
+        echo [ERROR] Invalid configuration '%~1'. Valid options are 'Release' or 'Retail'.
+        pause
+        exit /b 1
+    )
+)
+echo [INFO] Using configuration: %CONFIG%
 
 :: Script Logic Begin
 echo Initializing EMDSK Environment...

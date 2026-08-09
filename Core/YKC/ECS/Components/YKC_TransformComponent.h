@@ -3,7 +3,7 @@
 #include "YKC/Types/Math/YKC_Quaternion.h"
 #include "YKC/Types/Math/YKC_Vector.h"
 
-struct TransformComponent
+struct YK_TransformComponent
 {
     YK_Vector3f m_position;
     YK_Quaternion m_orientation;

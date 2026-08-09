@@ -1,8 +1,5 @@
 #pragma once
 
-// STL headers to replace with custom implementations
-#include <vector>
-
 // Platform
 #include "YKC/Platforms/YKC_PlatformDefines.h"
 

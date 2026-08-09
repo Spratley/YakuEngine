@@ -2,6 +2,8 @@
 #if YK_PLATFORM == YK_WINDOWS
 #include "YKC/Platforms/YKC_PlatformCore.h"
 
+#include "YKC/IO/Logging/YKC_Logger.h"
+
 #include <GLAD/include/glad/glad.h>
 #include <GLFW/include/glfw3.h>
 
@@ -9,12 +11,7 @@ inline void loc_GLFWError(const char* errorMessage)
 {
     const char* error;
     glfwGetError(&error);
-
-    // TODO: Add string builder
-    YK_LOG_ERROR("GLFW Error:");
-    YK_LOG_ERROR(errorMessage);
-    YK_LOG_ERROR(error);
-
+    YK_LOG_ERROR_PARAM("GLFW Error: {} - {}", errorMessage, error);
     glfwTerminate();
 }
 
@@ -26,15 +23,6 @@ bool YKC_PlatformCore::Init()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #if !YAKU_RETAIL
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif // !YAKU_RETAIL
-
-#if !YAKU_RETAIL
-    if (m_displaySurface.IsValid())
-    {
-        YK_LOG_ERROR("Attempting to re-initialize main window!");
-        // TODO: Assert
-        return false;
-    }
 #endif // !YAKU_RETAIL
 
     // TODO: Move hardcoded size outta here

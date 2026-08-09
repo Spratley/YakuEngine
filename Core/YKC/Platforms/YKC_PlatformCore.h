@@ -1,7 +1,7 @@
 #pragma once
 
 #include "YKC/Interfaces/YKC_Singleton.h"
-#include "YKC/Platforms/YKC_DisplaySurface.h"
+#include "YKC/IO/Display/YKC_DisplaySurface.h"
 
 // Does this need to be a singleton? Can we just rely on requesting access via the main engine object?
 class YKC_PlatformCore : public YKC_Singleton<YKC_PlatformCore>
@@ -24,9 +24,9 @@ public:
     // TODO: Find a better home for this?
     void OnFrameStart() const;
 
-    YKC_DisplaySurface& GetMainDisplaySurface() { return m_displaySurface; }
-    YKC_DisplaySurface const& GetMainDisplaySurface() const { return m_displaySurface; }
+    YK_DisplaySurface& GetMainDisplaySurface() { return m_displaySurface; }
+    YK_DisplaySurface const& GetMainDisplaySurface() const { return m_displaySurface; }
 
 private:
-    YKC_DisplaySurface m_displaySurface;
+    YK_DisplaySurface m_displaySurface;
 };

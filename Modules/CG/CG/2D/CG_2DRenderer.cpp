@@ -82,10 +82,10 @@ void CG_2DRenderer::Temp_Init()
     // Graphics shouldn't be parallel on the CPU, but we can't guarantee that the window is resized in sync with the
     // update cycle
     YKC_PlatformCore& platformCore = *YKC_PlatformCore::GetInstance();
-    YKC_DisplaySurface& mainDisplaySurface = platformCore.GetMainDisplaySurface();
+    YK_DisplaySurface& mainDisplaySurface = platformCore.GetMainDisplaySurface();
     if (mainDisplaySurface.IsValid())
     {
-        mainDisplaySurface.SetResizedCalback(CG_GLViewportHelper::SetViewportSize);
+        mainDisplaySurface.GetResizedCallback().Attach(CG_GLViewportHelper::SetViewportSize);
     }
     else
     {

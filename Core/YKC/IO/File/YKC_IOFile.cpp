@@ -1,6 +1,13 @@
 #include "PCH/YakuCore_PCH.h"
 #include "YKC_IOFile.h"
 
+#include "YKC/Debugging/YKC_Assert.h"
+#include "YKC/IO/Logging/YKC_Logger.h"
+
+#include <fstream>
+#include <sstream>
+#include <string>
+
 void YK_IFile::GetFileContents(const char* p_path, std::stringstream& p_outDestination)
 {
     YK_IFile file(p_path);
@@ -13,16 +20,7 @@ YK_IFile::~YK_IFile() { Close(); }
 
 bool YK_IFile::Open(const char* p_path)
 {
-#if !YAKU_RETAIL
-    if (m_inputFileStream.is_open())
-    {
-        // TODO: Assert file is closed
-        YK_LOG_ERROR_PARAM("Attempting to re-open a file!", p_path);
-        return false;
-    }
-#endif // !YAKU_RETAIL
-
-    // YK_LOG_PARAM("Opening {}", p_path);
+    YK_ASSERT(!m_inputFileStream.is_open(), "Attempting to open a file that's already open!");
 
     m_inputFileStream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
@@ -30,11 +28,9 @@ bool YK_IFile::Open(const char* p_path)
     {
         m_inputFileStream.open(p_path);
     }
-    catch (std::ifstream::failure /*error*/)
+    catch (std::ifstream::failure)
     {
-        // TODO: String builder
-        YK_LOG_ERROR("Failed to open file:");
-        YK_LOG_ERROR(p_path);
+        YK_LOG_ERROR_PARAM("Failed to open file: {}", p_path);
         return false;
     }
     return true;
@@ -44,7 +40,6 @@ void YK_IFile::Close()
 {
     if (m_inputFileStream.is_open())
     {
-        // YK_LOG("Closing some file");
         m_inputFileStream.close();
     }
 }
@@ -58,7 +53,7 @@ bool YK_IFile::GetContents(std::stringstream& p_destination) const
             p_destination << m_inputFileStream.rdbuf();
             return true;
         }
-        catch (std::ifstream::failure /*error*/)
+        catch (std::ifstream::failure)
         {
             YK_LOG_ERROR("Failed to read file contents!");
         }
@@ -73,12 +68,7 @@ YK_OFile::~YK_OFile() { Close(); }
 
 bool YK_OFile::Open(const char* p_path)
 {
-#if !YAKU_RETAIL
-    if (m_outputFileStream.is_open())
-    {
-        // TODO: Assert file is closed
-    }
-#endif // !YAKU_RETAIL
+    YK_ASSERT(!m_outputFileStream.is_open(), "Attempting to open a file that's already open!");
 
     m_outputFileStream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
@@ -86,10 +76,9 @@ bool YK_OFile::Open(const char* p_path)
     {
         m_outputFileStream.open(p_path);
     }
-    catch (std::ifstream::failure /*error*/)
+    catch (std::ifstream::failure)
     {
-        YK_LOG_ERROR("Failed to open file:");
-        YK_LOG_ERROR(p_path);
+        YK_LOG_ERROR_PARAM("Failed to open file: {}", p_path);
         return false;
     }
     return true;

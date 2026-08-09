@@ -1,6 +1,6 @@
 #pragma once
 
-#include "YKC/ECS/YKC_TEMP_TransformComponent.h"
+#include "YKC/ECS/Components/YKC_TransformComponent.h"
 #include "YKC/Libraries/Zen/System/Zen_System.h"
 #include "YKC/Time/YKC_Time.h"
 
@@ -11,7 +11,7 @@ struct BobbingComponent
     float m_phase;
 };
 
-struct BobbingSystem : public Zen::SystemBase<BobbingSystem, TransformComponent, BobbingComponent>
+struct BobbingSystem : public Zen::SystemBase<BobbingSystem, YK_TransformComponent, BobbingComponent>
 {
     static void Tick(ComponentView const& p_components)
     {

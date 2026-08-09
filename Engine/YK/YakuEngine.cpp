@@ -12,7 +12,9 @@
 #include "CG/Renderable/CG_Renderable.h"
 #include "CG/Resource/Mesh/CG_MeshFactory.h"
 #include "CG/Resource/Texture/CG_TextureFactory.h"
+#include "YKC/ECS/Components/YKC_TransformComponent.h"
 #include "YKC/Math/YKC_MatrixMath.h"
+#include "YKC/Types/Containers/YKC_PagedArray.h"
 
 #include <cstdlib>
 #include <ctime>
@@ -47,13 +49,11 @@ bool YakuEngine::Init()
 
     g_hidraCore.Init(initData);
 
-    // Also make THIS platform agnostic
-    m_renderModule =
-      new CG_RenderModule(m_platformCore.GetMainDisplaySurface().GetContents().m_glfwWindow); // TODO: Don't do this
+    m_renderModule = new CG_RenderModule(m_platformCore.GetMainDisplaySurface()); // TODO: Don't do this
 
     // Temp
-    g_camera = m_zenGarden.Spawn<TransformComponent, CG_CameraComponent>({}, {});
-    g_camera.GetComponent<TransformComponent>()->m_position.y = 1.0f;
+    g_camera = m_zenGarden.Spawn<YK_TransformComponent, CG_CameraComponent>({}, {});
+    g_camera.GetComponent<YK_TransformComponent>()->m_position.y = 1.0f;
 
     g_heartMesh = CG_MeshFactory::LoadOBJ("J:/Harbourfront/Data/Models/HeartTest.obj");
     g_quadMesh = CG_MeshFactory::Quad();
@@ -67,8 +67,9 @@ bool YakuEngine::Init()
         return static_cast<float>(randomValue) / 10000.0f * p_max;
     };
 
-    Zen::Entity groundPlane = m_zenGarden.Spawn<TransformComponent, CG_MeshComponent, CG_RendererComponent>({}, {}, {});
-    TransformComponent* groundTransform = groundPlane.GetComponent<TransformComponent>();
+    Zen::Entity groundPlane =
+      m_zenGarden.Spawn<YK_TransformComponent, CG_MeshComponent, CG_RendererComponent>({}, {}, {});
+    YK_TransformComponent* groundTransform = groundPlane.GetComponent<YK_TransformComponent>();
     constexpr float angle = 90 * (3.14159265f / 180.0f);
     groundTransform->m_orientation = YK_Quaternion(YK_Vector3f::Right(), angle);
     groundTransform->m_scale = YK_Vector3f(30.0f);
@@ -81,11 +82,11 @@ bool YakuEngine::Init()
         YK_Unused(i);
 
         Zen::Entity bobber =
-          m_zenGarden.Spawn<TransformComponent, CG_MeshComponent, CG_RendererComponent, BobbingComponent>({},
-                                                                                                          {},
-                                                                                                          {},
-                                                                                                          {});
-        TransformComponent* bobberTransform = bobber.GetComponent<TransformComponent>();
+          m_zenGarden.Spawn<YK_TransformComponent, CG_MeshComponent, CG_RendererComponent, BobbingComponent>({},
+                                                                                                             {},
+                                                                                                             {},
+                                                                                                             {});
+        YK_TransformComponent* bobberTransform = bobber.GetComponent<YK_TransformComponent>();
 
         float x = GetRandomFloat(10.0f) - 5.0f;
         float y = GetRandomFloat(10.0f) - 5.0f;
@@ -137,7 +138,7 @@ void YakuEngine::EngineLoop()
 
     float raise = HIDra::GetButton(HIDra::BID_BUMPER_L) ? -1.0f : HIDra::GetButton(HIDra::BID_BUMPER_R) ? 1.0f : 0.0f;
 
-    TransformComponent* cameraTransform = g_camera.GetComponent<TransformComponent>();
+    YK_TransformComponent* cameraTransform = g_camera.GetComponent<YK_TransformComponent>();
 
     // TODO: Converter function
     YK_Vector3f const flatForward = [&]() {
