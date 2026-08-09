@@ -37,7 +37,7 @@ HIDra::Core g_hidraCore;
 
 bool YakuEngine::Init()
 {
-    if (!m_platformCore.Init())
+    if (!YK_Core::Init())
     {
         return false;
     }
@@ -45,12 +45,12 @@ bool YakuEngine::Init()
     // TODO: Make this platform agnostic
     HIDra::Core_PlatformInitData initData;
 #if YK_PLATFORM == YK_WINDOWS
-    initData.m_mainWindowHandle = m_platformCore.GetMainDisplaySurface().GetNativeHandle();
+    initData.m_mainWindowHandle = GetMainDisplaySurface().GetNativeHandle();
 #endif // YK_PLATFORM == YK_WINDOWS
 
     g_hidraCore.Init(initData);
 
-    m_renderModule = new CG_RenderModule(m_platformCore.GetMainDisplaySurface()); // TODO: Don't do this
+    m_renderModule = new CG_RenderModule(GetMainDisplaySurface()); // TODO: Don't do this
 
     // Temp
     g_camera = m_zenGarden.Spawn<YK_TransformComponent, CG_CameraComponent>({}, {});
@@ -110,7 +110,7 @@ void YakuEngine::ShutDown()
 {
     YK_SAFE_DELETE(m_renderModule);
 
-    m_platformCore.ShutDown();
+    YK_Core::ShutDown();
 }
 
 void YakuEngine::EngineLoop()
@@ -169,7 +169,7 @@ void YakuEngine::EngineLoop()
     EndFrame();
 }
 
-void YakuEngine::BeginFrame() { m_platformCore.OnFrameStart(); }
+void YakuEngine::BeginFrame() { OnFrameStart(); }
 
 void YakuEngine::EndFrame()
 {

@@ -24,9 +24,7 @@
 
 #include "YK/Math/YK_MatrixMath.h"
 #include "YK/Platforms/YK_PlatformDefines.h"
-#include "YK/Platforms/YK_PlatformCore.h"
 #include "YK/Types/Math/YK_Matrix.h"
-
 
 // EVEN MORE TEMP
 #include "CG/Resource/Shader/CG_ShaderResource.h"
@@ -44,7 +42,7 @@ void RecalculatePerspectiveMatrix(YK_Vector2i p_viewportDimensions)
                                                   100.0f);
 }
 
-void CG_RenderModule::TempInit()
+void CG_RenderModule::TempInit(YK_DisplaySurface& p_displaySurface)
 {
     CG_TextureFactory::Init();
 
@@ -58,14 +56,9 @@ void CG_RenderModule::TempInit()
 
     // Super temp
     RecalculatePerspectiveMatrix(YK_Vector2i(1920, 1080));
-    YK_PlatformCore& platformCore = *YK_PlatformCore::GetInstance();
-    YK_DisplaySurface& mainDisplaySurface = platformCore.GetMainDisplaySurface();
-    if (mainDisplaySurface.IsValid())
-    {
-        mainDisplaySurface.GetResizedCallback().Attach(RecalculatePerspectiveMatrix);
-    }
+    p_displaySurface.GetResizedCallback().Attach(RecalculatePerspectiveMatrix);
 
-    m_2dRenderer.Temp_Init();
+    m_2dRenderer.Temp_Init(p_displaySurface);
 
     // Should this have a better home?
     glEnable(GL_CULL_FACE);

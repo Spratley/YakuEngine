@@ -1,6 +1,7 @@
 #include "PCH/YakuCore_PCH.h"
 #include "YK_Logger.h"
 
+#if !YAKU_RETAIL
 #include "YK/Platforms/YK_PlatformDefines.h"
 #include "YK/Types/Math/YK_Integer.h"
 
@@ -30,5 +31,6 @@ void YK_Logger::Log(ErrorLevel p_errorLevel, const char* p_message)
         case ErrorLevel::Error:   emscripten_console_error(p_message); break;
     }
 }
-
 #endif
+
+#endif // !YAKU_RETAIL

@@ -22,10 +22,10 @@ public:
     CG_RenderModule(YK_DisplaySurface& p_mainDisplay)
         : m_display(&p_mainDisplay)
     {
-        TempInit();
+        TempInit(p_mainDisplay);
     }
 
-    void TempInit();
+    void TempInit(YK_DisplaySurface& p_displaySurface);
 
     void Render(YK_Matrix44 const& p_viewMatrix, Zen::Garden const& p_entityGarden) const;
 

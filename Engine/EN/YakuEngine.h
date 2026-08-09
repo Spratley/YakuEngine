@@ -2,12 +2,9 @@
 
 #include "YK/Core/YK_Core.h"
 
-// TEMP
-#include "YK/Platforms/YK_PlatformCore.h"
-
 class CG_RenderModule;
 
-class YakuEngine : YK_Core
+class YakuEngine : public YK_Core
 {
 public:
     template <typename ComponentTypes, typename SystemTypes>
@@ -50,7 +47,6 @@ private:
 
 private:
     void* m_game = nullptr;
-    YK_PlatformCore m_platformCore;
 
     // Modules
     // TODO: Move to separate implementation struct so we can have linear packing and no header exposure
@@ -82,7 +78,7 @@ void YakuEngine::Run()
     // However, it takes up a callstack frame that wouldn't need to be if we were directly looping ourselves
     // Since most platforms DON'T have an asynchronous loop,
     // we can probably figure out a more elegant way to get that stack memory back
-    m_platformCore.LaunchCoreLoop([](void* p_context) { static_cast<YakuEngine*>(p_context)->EngineLoop(); }, this);
+    LaunchCoreLoop([](void* p_context) { static_cast<YakuEngine*>(p_context)->EngineLoop(); }, this);
 
     // Shut Down
     GetGame<Game>().ShutDown();

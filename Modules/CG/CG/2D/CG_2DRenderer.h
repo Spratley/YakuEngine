@@ -7,6 +7,7 @@
 class CG_Mesh;
 class CG_Texture;
 class CG_GLRenderTarget;
+class YK_DisplaySurface;
 
 class CG_2DRenderer
 {
@@ -14,7 +15,7 @@ public:
     CG_2DRenderer();
     ~CG_2DRenderer();
 
-    void Temp_Init();
+    void Temp_Init(YK_DisplaySurface& p_displaySurface);
 
     void Render() const;
 

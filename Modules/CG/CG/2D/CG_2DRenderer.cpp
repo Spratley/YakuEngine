@@ -26,8 +26,7 @@
 #include "CG/Matrix/CG_MatrixExtras.h"
 #include "YK/Math/YK_MatrixMath.h"
 
-// Temp for Window resizing
-#include "YK/Platforms/YK_PlatformCore.h"
+#include "YK/IO/Display/YK_DisplaySurface.h"
 
 constexpr YK_Matrix44 g_ortho = YK_Matrix::Orthographic(1.0f, 1080.f / 1920.f, 10.0f);
 
@@ -62,14 +61,14 @@ CG_2DRenderer::CG_2DRenderer()
 
 CG_2DRenderer::~CG_2DRenderer() { delete m_renderTarget; }
 
-void CG_2DRenderer::Temp_Init()
+void CG_2DRenderer::Temp_Init(YK_DisplaySurface& p_displaySurface)
 {
     // Temp, move this to window initialization
     GLint currentViewport[4];
     glGetIntegerv(GL_VIEWPORT, currentViewport);
     CG_GLViewportHelper::SetViewportSize(YK_Vector2i(currentViewport[2], currentViewport[3]));
 
-    m_renderTarget = new CG_GLRenderTarget(YK_Vector2i(1920/2, 1080/2));
+    m_renderTarget = new CG_GLRenderTarget(YK_Vector2i(1920 / 2, 1080 / 2));
 
     // Temp
     m_tempQuad = CG_MeshFactory::Quad();
@@ -81,16 +80,8 @@ void CG_2DRenderer::Temp_Init()
     // TODO: Make this more parallel safe, ensure CG_GLViewportHelper is aware that we're setting the main window size
     // Graphics shouldn't be parallel on the CPU, but we can't guarantee that the window is resized in sync with the
     // update cycle
-    YK_PlatformCore& platformCore = *YK_PlatformCore::GetInstance();
-    YK_DisplaySurface& mainDisplaySurface = platformCore.GetMainDisplaySurface();
-    if (mainDisplaySurface.IsValid())
-    {
-        mainDisplaySurface.GetResizedCallback().Attach(CG_GLViewportHelper::SetViewportSize);
-    }
-    else
-    {
-        YK_LOG_ERROR("AHHHHHHHHH");
-    }
+
+    p_displaySurface.GetResizedCallback().Attach(CG_GLViewportHelper::SetViewportSize);
 }
 
 void CG_2DRenderer::Render() const
