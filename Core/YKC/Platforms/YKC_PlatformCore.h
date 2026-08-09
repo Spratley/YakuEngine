@@ -1,7 +1,8 @@
 #pragma once
 
-#include "YKC/Interfaces/YKC_Singleton.h"
 #include "YKC/IO/Display/YKC_DisplaySurface.h"
+#include "YKC/IO/Logging/YKC_Logger.h"
+#include "YKC/Interfaces/YKC_Singleton.h"
 
 // Does this need to be a singleton? Can we just rely on requesting access via the main engine object?
 class YKC_PlatformCore : public YKC_Singleton<YKC_PlatformCore>

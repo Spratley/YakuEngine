@@ -4,6 +4,7 @@
 
 #include <type_traits>
 
+// Generic iterator for continuous data
 template <typename Type>
 struct YK_FlatIterator
 {
