@@ -17,6 +17,7 @@
 #include "CG/Matrix/CG_MatrixExtras.h"
 #include "CG/OpenGL/CG_GLMeshBuffer.h"
 #include "CG/OpenGL/CG_GLTextureBuffer.h"
+#include "CG/OpenGL/CG_GLViewportHelper.h"
 #include "CG/Renderable/CG_Renderable.h"
 #include "CG/Resource/Mesh/CG_Mesh.h"
 #include "CG/Resource/Shader/CG_Shader.h"
@@ -54,11 +55,26 @@ void CG_RenderModule::TempInit(YK_DisplaySurface& p_displaySurface)
                                                  "J:/Harbourfront/Data/Shaders/ShaderCode/Fragment.fs"));
 #endif // YK_PLATFORM == YK_WASM
 
-    // Super temp
-    RecalculatePerspectiveMatrix(YK_Vector2i(1920, 1080));
+    // Super temp - Initialize window stuff
+    GLint currentViewport[4];
+    glGetIntegerv(GL_VIEWPORT, currentViewport);
+    auto const viewportSize = YK_Vector2i(currentViewport[2], currentViewport[3]);
+    CG_GLViewportHelper::SetViewportSize(viewportSize);
+    RecalculatePerspectiveMatrix(viewportSize);
+    // Add layer of indirection here so I'm not directly touching Windows files
+    // TODO: Make this more parallel safe, ensure CG_GLViewportHelper is aware that we're setting the main window size
+    // Graphics shouldn't be parallel on the CPU, but we can't guarantee that the window is resized in sync with the
+    // update cycle
+
+    // This shouldn't be callbacks here
+    // The resized callback should just update the internal tracked size of the main render target
+    // Perspective matrix should be recalculated automatically by THAT, and SetViewportSize should be called when
+    // rendering to any target
+    p_displaySurface.GetResizedCallback().Attach(CG_GLViewportHelper::SetViewportSize);
     p_displaySurface.GetResizedCallback().Attach(RecalculatePerspectiveMatrix);
 
-    m_2dRenderer.Temp_Init(p_displaySurface);
+
+    m_2dRenderer.Temp_Init();
 
     // Should this have a better home?
     glEnable(GL_CULL_FACE);

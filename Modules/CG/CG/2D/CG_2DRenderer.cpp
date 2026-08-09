@@ -18,7 +18,6 @@
 #include "CG/OpenGL/CG_GLMeshBuffer.h"
 #include "CG/OpenGL/CG_GLRenderTarget.h"
 #include "CG/OpenGL/CG_GLTextureBuffer.h"
-#include "CG/OpenGL/CG_GLViewportHelper.h"
 #include "CG/Resource/Mesh/CG_MeshFactory.h"
 #include "CG/Resource/Shader/CG_Shader.h"
 #include "CG/Resource/Texture/CG_TextureFactory.h"
@@ -61,27 +60,16 @@ CG_2DRenderer::CG_2DRenderer()
 
 CG_2DRenderer::~CG_2DRenderer() { delete m_renderTarget; }
 
-void CG_2DRenderer::Temp_Init(YK_DisplaySurface& p_displaySurface)
+void CG_2DRenderer::Temp_Init()
 {
     // Temp, move this to window initialization
-    GLint currentViewport[4];
-    glGetIntegerv(GL_VIEWPORT, currentViewport);
-    CG_GLViewportHelper::SetViewportSize(YK_Vector2i(currentViewport[2], currentViewport[3]));
-
+    
     m_renderTarget = new CG_GLRenderTarget(YK_Vector2i(1920 / 2, 1080 / 2));
 
     // Temp
     m_tempQuad = CG_MeshFactory::Quad();
 
     m_canvases[0].AddItem("J:/Harbourfront/Data/Textures/Splash/YakuEn_Logo_Dark.png");
-
-    // More temp, figure this out - Initialize window stuff
-    // Add layer of indirection here so I'm not directly touching Windows files
-    // TODO: Make this more parallel safe, ensure CG_GLViewportHelper is aware that we're setting the main window size
-    // Graphics shouldn't be parallel on the CPU, but we can't guarantee that the window is resized in sync with the
-    // update cycle
-
-    p_displaySurface.GetResizedCallback().Attach(CG_GLViewportHelper::SetViewportSize);
 }
 
 void CG_2DRenderer::Render() const

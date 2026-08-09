@@ -15,7 +15,7 @@ public:
     CG_2DRenderer();
     ~CG_2DRenderer();
 
-    void Temp_Init(YK_DisplaySurface& p_displaySurface);
+    void Temp_Init();
 
     void Render() const;
 
