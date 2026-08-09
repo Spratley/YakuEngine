@@ -6,12 +6,13 @@
 #include "YKC/Time/YKC_Time.h"
 
 // Temp
-#include "ECS/YK_TEST_BobbingComponent.h"
+#include "ECS/EN_TEST_BobbingComponent.h"
 
 #include "CG/Camera/CG_Camera.h"
 #include "CG/Renderable/CG_Renderable.h"
 #include "CG/Resource/Mesh/CG_MeshFactory.h"
 #include "CG/Resource/Texture/CG_TextureFactory.h"
+
 #include "YKC/ECS/Components/YKC_TransformComponent.h"
 #include "YKC/Math/YKC_MatrixMath.h"
 #include "YKC/Types/Containers/YKC_PagedArray.h"
