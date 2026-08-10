@@ -1,8 +1,14 @@
 #pragma once
 
 #include "YK/Core/YK_Core.h"
+#include "YK/Types/Pointers/YK_UniquePointer.h"
 
 class CG_RenderModule;
+
+namespace HIDra
+{
+    class Core;
+}
 
 class YakuEngine : public YK_Core
 {
@@ -12,7 +18,7 @@ public:
         : YK_Core(p_componentTypes, p_systemTypes)
     {}
 
-    ~YakuEngine() {}
+    ~YakuEngine() = default;
 
     template <typename Game>
     void Run();
@@ -45,12 +51,21 @@ private:
     template <typename Game>
     void DeleteGame();
 
+    void InitializeModules();
+
 private:
     void* m_game = nullptr;
 
-    // Modules
-    // TODO: Move to separate implementation struct so we can have linear packing and no header exposure
-    CG_RenderModule* m_renderModule = nullptr;
+    struct Modules
+    {
+        Modules();
+        ~Modules();
+
+        YK_UniquePointer<CG_RenderModule> m_renderModule;
+
+        // Pseudo module
+        YK_UniquePointer<HIDra::Core> m_hidraCore;
+    } m_modules;
 };
 
 template <typename Game>

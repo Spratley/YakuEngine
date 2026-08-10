@@ -3,7 +3,9 @@ namespace YK_Core_GLFWHelpers
     inline void LogGLFWError(const char* p_errorMessage)
     {
         const char* error;
+#if YK_PLATFORM != YK_WASM
         glfwGetError(&error);
+#endif // YK_PLATFORM != YK_WASM
         YK_LOG_ERROR_PARAM("GLFW Error: {} - {}", p_errorMessage, error);
         glfwTerminate();
     }
@@ -25,17 +27,6 @@ namespace YK_Core_GLFWHelpers
             LogGLFWError("Failed to create window!");
             return false;
         }
-
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-        {
-            LogGLFWError("Failed to initialize GLAD!");
-            return false;
-        }
-
-        glViewport(0, 0, p_dimensions.x, p_dimensions.y);
-        // TODO: This probably shouldn't be here
-        glClearColor(0.1133f, 0.1269f, 0.1122f, 1.0f);
-        glEnable(GL_DEPTH_TEST);
         return true;
     }
 } // namespace YK_Core_GLFWHelpers

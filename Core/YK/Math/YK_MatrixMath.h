@@ -1,7 +1,7 @@
 #pragma once
 
-#include "YK/Types/Math/YK_Matrix.h"
 #include "YK/Math/YK_MathUtils.h"
+#include "YK/Types/Math/YK_Matrix.h"
 
 namespace YK_Matrix
 {
@@ -169,5 +169,16 @@ namespace YK_Matrix
         result[3].xyz = p_position;
 
         return result;
+    }
+
+    template <typename DataType>
+    constexpr YK_Matrix_R_C<DataType, 4, 4> Construct(YK_Vector_N<DataType, 3> const& p_position,
+                                                      YK_Vector_N<DataType, 3> const& p_scale)
+    {
+        constexpr DataType zero = static_cast<DataType>(0);
+        return YK_Matrix_R_C<DataType, 4, 4>{ p_scale.x,    zero,         zero,         zero,
+                                              zero,         p_scale.y,    zero,         zero,
+                                              zero,         zero,         p_scale.z,    zero,
+                                              p_position.x, p_position.y, p_position.z, static_cast<DataType>(1) };
     }
 } // namespace YK_Matrix

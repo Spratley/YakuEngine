@@ -15,7 +15,6 @@
 
 #include "YK/ECS/Components/YK_TransformComponent.h"
 #include "YK/Math/YK_MatrixMath.h"
-#include "YK/Types/Containers/YK_PagedArray.h"
 
 #include <cstdlib>
 #include <ctime>
@@ -32,9 +31,6 @@ CG_Mesh* g_quadMesh;
 CG_Texture* g_heartTexture;
 CG_Texture* g_groundTexture;
 
-// Temp 2x
-HIDra::Core g_hidraCore;
-
 bool YakuEngine::Init()
 {
     if (!YK_Core::Init())
@@ -42,15 +38,7 @@ bool YakuEngine::Init()
         return false;
     }
 
-    // TODO: Make this platform agnostic
-    HIDra::Core_PlatformInitData initData;
-#if YK_PLATFORM == YK_WINDOWS
-    initData.m_mainWindowHandle = GetMainDisplaySurface().GetNativeHandle();
-#endif // YK_PLATFORM == YK_WINDOWS
-
-    g_hidraCore.Init(initData);
-
-    m_renderModule = new CG_RenderModule(GetMainDisplaySurface()); // TODO: Don't do this
+    InitializeModules();
 
     // Temp
     g_camera = m_zenGarden.Spawn<YK_TransformComponent, CG_CameraComponent>({}, {});
@@ -106,12 +94,7 @@ bool YakuEngine::Init()
     return true;
 }
 
-void YakuEngine::ShutDown()
-{
-    YK_SAFE_DELETE(m_renderModule);
-
-    YK_Core::ShutDown();
-}
+void YakuEngine::ShutDown() { YK_Core::ShutDown(); }
 
 void YakuEngine::EngineLoop()
 {
@@ -164,7 +147,7 @@ void YakuEngine::EngineLoop()
     CG_CameraComponent* cameraComponent = g_camera.GetComponent<CG_CameraComponent>();
     YK_Matrix44 const& viewMatrix = cameraComponent->m_viewMatrix;
 
-    m_renderModule->Render(viewMatrix, m_zenGarden);
+    m_modules.m_renderModule->Render(viewMatrix, m_zenGarden);
 
     EndFrame();
 }
@@ -176,3 +159,20 @@ void YakuEngine::EndFrame()
     HIDra::Flush();
     YK_Time::OnFrameEnd();
 }
+
+void YakuEngine::InitializeModules()
+{
+    m_modules.m_renderModule = YK_UniquePointer<CG_RenderModule>::Make(GetMainDisplaySurface());
+
+    // TODO: Make this platform agnostic
+    HIDra::Core_PlatformInitData initData;
+#if YK_PLATFORM == YK_WINDOWS
+    initData.m_mainWindowHandle = GetMainDisplaySurface().GetNativeHandle();
+#endif // YK_PLATFORM == YK_WINDOWS
+
+    m_modules.m_hidraCore = YK_UniquePointer<HIDra::Core>::Make();
+    m_modules.m_hidraCore->Init(initData);
+}
+
+YakuEngine::Modules::Modules() = default;
+YakuEngine::Modules::~Modules() = default;

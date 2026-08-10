@@ -27,7 +27,7 @@
 
 #include "YK/IO/Display/YK_DisplaySurface.h"
 
-constexpr YK_Matrix44 g_ortho = YK_Matrix::Orthographic(1.0f, 1080.f / 1920.f, 10.0f);
+constexpr YK_Matrix44 g_ortho = YK_Matrix::Orthographic2D(1.0f, 1080.f / 1920.f);
 
 // TODO: Don't make this locally in 2DRenderer.cpp
 YK_U32 g_nullVAO = 0;
@@ -63,8 +63,8 @@ CG_2DRenderer::~CG_2DRenderer() { delete m_renderTarget; }
 void CG_2DRenderer::Temp_Init()
 {
     // Temp, move this to window initialization
-    
-    m_renderTarget = new CG_GLRenderTarget(YK_Vector2i(1920 / 2, 1080 / 2));
+
+    m_renderTarget = new CG_GLRenderTarget(YK_Vector2i(1920, 1080));
 
     // Temp
     m_tempQuad = CG_MeshFactory::Quad();
@@ -74,6 +74,7 @@ void CG_2DRenderer::Temp_Init()
 
 void CG_2DRenderer::Render() const
 {
+    glDisable(GL_DEPTH_TEST);
     RenderToFramebuffer();
 
     // Draw Fullscreen Quad to overlay result
@@ -86,6 +87,7 @@ void CG_2DRenderer::Render() const
 
     // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void CG_2DRenderer::RenderToFramebuffer() const
@@ -93,12 +95,10 @@ void CG_2DRenderer::RenderToFramebuffer() const
     CG_GLRenderTarget::Binding renderTargetBinding = m_renderTarget->Bind();
 
     constexpr float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    constexpr float depthClearColor = 1.0f;
     glClearBufferfv(GL_COLOR, 0, clearColor);
-    glClearBufferfv(GL_DEPTH, 0, &depthClearColor);
 
     m_2DShader.Use();
-    m_tempQuad->GetGLData().Bind(); // Can we skip binding a mesh? 2DR will only ever deal with quads
+    glBindVertexArray(g_nullVAO);
 
     // TODO: And then refactor it so we just batch render all the quads
     // TODO: Also like sort back to front? Opaque and transparent passes?
@@ -106,16 +106,14 @@ void CG_2DRenderer::RenderToFramebuffer() const
     {
         for (CG_CanvasTextureItem const& textureItem : canvas.GetItems())
         {
-            YK_Matrix44 transform(1.0f);
-            YK_Matrix::Translate(transform, YK_Vector3f(0.0f, 0.0f, 0.0f));
-            YK_Matrix44 scale(1.0f);
-            scale[1][1] = 1.0f / textureItem.GetAspectRatio();
-            transform = scale * transform * g_ortho;
+            YK_Matrix44 transform = YK_Matrix::Construct(YK_Vector3f(0.0f, 0.0f, 0.0f),
+                                                         YK_Vector3f(1.0f, 1.0f / textureItem.GetAspectRatio(), 1.0f));
+            transform = g_ortho * transform;
             m_2DShader.SetMatrix44("transform", transform.GetData());
 
             textureItem.GetTexture()->GetGLData().Bind(0);
 
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         }
     }
 }

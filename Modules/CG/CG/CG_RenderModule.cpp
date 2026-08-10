@@ -78,6 +78,7 @@ void CG_RenderModule::TempInit(YK_DisplaySurface& p_displaySurface)
 
     // Should this have a better home?
     glEnable(GL_CULL_FACE);
+    glClearColor(0.1133f, 0.1269f, 0.1122f, 1.0f);
 }
 
 void CG_RenderModule::Render(YK_Matrix44 const& p_viewMatrix, Zen::Garden const& p_entityGarden) const
