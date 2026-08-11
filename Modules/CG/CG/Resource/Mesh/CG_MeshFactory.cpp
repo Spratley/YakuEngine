@@ -7,7 +7,7 @@
 #include <map> // I don't want this here...
 
 // TODO: This needs SUPER improvement. It's not good as it stands
-CG_Mesh* CG_MeshFactory::LoadOBJ(const char* p_path)
+CG_Mesh* CG_MeshFactory::LoadOBJ(char const* p_path)
 {
     std::stringstream objFileContents;
     YK_IFile::GetFileContents(p_path, objFileContents);
@@ -25,8 +25,8 @@ CG_Mesh* CG_MeshFactory::LoadOBJ(const char* p_path)
     while (std::getline(objFileContents, fileLine))
     {
         // TODO: Move string parsing to its own YKC file
-        const char* dataPtr = &fileLine[fileLine.find_first_of(' ') + 1];
-        const char* endPtr = fileLine.data() + fileLine.size();
+        char const* dataPtr = &fileLine[fileLine.find_first_of(' ') + 1];
+        char const* endPtr = fileLine.data() + fileLine.size();
 
         auto extractData = [&dataPtr, endPtr]<typename DataType>(DataType& outData) {
             auto [nextDataPtr, errorCode] = std::from_chars(dataPtr, endPtr, outData);

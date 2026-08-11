@@ -1,8 +1,8 @@
 namespace YK_Core_GLFWHelpers
 {
-    inline void LogGLFWError(const char* p_errorMessage)
+    inline void LogGLFWError(char const* p_errorMessage)
     {
-        const char* error;
+        char const* error;
 #if YK_PLATFORM != YK_WASM
         glfwGetError(&error);
 #endif // YK_PLATFORM != YK_WASM

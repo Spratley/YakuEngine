@@ -7,14 +7,14 @@
 class YK_IFile
 {
 public:
-    static void GetFileContents(const char* p_path, std::stringstream& p_outDestination);
+    static void GetFileContents(char const* p_path, std::stringstream& p_outDestination);
 
 public:
     YK_IFile() = default;
-    YK_IFile(const char* p_path);
+    YK_IFile(char const* p_path);
     ~YK_IFile();
 
-    bool Open(const char* p_path);
+    bool Open(char const* p_path);
     void Close();
 
     bool GetContents(std::stringstream& p_outDestination) const;
@@ -27,10 +27,10 @@ class YK_OFile
 {
 public:
     YK_OFile() = default;
-    YK_OFile(const char* p_path);
+    YK_OFile(char const* p_path);
     ~YK_OFile();
 
-    bool Open(const char* p_path);
+    bool Open(char const* p_path);
     void Close();
 
     // TODO: Replace with custom string type

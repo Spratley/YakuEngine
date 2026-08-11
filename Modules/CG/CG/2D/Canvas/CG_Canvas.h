@@ -14,7 +14,7 @@ public:
     std::vector<CG_CanvasTextureItem> const& GetItems() const { return m_textureItems; }
 
     // Temp
-    void AddItem(const char* p_texturePath) { m_textureItems.emplace_back(p_texturePath); }
+    void AddItem(char const* p_texturePath) { m_textureItems.emplace_back(p_texturePath); }
 
 private:
     YK_Matrix44 m_transform;

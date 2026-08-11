@@ -11,8 +11,22 @@
 #endif
 
 #include "YK/IO/File/YK_IOFile.h"
+#include "YK/Types/Math/YK_Integer.h"
 
-CG_Shader::CG_Shader(const char* p_vertexPath, const char* p_fragmentPath)
+#include <string>
+#include <sstream>
+
+namespace CG_Shader_Private
+{
+#if YK_PLATFORM == YK_WASM
+    constexpr char const* shaderVersion = "#version 300 es\n";
+#else
+    constexpr char const* shaderVersion = "#version 330 core\n";
+#endif
+    constexpr YK_SizeT shaderVersionLength = std::char_traits<char>::length(shaderVersion);
+} // namespace CG_Shader_Private
+
+CG_Shader::CG_Shader(char const* p_vertexPath, char const* p_fragmentPath)
     : m_id(0)
 {
     InitShader(p_vertexPath, p_fragmentPath);
@@ -20,28 +34,28 @@ CG_Shader::CG_Shader(const char* p_vertexPath, const char* p_fragmentPath)
 
 void CG_Shader::Use() const { glUseProgram(m_id); }
 
-void CG_Shader::SetBool(const char* p_name, bool p_value) const
+void CG_Shader::SetBool(char const* p_name, bool p_value) const
 {
     glUniform1i(glGetUniformLocation(m_id, p_name), static_cast<YK_Int32>(p_value));
 }
 
-void CG_Shader::SetInt(const char* p_name, YK_Int32 p_value) const
+void CG_Shader::SetInt(char const* p_name, YK_Int32 p_value) const
 {
     glUniform1i(glGetUniformLocation(m_id, p_name), p_value);
 }
 
-void CG_Shader::SetFloat(const char* p_name, float p_value) const
+void CG_Shader::SetFloat(char const* p_name, float p_value) const
 {
     glUniform1f(glGetUniformLocation(m_id, p_name), p_value);
 }
 
-void CG_Shader::SetMatrix44(const char* p_name, float const* p_buffer) const
+void CG_Shader::SetMatrix44(char const* p_name, float const* p_buffer) const
 {
     const YK_U32 matrixLocation = glGetUniformLocation(m_id, p_name);
     glUniformMatrix4fv(matrixLocation, 1, GL_FALSE, p_buffer);
 }
 
-void CG_Shader::InitShader(const char* p_vertexPath, const char* p_fragmentPath)
+void CG_Shader::InitShader(char const* p_vertexPath, char const* p_fragmentPath)
 {
     // TODO: Replace with custom string implementation
     std::string vertexCode;
@@ -56,14 +70,11 @@ void CG_Shader::InitShader(const char* p_vertexPath, const char* p_fragmentPath)
     vertexCode = vertexShaderStream.str();
     fragmentCode = fragmentShaderStream.str();
 
-    const char* rawVertexCode = vertexCode.c_str();
-    const char* rawFragmentCode = fragmentCode.c_str();
-
     YK_U32 vertexShaderID;
     YK_U32 fragmentShaderID;
 
-    CompileShader(vertexShaderID, rawVertexCode, GL_VERTEX_SHADER);
-    CompileShader(fragmentShaderID, rawFragmentCode, GL_FRAGMENT_SHADER);
+    CompileShader(vertexShaderID, vertexCode, GL_VERTEX_SHADER);
+    CompileShader(fragmentShaderID, fragmentCode, GL_FRAGMENT_SHADER);
 
     m_id = glCreateProgram();
     glAttachShader(m_id, vertexShaderID);
@@ -75,10 +86,13 @@ void CG_Shader::InitShader(const char* p_vertexPath, const char* p_fragmentPath)
     glDeleteShader(fragmentShaderID);
 }
 
-void CG_Shader::CompileShader(YK_U32& p_outID, const char* p_shaderCode, YK_U32 p_shaderType) const
+void CG_Shader::CompileShader(YK_U32& p_outID, std::string const& p_shaderCode, YK_U32 p_shaderType) const
 {
     p_outID = glCreateShader(p_shaderType);
-    glShaderSource(p_outID, 1, &p_shaderCode, NULL);
+
+    char const* sources[]{ CG_Shader_Private::shaderVersion, p_shaderCode.c_str() };
+    YK_Int32 const sourceLengths[]{ CG_Shader_Private::shaderVersionLength, static_cast<YK_Int32>(p_shaderCode.length()) };
+    glShaderSource(p_outID, 2, sources, sourceLengths);
     glCompileShader(p_outID);
 
     LogShaderErrors(p_outID, GL_COMPILE_STATUS);

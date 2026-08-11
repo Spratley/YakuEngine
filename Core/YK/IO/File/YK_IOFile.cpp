@@ -8,17 +8,17 @@
 #include <sstream>
 #include <string>
 
-void YK_IFile::GetFileContents(const char* p_path, std::stringstream& p_outDestination)
+void YK_IFile::GetFileContents(char const* p_path, std::stringstream& p_outDestination)
 {
     YK_IFile file(p_path);
     file.GetContents(p_outDestination);
 }
 
-YK_IFile::YK_IFile(const char* p_path) { Open(p_path); }
+YK_IFile::YK_IFile(char const* p_path) { Open(p_path); }
 
 YK_IFile::~YK_IFile() { Close(); }
 
-bool YK_IFile::Open(const char* p_path)
+bool YK_IFile::Open(char const* p_path)
 {
     YK_ASSERT(!m_inputFileStream.is_open(), "Attempting to open a file that's already open!");
 
@@ -62,11 +62,11 @@ bool YK_IFile::GetContents(std::stringstream& p_destination) const
     return false;
 }
 
-YK_OFile::YK_OFile(const char* p_path) { Open(p_path); }
+YK_OFile::YK_OFile(char const* p_path) { Open(p_path); }
 
 YK_OFile::~YK_OFile() { Close(); }
 
-bool YK_OFile::Open(const char* p_path)
+bool YK_OFile::Open(char const* p_path)
 {
     YK_ASSERT(!m_outputFileStream.is_open(), "Attempting to open a file that's already open!");
 

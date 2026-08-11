@@ -15,7 +15,7 @@ CG_Texture* CG_TextureFactory::FromData(YK_U8* p_data, YK_U16 p_width, YK_U16 p_
 	return texture;
 }
 
-CG_Texture* CG_TextureFactory::LoadPNG(const char* p_path)
+CG_Texture* CG_TextureFactory::LoadPNG(char const* p_path)
 {
 	int width;
 	int height;

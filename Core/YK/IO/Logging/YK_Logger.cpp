@@ -7,14 +7,14 @@
 
 namespace YK_Logger_Private
 {
-    static constexpr const char* s_errorLevelStrings[] = { "Log", "Warning", "Error" };
+    static constexpr char const* s_errorLevelStrings[] = { "Log", "Warning", "Error" };
 }
 
 // TODO: Do a more formal split - I'm just doing this because it's one definition per platform
 #if YK_PLATFORM == YK_WINDOWS
 #include <print>
 
-void YK_Logger::Log(ErrorLevel p_errorLevel, const char* p_message)
+void YK_Logger::Log(ErrorLevel p_errorLevel, char const* p_message)
 {
     std::println("{}: {}", YK_Logger_Private::s_errorLevelStrings[static_cast<YK_U32>(p_errorLevel)], p_message);
 }
@@ -22,7 +22,7 @@ void YK_Logger::Log(ErrorLevel p_errorLevel, const char* p_message)
 #elif YK_PLATFORM == YK_WASM
 #include <emscripten/console.h>
 
-void YK_Logger::Log(ErrorLevel p_errorLevel, const char* p_message)
+void YK_Logger::Log(ErrorLevel p_errorLevel, char const* p_message)
 {
     switch (p_errorLevel)
     {

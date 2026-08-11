@@ -130,17 +130,19 @@ void YakuEngine::EngineLoop()
         result.y = 0.0f;
         return YK_Vector::GetNormalized(result);
     }();
-    YK_Vector3f const right = YK_Vector::Cross(YK_Vector3f::Up(), flatForward);
 
+    YK_Vector3f const right = YK_Vector::Cross(YK_Vector3f::Up(), flatForward);
     YK_Vector3f frameDelta = (right * input.m_x) + (flatForward * -input.m_y) + (YK_Vector3f(0.0f, raise, 0.0f));
+
     frameDelta *= YK_Time::DeltaTime() * 2.0f;
-    cameraTransform->m_position += frameDelta;
     cameraTransform->m_position += frameDelta;
 
     HIDra::Vec2f leftRight = HIDra::GetAxis2D(HIDra::GamepadAxisID::AID_STICK_R);
     YK_Vector3f newLookTarget = -flatForward + cameraTransform->m_position;
     newLookTarget += (right * leftRight.m_x) * YK_Time::DeltaTime();
-    cameraTransform->m_orientation = YK_Matrix::LookAt(cameraTransform->m_position, newLookTarget);
+    YK_Quaternion newOrientation = YK_Matrix::LookAt(cameraTransform->m_position, newLookTarget);
+
+    cameraTransform->m_orientation = newOrientation;
 
     m_zenGarden.Tick();
 

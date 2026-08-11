@@ -10,7 +10,7 @@ namespace YK_Hash
     constexpr inline YK_U64 FNV64_Base = 0xCBF29CE484222325;
     constexpr inline YK_U64 FNV64_Prime = 0x100000001B3;
 
-    constexpr YK_U32 FNV_1A_32(const char* p_str)
+    constexpr YK_U32 FNV_1A_32(char const* p_str)
     {
         YK_U32 hash = FNV32_Base;
         while (*p_str)
@@ -21,7 +21,7 @@ namespace YK_Hash
         return hash;
     }
 
-    constexpr YK_U64 FNV_1A_64(const char* p_str)
+    constexpr YK_U64 FNV_1A_64(char const* p_str)
     {
         YK_U64 hash = FNV64_Base;
         while (*p_str)

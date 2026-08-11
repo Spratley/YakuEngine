@@ -16,9 +16,6 @@ namespace Zen
     class Garden;
 }
 
-// The API communication point to launch any renderer based activities
-// Probably shouldn't actually be doing any of the rendering itself
-
 class CG_RenderModule
 {
 public:

@@ -10,7 +10,7 @@
 #include <YK/Libraries/OpenGL/GLAD/include/glad/glad.h>
 #endif
 
-#include "CG_GLViewportHelper.h"
+#include "CG/OpenGL/CG_GLViewportHelper.h"
 
 CG_GLRenderTarget::CG_GLRenderTarget(YK_Vector2i p_size)
     : m_size(p_size)

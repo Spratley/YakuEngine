@@ -11,5 +11,5 @@ public:
 
 	// TODO: Should this be elsewhere?
 	// File Loaders
-	static CG_Texture* LoadPNG(const char* p_path);
+	static CG_Texture* LoadPNG(char const* p_path);
 };

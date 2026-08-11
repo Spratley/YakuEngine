@@ -47,13 +47,8 @@ void CG_RenderModule::TempInit(YK_DisplaySurface& p_displaySurface)
 {
     CG_TextureFactory::Init();
 
-#if YK_PLATFORM == YK_WASM
-    shader = new CG_Shader(CG_ShaderLoader::Load("J:/Harbourfront/Data/Shaders/ShaderCode/WASM/Vertex_WASM.vs",
-                                                 "J:/Harbourfront/Data/Shaders/ShaderCode/WASM/Fragment_WASM.fs"));
-#else
     shader = new CG_Shader(CG_ShaderLoader::Load("J:/Harbourfront/Data/Shaders/ShaderCode/Vertex.vs",
                                                  "J:/Harbourfront/Data/Shaders/ShaderCode/Fragment.fs"));
-#endif // YK_PLATFORM == YK_WASM
 
     // Super temp - Initialize window stuff
     GLint currentViewport[4];
@@ -102,7 +97,7 @@ void CG_RenderModule::Render(YK_Matrix44 const& p_viewMatrix, Zen::Garden const&
         glDrawElements(GL_TRIANGLES, meshComponent.m_mesh->GetIndexBufferSize(), GL_UNSIGNED_INT, 0);
     }
 
-    m_2dRenderer.Render();
+    //m_2dRenderer.Render();
 
     m_display->SwapBuffers();
 }

@@ -3,7 +3,7 @@
 
 #include "CG/Resource/Texture/CG_TextureFactory.h"
 
-CG_CanvasTextureItem::CG_CanvasTextureItem(const char* p_texturePath)
+CG_CanvasTextureItem::CG_CanvasTextureItem(char const* p_texturePath)
 {
     m_texture = CG_TextureFactory::LoadPNG(p_texturePath);
     m_aspectRatio = static_cast<float>(m_texture->GetWidth()) / static_cast<float>(m_texture->GetHeight());

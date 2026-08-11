@@ -3,6 +3,8 @@
 #if !YAKU_RETAIL
 #include <format>
 #include <string_view>
+
+#include "YK/Types/Math/YK_MathTypeFormatters.h"
 #endif // !YAKU_RETAIL
 
 // TODO: Log Improvements
@@ -46,6 +48,6 @@ public:
         Error
     };
 
-    static void Log(ErrorLevel p_errorLevel, const char* message);
+    static void Log(ErrorLevel p_errorLevel, char const* message);
 };
 #endif // !YAKU_RETAIL

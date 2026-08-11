@@ -16,8 +16,8 @@
 
 // Temp
 #include "CG/OpenGL/CG_GLMeshBuffer.h"
-#include "CG/OpenGL/CG_GLRenderTarget.h"
 #include "CG/OpenGL/CG_GLTextureBuffer.h"
+#include "CG/RenderTarget/OpenGL/CG_GLRenderTarget.h"
 #include "CG/Resource/Mesh/CG_MeshFactory.h"
 #include "CG/Resource/Shader/CG_Shader.h"
 #include "CG/Resource/Texture/CG_TextureFactory.h"
@@ -34,21 +34,10 @@ YK_U32 g_nullVAO = 0;
 
 CG_2DRenderer::CG_2DRenderer()
     : m_canvases()
-#if YK_PLATFORM == YK_WASM // TODO: Don't do this
-    , m_2DShader("J:/Harbourfront/Data/Shaders/ShaderCode/WASM/2DR_Vertex_WASM.vs",
-                 "J:/Harbourfront/Data/Shaders/ShaderCode/WASM/2DR_Fragment_WASM.fs")
-#else
     , m_2DShader("J:/Harbourfront/Data/Shaders/ShaderCode/2DR_Vertex.vs",
                  "J:/Harbourfront/Data/Shaders/ShaderCode/2DR_Fragment.fs")
-#endif // YK_PLATFORM == YK_WASM
-
-#if YK_PLATFORM == YK_WASM
-    , m_fsqShader("J:/Harbourfront/Data/Shaders/ShaderCode/WASM/FSQ_WASM.vs",
-                  "J:/Harbourfront/Data/Shaders/ShaderCode/WASM/SolidTexture_WASM.fs")
-#else
     , m_fsqShader("J:/Harbourfront/Data/Shaders/ShaderCode/FSQ.vs",
                   "J:/Harbourfront/Data/Shaders/ShaderCode/SolidTexture.fs")
-#endif // YK_PLATFORM == YK_WASM
     , m_renderTarget(nullptr)
 {
     // TODO: Don't do this (sob)

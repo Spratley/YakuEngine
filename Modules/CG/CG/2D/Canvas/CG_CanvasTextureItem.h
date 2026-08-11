@@ -5,7 +5,7 @@ class CG_Texture;
 struct CG_CanvasTextureItem
 {
 public:
-    CG_CanvasTextureItem(const char* p_texturePath);
+    CG_CanvasTextureItem(char const* p_texturePath);
     ~CG_CanvasTextureItem();
 
     CG_Texture const* const GetTexture() const { return m_texture; }
