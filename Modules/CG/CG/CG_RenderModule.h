@@ -1,7 +1,10 @@
 #pragma once
 
-#include "CG/2D/CG_2DRenderer.h"
-#include "CG/Resource/Shader/CG_ShaderResource.h"
+#include "CG/Renderer/2D/CG_2DRenderer.h"
+#include "CG/Renderer/3D/CG_3DRenderer.h"
+#include "CG/Renderer/CG_RenderBinding.h"
+
+#include "YK/Types/Math/YK_Matrix.h"
 
 class YK_DisplaySurface;
 
@@ -30,17 +33,10 @@ public:
     void Render(YK_Matrix44 const& p_viewMatrix, Zen::Garden const& p_entityGarden) const;
 
 private:
-    // TODO: REPLACE THIS WITH A GENERIC RENDER TARGET?
-    // This is locked into purely drawing to the screen right now
-    // In order to do advanced render stuff (Deferred lighting etc)
-    // I need to be able to draw to an arbitrary target
     YK_DisplaySurface* m_display;
 
     CG_2DRenderer m_2dRenderer;
+    CG_3DRenderer m_3dRenderer;
 
-private:
-    // TEMP
-    CG_Mesh* temp_quad;
-    CG_Shader* shader;
-    CG_Texture* temp_texture;
+    mutable CG_RenderBinding m_renderBindings;
 };

@@ -12,6 +12,7 @@
 #include "CG/Renderable/CG_Renderable.h"
 #include "CG/Resource/Mesh/CG_MeshFactory.h"
 #include "CG/Resource/Texture/CG_TextureFactory.h"
+#include "CG/Material/CG_Material.h"
 
 #include "YK/ECS/Components/YK_TransformComponent.h"
 #include "YK/Math/YK_MatrixMath.h"
@@ -28,8 +29,8 @@ YK_Matrix44 g_viewMatrix;
 CG_Mesh* g_heartMesh;
 CG_Mesh* g_quadMesh;
 
-CG_Texture* g_heartTexture;
-CG_Texture* g_groundTexture;
+CG_Material g_heartMaterial;
+CG_Material g_groundMaterial;
 
 bool YakuEngine::Init()
 {
@@ -47,8 +48,8 @@ bool YakuEngine::Init()
     g_heartMesh = CG_MeshFactory::LoadOBJ("J:/Harbourfront/Data/Models/HeartTest.obj");
     g_quadMesh = CG_MeshFactory::Quad();
 
-    g_heartTexture = CG_TextureFactory::LoadPNG("J:/Harbourfront/Data/Textures/HeartTest.png");
-    g_groundTexture = CG_TextureFactory::LoadPNG("J:/Harbourfront/Data/Textures/Prototype_Ground.png");
+    g_heartMaterial.m_texture = CG_TextureFactory::LoadPNG("J:/Harbourfront/Data/Textures/HeartTest.png");
+    g_groundMaterial.m_texture = CG_TextureFactory::LoadPNG("J:/Harbourfront/Data/Textures/Prototype_Ground.png");
 
     std::srand(static_cast<unsigned int>(time(NULL)));
     auto GetRandomFloat = [](float p_max) {
@@ -64,7 +65,7 @@ bool YakuEngine::Init()
     groundTransform->m_scale = YK_Vector3f(30.0f);
 
     groundPlane.GetComponent<CG_MeshComponent>()->m_mesh = g_quadMesh;
-    groundPlane.GetComponent<CG_RendererComponent>()->m_texture = g_groundTexture;
+    groundPlane.GetComponent<CG_RendererComponent>()->m_material = &g_groundMaterial;
 
     for (auto i : Zen::LoopUtils::CountTo(5))
     {
@@ -86,7 +87,7 @@ bool YakuEngine::Init()
         bobber.GetComponent<BobbingComponent>()->m_phase = bobOffset;
 
         bobber.GetComponent<CG_MeshComponent>()->m_mesh = g_heartMesh;
-        bobber.GetComponent<CG_RendererComponent>()->m_texture = g_heartTexture;
+        bobber.GetComponent<CG_RendererComponent>()->m_material = &g_heartMaterial;
 
         g_lastHeart = bobber;
     }

@@ -7,7 +7,6 @@
 class CG_Mesh;
 class CG_Texture;
 class CG_GLRenderTarget;
-class YK_DisplaySurface;
 
 class CG_2DRenderer
 {

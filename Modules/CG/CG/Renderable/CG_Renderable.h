@@ -1,7 +1,7 @@
 #pragma once
 
 class CG_Mesh;
-class CG_Texture;
+class CG_Material;
 
 struct CG_MeshComponent
 {
@@ -10,6 +10,5 @@ struct CG_MeshComponent
 
 struct CG_RendererComponent
 {
-    // TODO: This is where a material would be referenced instead
-    CG_Texture* m_texture;
+    CG_Material* m_material;
 };

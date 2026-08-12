@@ -52,8 +52,7 @@ CG_2DRenderer::~CG_2DRenderer() { delete m_renderTarget; }
 void CG_2DRenderer::Temp_Init()
 {
     // Temp, move this to window initialization
-
-    m_renderTarget = new CG_GLRenderTarget(YK_Vector2i(1920, 1080));
+    m_renderTarget = new CG_GLRenderTarget(YK_Vector2i(1920/2, 1080/2));
 
     // Temp
     m_tempQuad = CG_MeshFactory::Quad();
