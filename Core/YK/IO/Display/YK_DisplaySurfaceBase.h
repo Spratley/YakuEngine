@@ -20,6 +20,7 @@ public:
     bool Init(YK_Vector2i p_dimensions)
     {
         YK_ASSERT(!IsValid(), "Attempting to re-initialize main display surface!");
+        OnSurfaceResized(p_dimensions);
         return InitImpl(p_dimensions);
     }
 
@@ -31,10 +32,15 @@ public:
     void* GetNativeHandle() const;
 
     YK_Callback<void, YK_Vector2i>& GetResizedCallback() { return m_onResizedCallback; }
-    void OnSurfaceResized(YK_Vector2i p_dimensions) const
+    void OnSurfaceResized(YK_Vector2i p_dimensions)
     {
+        m_dimensions = p_dimensions;
+        m_aspectRatio = static_cast<float>(p_dimensions.x) / static_cast<float>(p_dimensions.y);
         m_onResizedCallback.Run(p_dimensions);
     }
+
+    YK_Vector2i const& GetDimensions() const { return m_dimensions; }
+    float GetAspectRatio() const { return m_aspectRatio; }
 
 private:
     bool InitImpl(YK_Vector2i p_dimensions);
@@ -42,4 +48,6 @@ private:
 private:
     YK_Callback<void, YK_Vector2i> m_onResizedCallback;
     PlatformSpecificData m_platformSpecificData;
+    YK_Vector2i m_dimensions = YK_Vector2i::Zero();
+    float m_aspectRatio = 1.0f;
 };

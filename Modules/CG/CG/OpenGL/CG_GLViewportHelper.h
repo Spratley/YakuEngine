@@ -10,5 +10,5 @@ public:
     static YK_Vector2i const& GetViewportSize() { return s_viewportSize; }
 
 private:
-    static YK_Vector2i s_viewportSize;
+    static inline YK_Vector2i s_viewportSize = YK_Vector2i(0, 0);
 };

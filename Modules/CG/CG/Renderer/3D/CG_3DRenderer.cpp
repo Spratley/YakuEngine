@@ -1,9 +1,11 @@
 #include "PCH/CG_PCH.h"
 #include "CG_3DRenderer.h"
 
+#include "CG/Camera/CG_Camera.h"
 #include "CG/Resource/Shader/CG_ShaderResource.h"
 
 // Temp
+#include "CG/Material/CG_Material.h"
 #include "CG/Matrix/CG_MatrixExtras.h"
 #include "CG/Renderable/CG_Renderable.h"
 #include "CG/Renderer/CG_RenderBinding.h"
@@ -35,13 +37,6 @@ namespace CG_3DRenderer_Private
     }
 } // namespace CG_3DRenderer_Private
 
-CG_3DRenderer::CG_3DRenderer()
-    : m_shader(CG_ShaderLoader::Load("J:/Harbourfront/Data/Shaders/ShaderCode/Vertex.vs",
-                                     "J:/Harbourfront/Data/Shaders/ShaderCode/Fragment.fs"))
-{}
-
-CG_3DRenderer::~CG_3DRenderer() {}
-
 void CG_3DRenderer::Temp_Init(YK_DisplaySurface& p_displaySurface)
 {
     GLint currentViewport[4];
@@ -50,26 +45,27 @@ void CG_3DRenderer::Temp_Init(YK_DisplaySurface& p_displaySurface)
     p_displaySurface.GetResizedCallback().Attach(CG_3DRenderer_Private::RecalculateViewport);
 }
 
-void CG_3DRenderer::Render(CG_RenderBinding& p_bindings, YK_Matrix44 const& p_view, Zen::Garden const& p_garden) const
+void CG_3DRenderer::Render(CG_RenderBinding& p_bindings,
+                           CG_CameraComponent const& p_camera,
+                           Zen::Garden const& p_garden) const
 {
-    Zen::EntityView view = p_garden.ViewComponents<YK_TransformComponent, CG_MeshComponent, CG_RendererComponent>();
-    for (auto [transform, meshComponent, rendererComponent] : view)
+    Zen::EntityView renderableEntities =
+      p_garden.ViewComponents<YK_TransformComponent, CG_MeshComponent, CG_RendererComponent>();
+    for (auto [transform, meshComponent, rendererComponent] : renderableEntities)
     {
         m_renderQueue.Push(*rendererComponent.m_material, *meshComponent.m_mesh, transform);
     }
     m_renderQueue.Bake();
 
-    YK_Matrix44 perspective =
-      YK_Matrix::Perspective<float>(60.0f, CG_3DRenderer_Private::viewportAspectRatio, 0.1f, 100.0f);
-
-    p_bindings.Bind(m_shader);
+    YK_Matrix44 const cameraMatrix =
+      CG_CameraUtils::CalculateCameraMatrix(p_camera, 60.0f, CG_3DRenderer_Private::viewportAspectRatio, 0.1f, 100.0f);
 
     for (CG_RenderQueue::Entry const& item : m_renderQueue)
     {
         p_bindings.Bind(*item.m_material);
         p_bindings.Bind(*item.m_mesh);
-        YK_Matrix44 perspectiveTransform = perspective * p_view * item.m_transform;
-        m_shader.SetMatrix44("transform", perspectiveTransform.GetData());
+        YK_Matrix44 perspectiveTransform = cameraMatrix * item.m_transform;
+        item.m_material->m_shader->SetMatrix44("transform", perspectiveTransform.GetData());
         glDrawElements(GL_TRIANGLES, p_bindings.GetBoundMesh()->GetIndexBufferSize(), GL_UNSIGNED_INT, 0);
     }
 

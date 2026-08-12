@@ -9,10 +9,11 @@
 #include "ECS/EN_TEST_BobbingComponent.h"
 
 #include "CG/Camera/CG_Camera.h"
+#include "CG/Material/CG_Material.h"
 #include "CG/Renderable/CG_Renderable.h"
 #include "CG/Resource/Mesh/CG_MeshFactory.h"
+#include "CG/Resource/Shader/CG_ShaderResource.h"
 #include "CG/Resource/Texture/CG_TextureFactory.h"
-#include "CG/Material/CG_Material.h"
 
 #include "YK/ECS/Components/YK_TransformComponent.h"
 #include "YK/Math/YK_MatrixMath.h"
@@ -28,6 +29,8 @@ YK_Matrix44 g_viewMatrix;
 
 CG_Mesh* g_heartMesh;
 CG_Mesh* g_quadMesh;
+
+CG_Shader* g_mainShader;
 
 CG_Material g_heartMaterial;
 CG_Material g_groundMaterial;
@@ -48,7 +51,12 @@ bool YakuEngine::Init()
     g_heartMesh = CG_MeshFactory::LoadOBJ("J:/Harbourfront/Data/Models/HeartTest.obj");
     g_quadMesh = CG_MeshFactory::Quad();
 
+    g_mainShader = new CG_Shader(CG_ShaderLoader::Load("J:/Harbourfront/Data/Shaders/ShaderCode/Vertex.vs",
+                                                       "J:/Harbourfront/Data/Shaders/ShaderCode/Fragment.fs"));
+
+    g_heartMaterial.m_shader = g_mainShader;
     g_heartMaterial.m_texture = CG_TextureFactory::LoadPNG("J:/Harbourfront/Data/Textures/HeartTest.png");
+    g_groundMaterial.m_shader = g_mainShader;
     g_groundMaterial.m_texture = CG_TextureFactory::LoadPNG("J:/Harbourfront/Data/Textures/Prototype_Ground.png");
 
     std::srand(static_cast<unsigned int>(time(NULL)));
@@ -148,9 +156,7 @@ void YakuEngine::EngineLoop()
     m_zenGarden.Tick();
 
     CG_CameraComponent* cameraComponent = g_camera.GetComponent<CG_CameraComponent>();
-    YK_Matrix44 const& viewMatrix = cameraComponent->m_viewMatrix;
-
-    m_modules.m_renderModule->Render(viewMatrix, m_zenGarden);
+    m_modules.m_renderModule->Render(*cameraComponent, m_zenGarden);
 
     EndFrame();
 }

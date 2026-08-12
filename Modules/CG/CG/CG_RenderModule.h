@@ -7,6 +7,7 @@
 #include "YK/Types/Math/YK_Matrix.h"
 
 class YK_DisplaySurface;
+struct CG_CameraComponent;
 
 // Temp
 class CG_Mesh;
@@ -30,7 +31,7 @@ public:
 
     void TempInit(YK_DisplaySurface& p_displaySurface);
 
-    void Render(YK_Matrix44 const& p_viewMatrix, Zen::Garden const& p_entityGarden) const;
+    void Render(CG_CameraComponent const& p_camera, Zen::Garden const& p_entityGarden) const;
 
 private:
     YK_DisplaySurface* m_display;

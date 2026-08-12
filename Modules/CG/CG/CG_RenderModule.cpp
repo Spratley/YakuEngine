@@ -64,12 +64,12 @@ void CG_RenderModule::TempInit(YK_DisplaySurface& p_displaySurface)
     glClearColor(0.1133f, 0.1269f, 0.1122f, 1.0f);
 }
 
-void CG_RenderModule::Render(YK_Matrix44 const& p_viewMatrix, Zen::Garden const& p_entityGarden) const
+void CG_RenderModule::Render(CG_CameraComponent const& p_camera, Zen::Garden const& p_entityGarden) const
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_3dRenderer.Render(m_renderBindings, p_viewMatrix, p_entityGarden);
-    //m_2dRenderer.Render();
+    m_3dRenderer.Render(m_renderBindings, p_camera, p_entityGarden);
+    m_2dRenderer.Render();
 
     m_display->SwapBuffers();
 }

@@ -4,6 +4,7 @@
 #include "CG/Resource/Shader/CG_Shader.h"
 
 class CG_RenderBinding;
+struct CG_CameraComponent;
 
 // Temp
 class CG_Mesh;
@@ -21,14 +22,13 @@ namespace Zen
 class CG_3DRenderer
 {
 public:
-    CG_3DRenderer();
-    ~CG_3DRenderer();
+    CG_3DRenderer() = default;
+    ~CG_3DRenderer() = default;
 
     void Temp_Init(YK_DisplaySurface& p_displaySurface);
 
-    void Render(CG_RenderBinding& p_bindings, YK_Matrix44 const& p_view, Zen::Garden const& p_garden) const;
+    void Render(CG_RenderBinding& p_bindings, CG_CameraComponent const& p_camera, Zen::Garden const& p_garden) const;
 
 private:
-    CG_Shader m_shader;
     mutable CG_RenderQueue m_renderQueue;
 };
