@@ -41,6 +41,7 @@ public:
     }
 
     Type* operator->() const { return m_item; }
+    Type& operator*() const { return *m_item; }
 
     bool IsValid() const { return m_item != nullptr; }
 

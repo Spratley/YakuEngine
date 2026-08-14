@@ -6,6 +6,11 @@
 class YK_Core
 {
 public:
+    YK_DisplaySurface& GetMainDisplaySurface() { return m_displaySurface; }
+    YK_DisplaySurface const& GetMainDisplaySurface() const { return m_displaySurface; }
+
+    Zen::Garden& GetGarden() { return m_zenGarden; }
+
 protected:
     template <typename ComponentTypes, typename SystemTypes>
     constexpr YK_Core(ComponentTypes p_componentTypes, SystemTypes p_systemTypes)
@@ -20,9 +25,6 @@ protected:
 
     using CoreLoopSignature = void (*)(void*);
     void LaunchCoreLoop(CoreLoopSignature p_coreLoop, void* p_contextData) const;
-
-    YK_DisplaySurface& GetMainDisplaySurface() { return m_displaySurface; }
-    YK_DisplaySurface const& GetMainDisplaySurface() const { return m_displaySurface; }
 
     void OnFrameStart() const;
 

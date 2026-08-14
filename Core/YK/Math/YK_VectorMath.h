@@ -37,11 +37,19 @@ namespace YK_Vector
         return p_vector;
     }
 
+    template <YK_VectorType Vector>
+    /*constexpr*/ typename Vector::DataType_T NormalizeAndGetMagnitude(Vector& p_vector)
+    {
+        float const magnitude = Magnitude(p_vector);
+        p_vector /= magnitude;
+        return magnitude;
+    }
+
     template <YK_VectorType VectorA, YK_VectorType VectorB>
     requires(YK_AreVectorsCompatible<VectorA, VectorB>::value)
-    constexpr YK_Vector_N<typename VectorA::DataType, VectorA::Count> Scale(VectorA const& p_lhs, VectorB const& p_rhs)
+    constexpr YK_Vector_N<typename VectorA::DataType_T, VectorA::Count> Scale(VectorA const& p_lhs, VectorB const& p_rhs)
     {
-        YK_Vector_N<typename VectorA::DataType, VectorA::Count> result;
+        YK_Vector_N<typename VectorA::DataType_T, VectorA::Count> result;
         for (auto i : YK_CountTo(VectorA::Count))
         {
             result[i] = p_lhs[i] * p_rhs[i];

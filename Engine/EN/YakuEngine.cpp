@@ -42,7 +42,7 @@ bool YakuEngine::Init()
         return false;
     }
 
-    InitializeModules();
+    m_modules.InitializeModules(*this);
 
     // Temp
     g_camera = m_zenGarden.Spawn<YK_TransformComponent, CG_CameraComponent>({}, {});
@@ -110,7 +110,7 @@ void YakuEngine::EngineLoop()
     // Run Game Loop
     BeginFrame();
 
-    HIDra::Vec2f input = HIDra::GetAxis2D(HIDra::GamepadAxisID::AID_STICK_L);
+    HIDra::Vec2f input /*= HIDra::GetAxis2D(HIDra::GamepadAxisID::AID_STICK_L)*/ = { 0.0f, 0.0f };
     if (HIDra::GetKey(HIDra::KEYCODE_S) || HIDra::GetButton(HIDra::BID_DPAD_SOUTH))
     {
         input.m_y = -1;
@@ -156,7 +156,7 @@ void YakuEngine::EngineLoop()
     m_zenGarden.Tick();
 
     CG_CameraComponent* cameraComponent = g_camera.GetComponent<CG_CameraComponent>();
-    m_modules.m_renderModule->Render(*cameraComponent, m_zenGarden);
+    m_modules.GetRenderModule().Render(*cameraComponent, m_zenGarden);
 
     EndFrame();
 }
@@ -168,20 +168,3 @@ void YakuEngine::EndFrame()
     HIDra::Flush();
     YK_Time::OnFrameEnd();
 }
-
-void YakuEngine::InitializeModules()
-{
-    m_modules.m_renderModule = YK_UniquePointer<CG_RenderModule>::Make(GetMainDisplaySurface());
-
-    // TODO: Make this platform agnostic
-    HIDra::Core_PlatformInitData initData;
-#if YK_PLATFORM == YK_WINDOWS
-    initData.m_mainWindowHandle = GetMainDisplaySurface().GetNativeHandle();
-#endif // YK_PLATFORM == YK_WINDOWS
-
-    m_modules.m_hidraCore = YK_UniquePointer<HIDra::Core>::Make();
-    m_modules.m_hidraCore->Init(initData);
-}
-
-YakuEngine::Modules::Modules() = default;
-YakuEngine::Modules::~Modules() = default;

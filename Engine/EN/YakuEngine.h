@@ -1,14 +1,8 @@
 #pragma once
 
+#include "EN/Modules/EN_ModuleRegistry.h"
+
 #include "YK/Core/YK_Core.h"
-#include "YK/Types/Pointers/YK_UniquePointer.h"
-
-class CG_RenderModule;
-
-namespace HIDra
-{
-    class Core;
-}
 
 class YakuEngine : public YK_Core
 {
@@ -51,21 +45,10 @@ private:
     template <typename Game>
     void DeleteGame();
 
-    void InitializeModules();
-
 private:
     void* m_game = nullptr;
 
-    struct Modules
-    {
-        Modules();
-        ~Modules();
-
-        YK_UniquePointer<CG_RenderModule> m_renderModule;
-
-        // Pseudo module
-        YK_UniquePointer<HIDra::Core> m_hidraCore;
-    } m_modules;
+    EN_ModuleRegistry m_modules;
 };
 
 template <typename Game>
@@ -80,7 +63,7 @@ void YakuEngine::Run()
 
     // Init Game
     m_game = new Game();
-    if (!GetGame<Game>().Init())
+    if (!GetGame<Game>().Init(*this))
     {
         GetGame<Game>().ShutDown();
         DeleteGame<Game>();
