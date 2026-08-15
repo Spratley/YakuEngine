@@ -8,7 +8,7 @@
 // Temp
 #include "ECS/EN_TEST_BobbingComponent.h"
 
-#include "CG/Camera/CG_Camera.h"
+#include "CG/Camera/CG_CameraComponent.h"
 #include "CG/Material/CG_Material.h"
 #include "CG/Renderable/CG_Renderable.h"
 #include "CG/Resource/Mesh/CG_MeshFactory.h"
@@ -47,6 +47,10 @@ bool YakuEngine::Init()
     // Temp
     g_camera = m_zenGarden.Spawn<YK_TransformComponent, CG_CameraComponent>({}, {});
     g_camera.GetComponent<YK_TransformComponent>()->m_position.y = 1.0f;
+    CG_CameraComponent* camera = g_camera.GetComponent<CG_CameraComponent>();
+    camera->m_fov= 60.0f;
+    camera->m_nearPlane = 0.1f;
+    camera->m_farPlane = 100.0f;
 
     g_heartMesh = CG_MeshFactory::LoadOBJ("J:/Harbourfront/Data/Models/HeartTest.obj");
     g_quadMesh = CG_MeshFactory::Quad();

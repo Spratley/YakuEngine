@@ -12,6 +12,8 @@ using YK_U64 = unsigned long long;
 
 using YK_SizeT = decltype(sizeof(0));
 
+enum class YK_Byte : YK_U8 {};
+
 #define TEST_INT_SIZE(Base) static_assert(sizeof(YK_Int##Base) == (Base / 8), "Incorrectly sized integer detected!: YK_Int" #Base); \
 static_assert(sizeof(YK_U##Base) == (Base / 8), "Incorrectly sized unsigned integer detected!: YK_U" #Base);
 TEST_INT_SIZE(8);

@@ -1,7 +1,7 @@
 #include "PCH/CG_PCH.h"
 #include "CG_3DRenderer.h"
 
-#include "CG/Camera/CG_Camera.h"
+#include "CG/Camera/CG_CameraComponent.h"
 #include "CG/Resource/Shader/CG_ShaderResource.h"
 
 // Temp
@@ -57,8 +57,7 @@ void CG_3DRenderer::Render(CG_RenderBinding& p_bindings,
     }
     m_renderQueue.Bake();
 
-    YK_Matrix44 const cameraMatrix =
-      CG_CameraUtils::CalculateCameraMatrix(p_camera, 60.0f, CG_3DRenderer_Private::viewportAspectRatio, 0.1f, 100.0f);
+    YK_Matrix44 const cameraMatrix = p_camera.CalculateCameraMatrix(CG_3DRenderer_Private::viewportAspectRatio);
 
     for (CG_RenderQueue::Entry const& item : m_renderQueue)
     {

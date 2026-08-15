@@ -2,7 +2,8 @@
 
 #include "YK/ECS/YK_ECSRegistry.h"
 
-#include "CG/Camera/CG_Camera.h"
+#include "CG/Camera/CG_CameraComponent.h"
+#include "CG/Camera/CG_CameraUpdateSystem.h"
 #include "CG/Renderable/CG_Renderable.h"
 
 namespace CG_ECSRegistry

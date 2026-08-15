@@ -13,27 +13,9 @@
 
 #include "YK/IO/Display/YK_DisplaySurface.h"
 
-#include "CG/Material/CG_Material.h"
-#include "CG/Renderer/CG_RenderBinding.h"
-#include "CG/Renderer/CG_RenderQueue.h"
-
 // TEMP
-#include "CG/Matrix/CG_MatrixExtras.h"
-#include "CG/OpenGL/CG_GLMeshBuffer.h"
-#include "CG/OpenGL/CG_GLTextureBuffer.h"
 #include "CG/OpenGL/CG_GLViewportHelper.h"
-#include "CG/Renderable/CG_Renderable.h"
-#include "CG/Resource/Mesh/CG_Mesh.h"
-#include "CG/Resource/Shader/CG_Shader.h"
 #include "CG/Resource/Texture/CG_TextureFactory.h"
-
-#include "YK/Math/YK_MatrixMath.h"
-#include "YK/Platforms/YK_PlatformDefines.h"
-#include "YK/Types/Math/YK_Matrix.h"
-
-// EVEN MORE TEMP
-#include "CG/Resource/Shader/CG_ShaderResource.h"
-#include "YK/ECS/Components/YK_TransformComponent.h"
 
 void CG_RenderModule::TempInit(YK_DisplaySurface& p_displaySurface)
 {
@@ -68,7 +50,7 @@ void CG_RenderModule::Render(CG_CameraComponent const& p_camera, Zen::Garden con
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_3dRenderer.Render(m_renderBindings, p_camera, p_entityGarden);
+    m_3dRenderer.Render(m_renderBindingsCache, p_camera, p_entityGarden);
     m_2dRenderer.Render();
 
     m_display->SwapBuffers();

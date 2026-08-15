@@ -1,5 +1,6 @@
 #pragma once
 
+#include "YK/Types/Containers/YK_InlineDynamicArray.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Traits/YK_TypeTraits.h"
 
@@ -7,6 +8,7 @@
 
 // TODO: Add an iterator that is aware of page size and jumps to the next page on its own without doing any math
 template <typename DataType, YK_SizeT PageSize>
+// TODO: Check if this is actually doing anything or if I need to be making the actual page byte counts powers of 2
 requires(IsPowerOfTwo_v<PageSize>)
 struct YK_PagedArray
 {
@@ -48,8 +50,7 @@ private:
     void AllocatePage();
 
 private:
-    // TODO: Replace with YK_DynamicArray of YK_StaticArrays
-    std::vector<std::array<DataType, PageSize>> m_pages;
+    std::vector<YK_InlineDynamicArray<DataType, PageSize>> m_pages;
     YK_SizeT m_count = 0;
 };
 

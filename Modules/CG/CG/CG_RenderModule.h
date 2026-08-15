@@ -4,8 +4,6 @@
 #include "CG/Renderer/3D/CG_3DRenderer.h"
 #include "CG/Renderer/CG_RenderBinding.h"
 
-#include "YK/Types/Math/YK_Matrix.h"
-
 class YK_DisplaySurface;
 struct CG_CameraComponent;
 
@@ -39,5 +37,5 @@ private:
     CG_2DRenderer m_2dRenderer;
     CG_3DRenderer m_3dRenderer;
 
-    mutable CG_RenderBinding m_renderBindings;
+    mutable CG_RenderBinding m_renderBindingsCache;
 };
