@@ -20,4 +20,3 @@
 #include "YK/Types/Math/YK_Vector.h"
 
 #include "YK/Types/Containers/YK_DynamicArray.h"
-#include "YK/Types/Containers/YK_PagedArray.h"

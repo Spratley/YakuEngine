@@ -1,12 +1,17 @@
 #pragma once
 
-#include "YK/Types/Math/YK_Integer.h"
+#include <type_traits>
 
-template <YK_SizeT Number>
-struct IsPowerOfTwo
+template <typename Type_T>
+struct YK_TypeType
 {
-    static constexpr bool value = (Number > 0) && ((Number & (Number - 1)) == 0);
+    using Type = Type_T;
 };
 
-template <YK_SizeT Number>
-constexpr bool IsPowerOfTwo_v = IsPowerOfTwo<Number>::value;
+template <typename SourceType, typename DestinationType>
+struct YK_CopyCV
+{
+    using Type = std::conditional_t<std::is_const_v<SourceType>, DestinationType const, DestinationType>;
+};
+template <typename SourceType, typename DestinationType>
+using YK_CopyCV_T = typename YK_CopyCV<SourceType, DestinationType>::Type;

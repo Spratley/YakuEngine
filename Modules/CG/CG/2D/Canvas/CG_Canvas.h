@@ -2,6 +2,11 @@
 
 #include "CG_CanvasTextureItem.h"
 
+#include "YK/Types/Math/YK_Matrix.h"
+#include "YK/Types/Math/YK_Vector.h"
+
+#include <vector>
+
 class CG_Canvas
 {
 public:

@@ -5,6 +5,7 @@
 
 #include <charconv> // For extracting data from strings
 #include <map> // I don't want this here...
+#include <vector>
 
 // TODO: This needs SUPER improvement. It's not good as it stands
 CG_Mesh* CG_MeshFactory::LoadOBJ(char const* p_path)
