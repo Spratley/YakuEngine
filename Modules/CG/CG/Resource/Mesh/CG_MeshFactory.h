@@ -11,3 +11,8 @@ public:
 
 	static CG_Mesh* Quad();
 };
+
+struct CG_MeshLoader
+{
+    static CG_Mesh* Load(char const* p_path) { return CG_MeshFactory::LoadOBJ(p_path); }
+};

@@ -12,6 +12,7 @@ class CG_Mesh : public CG_GPUResource<CG_Mesh>
 
 public:
     CG_Mesh();
+    CG_Mesh(CG_Mesh&& p_otherMesh) noexcept;
     // TODO: Destructor
 
     CG_Mesh& operator=(CG_Mesh& p_otherMesh) = delete;
@@ -32,7 +33,6 @@ public:
 
 private:
     CG_Mesh(CG_GPUDataPolicy::GPUDataPolicy p_dataPolicy);
-    CG_Mesh(CG_Mesh&& p_otherMesh) noexcept;
 
     void SetData(float* p_vertexBuffer, YK_U32 p_vertexBufferCount, YK_U32* p_indexBuffer, YK_U32 p_indexBufferCount);
 

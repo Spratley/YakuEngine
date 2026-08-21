@@ -27,7 +27,6 @@ Zen::Entity g_lastHeart;
 
 YK_Matrix44 g_viewMatrix;
 
-CG_Mesh* g_heartMesh;
 CG_Mesh* g_quadMesh;
 
 CG_Shader* g_mainShader;
@@ -52,7 +51,7 @@ bool YakuEngine::Init()
     camera->m_nearPlane = 0.1f;
     camera->m_farPlane = 100.0f;
 
-    g_heartMesh = CG_MeshFactory::LoadOBJ("J:/Harbourfront/Data/Models/HeartTest.obj");
+    CG_Mesh const& heartMesh = m_meshStorage.GetAsset("J:/Harbourfront/Data/Models/HeartTest.obj");
     g_quadMesh = CG_MeshFactory::Quad();
 
     g_mainShader = new CG_Shader(CG_ShaderLoader::Load("J:/Harbourfront/Data/Shaders/ShaderCode/Vertex.vs",
@@ -98,7 +97,7 @@ bool YakuEngine::Init()
         float bobOffset = GetRandomFloat(10.0f);
         bobber.GetComponent<BobbingComponent>()->m_phase = bobOffset;
 
-        bobber.GetComponent<CG_MeshComponent>()->m_mesh = g_heartMesh;
+        bobber.GetComponent<CG_MeshComponent>()->m_mesh = &heartMesh;
         bobber.GetComponent<CG_RendererComponent>()->m_material = &g_heartMaterial;
 
         g_lastHeart = bobber;

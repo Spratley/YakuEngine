@@ -5,7 +5,7 @@ class CG_Material;
 
 struct CG_MeshComponent
 {
-    CG_Mesh* m_mesh;
+    CG_Mesh const* m_mesh;
 };
 
 struct CG_RendererComponent

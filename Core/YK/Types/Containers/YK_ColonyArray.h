@@ -47,10 +47,10 @@ public:
     DataType* operator[](Index p_index);
     DataType const* operator[](Index p_index) const;
 
-    DataType& Add(DataType const& p_item)
+    Index Add(DataType const& p_item)
     requires(std::is_copy_constructible_v<DataType>);
 
-    DataType& Add(DataType&& p_item)
+    Index Add(DataType&& p_item)
     requires(std::is_move_constructible_v<DataType>);
 
     template <typename... Parameters>
@@ -117,7 +117,7 @@ private:
 
     inline bool Exists(Index& p_index) const { return m_skipField.Exists(ToFlatIndex(p_index)); }
 
-    DataType* FindNextFreeAddress();
+    DataType* FindNextFreeAddress(Index& p_outIndex);
     void AllocateBlock();
 
 private:
@@ -224,18 +224,24 @@ DataType const* YK_ColonyArray<DataType, BlockCapacity>::operator[](Index p_inde
 
 template <typename DataType, YK_SizeT BlockCapacity>
 requires(YK_IsPowerOfTwo<BlockCapacity>)
-DataType& YK_ColonyArray<DataType, BlockCapacity>::Add(DataType const& p_item)
+YK_ColonyArray<DataType, BlockCapacity>::Index YK_ColonyArray<DataType, BlockCapacity>::Add(DataType const& p_item)
 requires(std::is_copy_constructible_v<DataType>)
 {
-    return *YK_PlacementNew::New(FindNextFreeAddress(), p_item);
+    Index outIndex;
+    DataType* dummy = YK_PlacementNew::New(FindNextFreeAddress(outIndex), p_item);
+    YK_Unused(dummy);
+    return outIndex;
 }
 
 template <typename DataType, YK_SizeT BlockCapacity>
 requires(YK_IsPowerOfTwo<BlockCapacity>)
-DataType& YK_ColonyArray<DataType, BlockCapacity>::Add(DataType&& p_item)
+YK_ColonyArray<DataType, BlockCapacity>::Index YK_ColonyArray<DataType, BlockCapacity>::Add(DataType&& p_item)
 requires(std::is_move_constructible_v<DataType>)
 {
-    return *YK_PlacementNew::New(FindNextFreeAddress(), std::move(p_item));
+    Index outIndex;
+    DataType* dummy = YK_PlacementNew::New(FindNextFreeAddress(outIndex), std::move(p_item));
+    YK_Unused(dummy);
+    return outIndex;
 }
 
 template <typename DataType, YK_SizeT BlockCapacity>
@@ -244,7 +250,8 @@ template <typename... Parameters>
 requires(std::is_constructible_v<DataType, Parameters...>)
 DataType& YK_ColonyArray<DataType, BlockCapacity>::AddInPlace(Parameters&&... p_parameters)
 {
-    return *YK_PlacementNew::New(FindNextFreeAddress(), std::forward<Parameters>(p_parameters)...);
+    Index dummy;
+    return *YK_PlacementNew::New(FindNextFreeAddress(dummy), std::forward<Parameters>(p_parameters)...);
 }
 
 template <typename DataType, YK_SizeT BlockCapacity>
@@ -328,12 +335,13 @@ void YK_ColonyArray<DataType, BlockCapacity>::IncrementIndex(Index& p_index) con
 
 template <typename DataType, YK_SizeT BlockCapacity>
 requires(YK_IsPowerOfTwo<BlockCapacity>)
-DataType* YK_ColonyArray<DataType, BlockCapacity>::FindNextFreeAddress()
+DataType* YK_ColonyArray<DataType, BlockCapacity>::FindNextFreeAddress(Index& p_outIndex)
 {
     if (!ValidateIndex(m_firstEmptyIndex))
     {
         AllocateBlock();
     }
+    p_outIndex = m_firstEmptyIndex;
     BlockItem& item = m_blocks[m_firstEmptyIndex.m_blockIndex]->operator[](m_firstEmptyIndex.m_localIndex);
     m_skipField.RemoveSkip(m_firstEmptyIndex);
     return &item.m_item;

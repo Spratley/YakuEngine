@@ -4,6 +4,11 @@
 
 #include "YK/Core/YK_Core.h"
 
+// Temp
+#include "CG/Resource/Mesh/CG_Mesh.h"
+#include "CG/Resource/Mesh/CG_MeshFactory.h"
+#include "YK/IO/Asset/YK_AssetStorage.h"
+
 class YakuEngine : public YK_Core
 {
 public:
@@ -28,6 +33,8 @@ public:
         return *static_cast<Game*>(m_game);
     }
 
+    YK_AssetStorage<CG_Mesh, CG_MeshLoader>& GetMfUhhAssets() { return m_meshStorage; }
+
 private:
     bool Init();
     void ShutDown();
@@ -49,6 +56,9 @@ private:
     void* m_game = nullptr;
 
     EN_ModuleRegistry m_modules;
+
+    // TEMP
+    YK_AssetStorage<CG_Mesh, CG_MeshLoader> m_meshStorage;
 };
 
 template <typename Game>
