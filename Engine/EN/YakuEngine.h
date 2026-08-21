@@ -33,7 +33,7 @@ public:
         return *static_cast<Game*>(m_game);
     }
 
-    YK_AssetStorage<CG_Mesh, CG_MeshLoader>& GetMfUhhAssets() { return m_meshStorage; }
+    YK_AssetStorage<CG_Mesh, CG_MeshLoader>& GetMeshAssetStorage() { return m_meshStorage; }
 
 private:
     bool Init();
