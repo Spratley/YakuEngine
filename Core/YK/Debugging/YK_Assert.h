@@ -16,6 +16,8 @@ static inline void YK_AssertImpl(bool p_condition, char const* p_message)
 }
 
 #define YK_ASSERT(Condition, Message) YK_AssertImpl(Condition, Message)
+#define YK_ASSERT_PARAM(Condition, Message, ...) YK_AssertImpl(Condition, std::format(Message, __VA_ARGS__).c_str())
 #else
 #define YK_ASSERT(Condition, Message)
+#define YK_ASSERT_PARAM(Condition, Message, ...)
 #endif // YAKU_RETAIL

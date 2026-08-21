@@ -1,19 +1,20 @@
 #pragma once
 
 #include "YK/Debugging/YK_Assert.h"
-#include "YK/IO/Logging/YK_Logger.h"
 #include "YK/Types/Containers/YK_ColonyArray.h"
-#include "YK/Utils/YK_MemoryUtils.h"
+// #include "YK/Utils/YK_MemoryUtils.h"
 
 #include <concepts>
 #include <unordered_map>
 
-template <typename Loader, typename AssetType, typename... AssetLoadParameters>
-concept YK_AssetLoaderType = requires(AssetType asset, AssetLoadParameters... parameters) {
-    { Loader::Load(parameters...) } -> std::convertible_to<AssetType*>;
+template <typename Loader, typename AssetType>
+concept YK_AssetLoaderType = requires(char const* p_path) {
+    { Loader::Load(p_path) } -> std::convertible_to<AssetType>;
 };
 
-template <typename AssetType, YK_AssetLoaderType<AssetType, char const*> AssetLoader>
+// TODO: Add a generation stamp and asset handles,
+// so that we don't get overlapping memory causing incorrect assets to be used
+template <typename AssetType, YK_AssetLoaderType<AssetType> AssetLoader>
 class YK_AssetStorage
 {
 public:
@@ -32,31 +33,27 @@ private:
     ContainerType m_dataColony;
 };
 
-template <typename AssetType, YK_AssetLoaderType<AssetType, char const*> AssetLoader>
+template <typename AssetType, YK_AssetLoaderType<AssetType> AssetLoader>
 AssetType const& YK_AssetStorage<AssetType, AssetLoader>::GetAsset(char const* p_localDataPath)
 {
     if (!HasAsset(p_localDataPath))
     {
-        bool loaded = LoadAsset(p_localDataPath);
-        YK_LOG_ERROR(p_localDataPath);
-        YK_ASSERT(loaded, "Asset not found!");
-        YK_Unused(loaded); // Since YK_ASSERT gets stripped for retail
+        LoadAsset(p_localDataPath);
+        YK_ASSERT_PARAM(HasAsset(p_localDataPath), "Asset '{}' not found!", p_localDataPath);
     }
     return *m_dataColony[m_loadedAssets[p_localDataPath]];
 }
 
-template <typename AssetType, YK_AssetLoaderType<AssetType, char const*> AssetLoader>
+template <typename AssetType, YK_AssetLoaderType<AssetType> AssetLoader>
 bool YK_AssetStorage<AssetType, AssetLoader>::LoadAsset(char const* p_localDataPath)
 {
     // TODO: Check that file exists
-    AssetType* loadedAsset = AssetLoader::Load(p_localDataPath);
-    typename ContainerType::Index index = m_dataColony.Add(std::move(*loadedAsset));
-    delete loadedAsset; // TODO: Don't do this!!!!
+    typename ContainerType::Index index = m_dataColony.Add(std::move(AssetLoader::Load(p_localDataPath)));
     m_loadedAssets[p_localDataPath] = index;
     return true;
 }
 
-template <typename AssetType, YK_AssetLoaderType<AssetType, char const*> AssetLoader>
+template <typename AssetType, YK_AssetLoaderType<AssetType> AssetLoader>
 void YK_AssetStorage<AssetType, AssetLoader>::UnloadAsset(char const* p_localDataPath)
 {
     if (!HasAsset(p_localDataPath))
