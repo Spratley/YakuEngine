@@ -3,8 +3,6 @@
 #include "YK/Types/Math/YK_Vector.h"
 #include "YK/Utils/YK_AlgorithmUtils.h"
 
-#include <cmath> // std::sqrt
-
 namespace YK_Vector
 {
     template <YK_VectorType Vector>

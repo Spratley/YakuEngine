@@ -1,3 +1,5 @@
+#include "YK/IO/Logging/YK_Logger.h"
+
 namespace YK_Core_GLFWHelpers
 {
     inline void LogGLFWError(char const* p_errorMessage)

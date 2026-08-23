@@ -3,7 +3,7 @@
 #include "YK/Types/Containers/Iterator/YK_FlatIterator.h"
 #include "YK/Utils/YK_AlgorithmUtils.h"
 
-#include <vector> // TODO: Replace with YK_Vector
+#include <vector> // TODO: Replace with YK_DynamicArray
 
 // Set that uses a continuous array under the hood
 // Used for small counts where a hash would be more work than its worth

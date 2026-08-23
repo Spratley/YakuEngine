@@ -4,6 +4,7 @@
 #include "YK/Math/YK_NumericLimits.h"
 #include "YK/Types/Containers/YK_StaticArray.h"
 #include "YK/Types/Math/YK_Integer.h"
+#include "YK/Types/Pointers/YK_UniquePointer.h"
 #include "YK/Types/Traits/YK_Concepts.h"
 #include "YK/Types/Traits/YK_TypeTraits.h"
 #include "YK/Utils/YK_MemoryUtils.h"
@@ -151,8 +152,7 @@ private:
         std::vector<SkipFieldEntry> m_data;
     };
 
-    // std::vector<YK_StaticArray<BlockItem, BlockCapacity>> m_blocks;
-    std::vector<std::unique_ptr<std::array<BlockItem, BlockCapacity>>> m_blocks;
+    std::vector<YK_UniquePointer<YK_StaticArray<BlockItem, BlockCapacity>>> m_blocks;
     SkipField m_skipField;
     Index m_firstEmptyIndex;
 };
@@ -292,8 +292,7 @@ template <typename DataType, YK_SizeT BlockCapacity>
 requires(YK_IsPowerOfTwo<BlockCapacity>)
 void YK_ColonyArray<DataType, BlockCapacity>::AllocateBlock()
 {
-    // m_blocks.push_back(YK_StaticArray<BlockItem, BlockCapacity>{});
-    m_blocks.push_back(std::move(std::make_unique<std::array<BlockItem, BlockCapacity>>()));
+    m_blocks.push_back(std::move(YK_UniquePointer<YK_StaticArray<BlockItem, BlockCapacity>>::Make()));
     m_skipField.AllocateBlock();
 
     Index newBlockIndex = Index{ .m_blockIndex = m_blocks.size() - 1, .m_localIndex = 0 };

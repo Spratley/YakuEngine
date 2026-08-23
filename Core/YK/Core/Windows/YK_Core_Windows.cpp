@@ -2,8 +2,6 @@
 #if YK_PLATFORM == YK_WINDOWS
 #include "YK/Core/YK_Core.h"
 
-#include "YK/IO/Logging/YK_Logger.h"
-
 #include <GLAD/include/glad/glad.h>
 #include <GLFW/include/glfw3.h>
 

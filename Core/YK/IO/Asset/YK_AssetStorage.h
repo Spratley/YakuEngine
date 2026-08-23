@@ -28,7 +28,6 @@ public:
     YK_AssetStorage(YK_TypeList<AssetLoader> p_loaderType);
 
     // TODO: Replace with concepts for actual load function parameters
-    // Also add data path resolution
     AssetType const& GetAsset(YK_FilePath const& p_localDataPath);
     bool LoadAsset(YK_FilePath const& p_localDataPath);
     void UnloadAsset(YK_FilePath const& p_localDataPath);
