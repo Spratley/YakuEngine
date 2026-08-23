@@ -1,7 +1,7 @@
 #include "PCH/CG_PCH.h"
 #include "CG/Renderer/CG_RenderBinding.h"
 
-#include "CG/Material/CG_Material.h"
+#include "CG/Resource/Material/CG_Material.h"
 #include "CG/OpenGL/CG_GLMeshBuffer.h"
 #include "CG/OpenGL/CG_GLTextureBuffer.h"
 #include "CG/Resource/Mesh/CG_Mesh.h"

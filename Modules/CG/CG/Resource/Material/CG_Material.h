@@ -6,6 +6,6 @@ class CG_Texture;
 class CG_Material
 {
 public:
-    CG_Shader* m_shader;
-    CG_Texture* m_texture;
+    CG_Shader const* m_shader;
+    CG_Texture const* m_texture;
 };

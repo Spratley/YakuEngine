@@ -10,5 +10,5 @@ struct CG_MeshComponent
 
 struct CG_RendererComponent
 {
-    CG_Material* m_material;
+    CG_Material const* m_material;
 };

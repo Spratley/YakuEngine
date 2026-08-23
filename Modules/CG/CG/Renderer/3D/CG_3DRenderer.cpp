@@ -2,10 +2,9 @@
 #include "CG_3DRenderer.h"
 
 #include "CG/Camera/CG_CameraComponent.h"
-#include "CG/Resource/Shader/CG_ShaderResource.h"
 
 // Temp
-#include "CG/Material/CG_Material.h"
+#include "CG/Resource/Material/CG_Material.h"
 #include "CG/Matrix/CG_MatrixExtras.h"
 #include "CG/Renderable/CG_Renderable.h"
 #include "CG/Renderer/CG_RenderBinding.h"
