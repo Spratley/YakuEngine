@@ -11,7 +11,6 @@ public:
     YakuEngine(ComponentTypes p_componentTypes, SystemTypes p_systemTypes)
         : YK_Core(p_componentTypes, p_systemTypes)
     {}
-
     ~YakuEngine() = default;
 
     void Run();

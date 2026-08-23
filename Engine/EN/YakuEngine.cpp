@@ -1,15 +1,16 @@
 #include "PCH/YakuEngine_PCH.h"
 #include "YakuEngine.h"
 
+#include "EN/Libraries/HIDra/HIDra.h"
+
 #include "CG/CG_RenderModule.h"
-
-#include "YK/Time/YK_Time.h"
-
-// Temp
 #include "CG/Camera/CG_CameraComponent.h"
 #include "CG/Resource/CG_ResourceRegistry.h"
 
-#include <tuple>
+#include "YK/Core/YK_Core.h"
+#include "YK/Libraries/Zen/Entity/Zen_EntityView.h"
+#include "YK/Libraries/Zen/Zen_Garden.h"
+#include "YK/Time/YK_Time.h"
 
 namespace YakuEngine_Private
 {
@@ -18,7 +19,7 @@ namespace YakuEngine_Private
     CG_CameraComponent const& FindCamera(Zen::Garden const& p_entityGarden)
     {
         Zen::EntityView<CG_CameraComponent> cameras = p_entityGarden.ViewComponents<CG_CameraComponent>();
-        return std::get<0>(*cameras.begin());
+        return *cameras.begin();
     }
 } // namespace YakuEngine_Private
 

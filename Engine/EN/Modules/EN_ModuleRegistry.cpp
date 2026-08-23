@@ -7,6 +7,7 @@
 #include "CG/CG_RenderModule.h"
 
 #include "YK/IO/Display/YK_DisplaySurface.h"
+#include "YK/Types/Pointers/YK_UniquePointer.h"
 
 EN_ModuleRegistry::EN_ModuleRegistry() = default;
 EN_ModuleRegistry::~EN_ModuleRegistry() = default;
@@ -17,6 +18,7 @@ bool EN_ModuleRegistry::InitializeModules(YakuEngine& p_engine)
 
     m_renderModule = YK_UniquePointer<CG_RenderModule>::Make(mainDisplaySurface);
 
+    // HIDra isn't really a module, but this is convenient
     HIDra::Core_PlatformInitData initData;
 #if YK_PLATFORM == YK_WINDOWS
     initData.m_mainWindowHandle = mainDisplaySurface.GetNativeHandle();
@@ -25,7 +27,7 @@ bool EN_ModuleRegistry::InitializeModules(YakuEngine& p_engine)
     if (!m_hidraCore->Init(initData))
     {
         YK_LOG_ERROR("Failed to initialize HIDra!");
-        return false;;
+        return false;
     }
 
     return true;
