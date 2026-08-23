@@ -17,15 +17,16 @@ public:
     void Attach(FunctionSignature const& p_callback) { m_callbacks.Insert(p_callback); }
     void Detach(FunctionSignature const& p_callback) { m_callbacks.Remove(p_callback); }
 
-    void Run(Parameters... p_parameters) const
+    template <typename... CallParameters>
+    requires(sizeof...(Parameters) == sizeof...(CallParameters)
+             && (std::is_invocable_v<FunctionSignature, CallParameters&&> && ...))
+    void operator()(CallParameters&&... p_parameters) const
     {
         for (FunctionSignature const& callback : m_callbacks)
         {
-            callback(p_parameters...);
+            callback(std::forward<CallParameters>(p_parameters)...);
         }
     }
-
-    void operator()(Parameters... p_parameters) const { Run(p_parameters...); }
 
 private:
     YK_FlatSet<FunctionSignature> m_callbacks;

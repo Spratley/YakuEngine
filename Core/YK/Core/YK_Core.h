@@ -1,5 +1,6 @@
 #pragma once
 
+#include "YK/EngineSystem/YK_EngineSystemManager.h"
 #include "YK/IO/Asset/YK_AssetManager.h"
 #include "YK/IO/Display/YK_DisplaySurface.h"
 #include "YK/Libraries/Zen/Zen_Garden.h"
@@ -16,9 +17,10 @@ public:
     YK_DisplaySurface& GetMainDisplaySurface() { return m_displaySurface; }
     YK_DisplaySurface const& GetMainDisplaySurface() const { return m_displaySurface; }
 
-    Zen::Garden& GetGarden() { return m_zenGarden; }
-
     YK_AssetManager& GetAssetManager() { return m_assetManager; }
+    YK_EngineSystemManager& GetEngineSystemManager() { return m_engineSystemManager; }
+
+    Zen::Garden& GetZenGarden() { return m_zenGarden; }
 
 protected:
     template <typename ComponentTypes, typename SystemTypes>
@@ -42,6 +44,7 @@ protected:
 
 protected:
     YK_DisplaySurface m_displaySurface;
-    Zen::Garden m_zenGarden;
     YK_AssetManager m_assetManager;
+    YK_EngineSystemManager m_engineSystemManager;
+    Zen::Garden m_zenGarden;
 };

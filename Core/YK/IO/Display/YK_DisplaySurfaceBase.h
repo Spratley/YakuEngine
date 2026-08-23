@@ -36,7 +36,7 @@ public:
     {
         m_dimensions = p_dimensions;
         m_aspectRatio = static_cast<float>(p_dimensions.x) / static_cast<float>(p_dimensions.y);
-        m_onResizedCallback.Run(p_dimensions);
+        m_onResizedCallback(p_dimensions);
     }
 
     YK_Vector2i const& GetDimensions() const { return m_dimensions; }
