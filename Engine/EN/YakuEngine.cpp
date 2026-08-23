@@ -7,14 +7,7 @@
 
 // Temp
 #include "CG/Camera/CG_CameraComponent.h"
-#include "CG/Resource/Material/CG_Material.h"
-#include "CG/Resource/Material/CG_MaterialLoader.h"
-#include "CG/Resource/Mesh/CG_Mesh.h"
-#include "CG/Resource/Mesh/CG_MeshFactory.h"
-#include "CG/Resource/Shader/CG_Shader.h"
-#include "CG/Resource/Shader/CG_ShaderLoader.h"
-#include "CG/Resource/Texture/CG_Texture.h"
-#include "CG/Resource/Texture/CG_TextureFactory.h"
+#include "CG/Resource/CG_ResourceRegistry.h"
 
 #include <tuple>
 
@@ -55,8 +48,8 @@ bool YakuEngine::Init()
         return false;
     }
     RegisterAssetTypes();
-    m_modules.InitializeModules(*this);
 
+    m_modules.InitializeModules(*this);
     m_engineSystemManager.InitSystems(*this);
 
     return true;
@@ -68,9 +61,7 @@ void YakuEngine::EngineLoop()
 {
     // Run Game Loop
     BeginFrame();
-
     m_engineSystemManager.UpdateSystems(*this);
-
     m_zenGarden.Tick();
     m_modules.GetRenderModule().Render(YakuEngine_Private::FindCamera(m_zenGarden), m_zenGarden);
     EndFrame();
@@ -84,10 +75,4 @@ void YakuEngine::EndFrame()
     YK_Time::OnFrameEnd();
 }
 
-void YakuEngine::RegisterAssetTypes()
-{
-    m_assetManager.RegisterType<CG_Mesh, CG_MeshLoader>();
-    m_assetManager.RegisterType<CG_Shader, CG_ShaderLoader>();
-    m_assetManager.RegisterType<CG_Texture, CG_TextureLoader>();
-    m_assetManager.RegisterType<CG_Material, CG_MaterialLoader>();
-}
+void YakuEngine::RegisterAssetTypes() { CG_ResourceRegistry::RegisterAssetTypes(m_assetManager); }
