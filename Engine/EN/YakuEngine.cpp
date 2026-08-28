@@ -64,7 +64,7 @@ void YakuEngine::EngineLoop()
     BeginFrame();
     m_engineSystemManager.UpdateSystems(*this);
     m_zenGarden.Tick();
-    m_modules.GetRenderModule().Render(YakuEngine_Private::FindCamera(m_zenGarden), m_zenGarden);
+    m_modules.GetRenderModule().Render(YakuEngine_Private::FindCamera(m_zenGarden));
     EndFrame();
 }
 

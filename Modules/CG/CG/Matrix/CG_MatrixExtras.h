@@ -19,9 +19,9 @@ namespace YK_Matrix
     }
 
     template <typename DataType>
-    [[nodiscard]] constexpr inline YK_Matrix_R_C<DataType, 4, 4> Orthographic(DataType p_width,
-                                                                              DataType p_height,
-                                                                              DataType p_depth)
+    [[nodiscard]] constexpr YK_Matrix_R_C<DataType, 4, 4> Orthographic(DataType p_width,
+                                                                       DataType p_height,
+                                                                       DataType p_depth)
     {
         // Solution provided by
         // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/orthographic-projection-matrix.html
@@ -35,11 +35,19 @@ namespace YK_Matrix
     }
 
     template <typename DataType>
-    [[nodiscard]] constexpr inline YK_Matrix_R_C<DataType, 4, 4> Orthographic2D(DataType p_width, DataType p_height)
+    [[nodiscard]] constexpr YK_Matrix_R_C<DataType, 4, 4> OrthographicUI(DataType p_width, DataType p_height)
     {
+        // Orthographic projection matrix that maps from
+        // UI Coordinates: X [0, Width] Y [0, Height]
+        // to NDC [-1, 1]
         YK_Matrix_R_C<DataType, 4, 4> result(static_cast<DataType>(0));
         result[0][0] = static_cast<DataType>(2) / p_width;
+        result[3][0] = static_cast<DataType>(-1);
+
         result[1][1] = static_cast<DataType>(2) / p_height;
+        result[3][1] = static_cast<DataType>(-1);
+
+        // [2][2] is omitted to flatten Z to 0
         result[3][3] = static_cast<DataType>(1);
         return result;
     }

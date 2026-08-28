@@ -4,7 +4,7 @@
 
 #include "CG/Camera/CG_CameraComponent.h"
 #include "CG/Camera/CG_CameraUpdateSystem.h"
-#include "CG/Renderable/CG_Renderable.h"
+#include "CG/ECS/CG_Components.h"
 
 namespace CG_ECSRegistry
 {

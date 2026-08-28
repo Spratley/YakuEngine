@@ -1,6 +1,9 @@
 #pragma once
 
+#include "CG/GPU/CG_GPUDataPolicy.h"
 #include "CG/GPU/CG_GPUResource.h"
+
+#include "YK/Types/Math/YK_Integer.h"
 
 // TODO: Decouple textures and OpenGL
 struct CG_GLTextureBuffer;
@@ -17,8 +20,11 @@ public:
     CG_Texture(CG_Texture&& p_otherTexture) noexcept;
     ~CG_Texture() = default;
 
-    CG_Texture& operator=(CG_Texture&) = delete;
     CG_Texture& operator=(CG_Texture&& p_otherTexture) noexcept;
+
+    // Prevent accidental copies
+    CG_Texture(CG_Texture const&) = delete;
+    CG_Texture& operator=(CG_Texture const&) = delete;
 
     YK_U8* GetBuffer() const { return m_buffer; }
     YK_U32 GetBufferSize() const { return m_width * m_height * m_nrChannels; } // Should this be cached?
@@ -26,6 +32,8 @@ public:
     YK_U16 GetWidth() const { return m_width; }
     YK_U16 GetHeight() const { return m_height; }
     YK_U16 GetNrChannels() const { return m_nrChannels; }
+
+    constexpr float GetAspectRatio() const { return static_cast<float>(m_width) / static_cast<float>(m_height); }
 
     CG_GLTextureBuffer const& GetGLData() const { return *m_glData; }
 

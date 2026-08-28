@@ -15,6 +15,8 @@ public:
 
     void Run();
 
+    EN_ModuleRegistry& GetModules() { return m_modules; }
+
 private:
     bool Init();
     void ShutDown();

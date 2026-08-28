@@ -1,7 +1,15 @@
 #include "PCH/CG_PCH.h"
 #include "CG_Mesh.h"
 
+#include "CG/GPU/CG_GPUDataPolicy.h"
+#include "CG/GPU/CG_GPUResource.h"
 #include "CG/OpenGL/CG_GLMeshBuffer.h"
+
+#include "YK/Types/Math/YK_Integer.h"
+#include "YK/Utils/YK_MemoryUtils.h"
+
+#include <cstring>
+#include <utility>
 
 CG_Mesh::CG_Mesh()
     : CG_GPUResource<CG_Mesh>(CG_GPUDataPolicy::INVALID)

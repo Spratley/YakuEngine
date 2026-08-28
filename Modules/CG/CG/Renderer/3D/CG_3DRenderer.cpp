@@ -4,14 +4,19 @@
 #include "CG/Camera/CG_CameraComponent.h"
 
 // Temp
-#include "CG/Resource/Material/CG_Material.h"
-#include "CG/Matrix/CG_MatrixExtras.h"
-#include "CG/Renderable/CG_Renderable.h"
+#include "CG/ECS/CG_Components.h"
 #include "CG/Renderer/CG_RenderBinding.h"
+#include "CG/Renderer/CG_RenderQueue.h"
+#include "CG/Resource/Material/CG_Material.h"
 #include "CG/Resource/Mesh/CG_Mesh.h"
+#include "CG/Resource/Shader/CG_Shader.h"
+
+#include "YK/Core/YK_Core.h"
 #include "YK/ECS/Components/YK_TransformComponent.h"
 #include "YK/IO/Display/YK_DisplaySurface.h"
 #include "YK/Libraries/Zen/Zen_Garden.h"
+#include "YK/Types/Math/YK_Matrix.h"
+#include "YK/Types/Math/YK_Vector.h"
 
 #if YK_PLATFORM == YK_WASM
 // Emscripten specific GL headers
@@ -36,7 +41,7 @@ namespace CG_3DRenderer_Private
     }
 } // namespace CG_3DRenderer_Private
 
-void CG_3DRenderer::Temp_Init(YK_DisplaySurface& p_displaySurface)
+CG_3DRenderer::CG_3DRenderer(YK_DisplaySurface& p_displaySurface)
 {
     GLint currentViewport[4];
     glGetIntegerv(GL_VIEWPORT, currentViewport);
@@ -44,21 +49,26 @@ void CG_3DRenderer::Temp_Init(YK_DisplaySurface& p_displaySurface)
     p_displaySurface.GetResizedCallback().Attach(CG_3DRenderer_Private::RecalculateViewport);
 }
 
-void CG_3DRenderer::Render(CG_RenderBinding& p_bindings,
-                           CG_CameraComponent const& p_camera,
-                           Zen::Garden const& p_garden) const
+void CG_3DRenderer::Render(CG_RenderBinding& p_bindings, CG_CameraComponent const& p_camera) const
 {
+    Zen::Garden& entityGarden = YK_Core::GetEngine().GetZenGarden();
+
     Zen::EntityView renderableEntities =
-      p_garden.ViewComponents<YK_TransformComponent, CG_MeshComponent, CG_RendererComponent>();
+      entityGarden.ViewComponents<YK_TransformComponent, CG_MeshComponent, CG_RendererComponent>();
+
+    // Previously I had this as a mutable member so we don't reallocate a buffer every frame
+    // Then I realized it's ONE buffer per frame... The difference is so small it's probably immesurable
+    CG_RenderQueue renderQueue;
+    renderQueue.Allocate(renderableEntities.CountU());
     for (auto [transform, meshComponent, rendererComponent] : renderableEntities)
     {
-        m_renderQueue.Push(*rendererComponent.m_material, *meshComponent.m_mesh, transform);
+        renderQueue.Push(*rendererComponent.m_material, *meshComponent.m_mesh, transform);
     }
-    m_renderQueue.Bake();
+    renderQueue.Bake();
 
     YK_Matrix44 const cameraMatrix = p_camera.CalculateCameraMatrix(CG_3DRenderer_Private::viewportAspectRatio);
 
-    for (CG_RenderQueue::Entry const& item : m_renderQueue)
+    for (CG_RenderQueue::Entry const& item : renderQueue)
     {
         p_bindings.Bind(*item.m_material);
         p_bindings.Bind(*item.m_mesh);
@@ -67,6 +77,5 @@ void CG_3DRenderer::Render(CG_RenderBinding& p_bindings,
         glDrawElements(GL_TRIANGLES, p_bindings.GetBoundMesh()->GetIndexBufferSize(), GL_UNSIGNED_INT, 0);
     }
 
-    m_renderQueue.Clear();
     p_bindings.TempInvalidate();
 }

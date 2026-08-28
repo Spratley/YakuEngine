@@ -1,18 +1,18 @@
 #pragma once
 
-class CG_Texture;
+#include "CG/Resource/Texture/CG_Texture.h"
+
+#include "YK/IO/File/YK_FilePath.h"
 
 struct CG_CanvasTextureItem
 {
 public:
-    CG_CanvasTextureItem(char const* p_texturePath);
-    ~CG_CanvasTextureItem();
+    CG_CanvasTextureItem(YK_FilePath const& p_texturePath);
+    ~CG_CanvasTextureItem() = default;
 
-    CG_Texture const* const GetTexture() const { return m_texture; }
-    float GetAspectRatio() const { return m_aspectRatio; }
+    CG_Texture const& GetTexture() const { return m_texture; }
+    float GetAspectRatio() const { return m_texture.GetAspectRatio(); }
 
 private:
-    // TODO: Switch this for asset references
-    CG_Texture* m_texture;
-    float m_aspectRatio;
+    CG_Texture const& m_texture;
 };
