@@ -7,8 +7,7 @@
 #include "YK/Types/Math/YK_Matrix.h"
 #include "YK/Types/Math/YK_Vector.h"
 
-#include <cmath>
-#include <vector>
+#include <vector> // Replace with YK_DynamicArray
 
 class CG_Canvas
 {
@@ -19,19 +18,7 @@ public:
     void SetPosition(YK_Vector2f const& p_position) { m_scroll = p_position; }
     void SetRotation(float p_angleDegrees) { m_spin = YK_ToRadians(p_angleDegrees); }
 
-    YK_Matrix44 CalculateMatrix() const
-    {
-        float const cosAngle = std::cos(m_spin);
-        float const sinAngle = std::sin(m_spin);
-        YK_Matrix44 result = {};
-        result[0][0] = cosAngle;
-        result[0][1] = -sinAngle;
-        result[1][0] = sinAngle;
-        result[1][1] = cosAngle;
-        result[3][0] = m_scroll.x;
-        result[3][1] = m_scroll.y;
-        return result;
-    }
+    YK_Matrix44 CalculateMatrix() const;
 
     // Temp
     std::vector<CG_CanvasTextureItem> const& GetItems() const { return m_textureItems; }

@@ -1,5 +1,8 @@
 #pragma once
+
 #include "CG/GPU/CG_GPUDataPolicy.h"
+
+#include "YK/Utils/YK_AlgorithmUtils.h"
 #include "YK/Utils/YK_TemplateUtils.h"
 
 // TODO: Evaluate if this is the right approach and how well it synergizes with the rest of the engine
@@ -49,7 +52,7 @@ template <class ResourceType>
 inline CG_GPUResource<ResourceType>& CG_GPUResource<ResourceType>::operator=(
   CG_GPUResource<ResourceType>&& p_otherResource) noexcept
 {
-    YK_STEAL_MEMBER(m_dataPolicy, p_otherResource, CG_GPUDataPolicy::INVALID)
+    m_dataPolicy = YK_Exchange(p_otherResource.m_dataPolicy, CG_GPUDataPolicy::INVALID);
     return *this;
 }
 

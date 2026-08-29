@@ -6,6 +6,7 @@
 #include "CG/OpenGL/CG_GLMeshBuffer.h"
 
 #include "YK/Types/Math/YK_Integer.h"
+#include "YK/Utils/YK_AlgorithmUtils.h"
 #include "YK/Utils/YK_MemoryUtils.h"
 
 #include <cstring>
@@ -60,13 +61,13 @@ CG_Mesh& CG_Mesh::operator=(CG_Mesh&& p_otherMesh) noexcept
 
     CG_GPUResource::operator=(std::move(p_otherMesh));
 
-    YK_STEAL_MEMBER(m_glData, p_otherMesh, nullptr)
-    YK_STEAL_MEMBER(m_vertexBuffer, p_otherMesh, nullptr)
-    YK_STEAL_MEMBER(m_indexBuffer, p_otherMesh, nullptr)
+    m_glData = YK_Exchange(p_otherMesh.m_glData, nullptr);
+    m_vertexBuffer = YK_Exchange(p_otherMesh.m_vertexBuffer, nullptr);
+    m_indexBuffer = YK_Exchange(p_otherMesh.m_indexBuffer, nullptr);
 
-    YK_STEAL_MEMBER(m_vertexBufferCount, p_otherMesh, 0)
-    YK_STEAL_MEMBER(m_indexBufferCount, p_otherMesh, 0)
-    YK_STEAL_MEMBER(m_triangleCount, p_otherMesh, 0)
+    m_vertexBufferCount = YK_Exchange(p_otherMesh.m_vertexBufferCount, 0);
+    m_indexBufferCount = YK_Exchange(p_otherMesh.m_indexBufferCount, 0);
+    m_triangleCount = YK_Exchange(p_otherMesh.m_triangleCount, 0);
 
     return *this;
 }

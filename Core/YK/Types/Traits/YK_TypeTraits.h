@@ -7,6 +7,8 @@ struct YK_TypeType
 {
     using Type = Type_T;
 };
+template <typename Type_T>
+using YK_TypeType_T = typename YK_TypeType<Type_T>::Type;
 
 template <typename SourceType, typename DestinationType>
 struct YK_CopyCV

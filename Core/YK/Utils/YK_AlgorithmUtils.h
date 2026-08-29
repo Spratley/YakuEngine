@@ -2,12 +2,35 @@
 
 #include "YK/Types/Math/YK_Integer.h"
 
-template <typename T>
-inline constexpr void YK_Swap(T& p_a, T& p_b)
+#include "YK/Types/Traits/YK_TypeTraits.h"
+
+#include <type_traits>
+#include <utility>
+
+// Overload for scalar types so that any constant that can be reasonably assigned to a type will work
+template <typename ScalarType>
+requires(std::is_scalar_v<ScalarType> && std::is_assignable_v<ScalarType&, ScalarType>)
+constexpr ScalarType YK_Exchange(ScalarType& p_source, YK_TypeType_T<ScalarType> p_newValue)
 {
-    T temp = std::move(p_a);
-    p_a = std::move(p_b);
-    p_b = std::move(temp);
+    ScalarType oldValue = p_source;
+    p_source = p_newValue;
+    return oldValue;
+}
+
+template <typename Type, typename NewValueType = Type>
+requires(std::is_move_constructible_v<Type> && std::is_assignable_v<Type&, NewValueType> && !std::is_scalar_v<Type>)
+constexpr Type YK_Exchange(Type& p_source, NewValueType&& p_newValue)
+{
+    Type oldValue = std::move(p_source);
+    p_source = std::forward<NewValueType>(p_newValue);
+    return oldValue;
+}
+
+template <typename Type>
+requires(std::is_move_assignable_v<Type> && std::is_move_constructible_v<Type>)
+constexpr void YK_Swap(Type& p_a, Type& p_b)
+{
+    p_a = YK_Exchange(p_b, std::move(p_a));
 }
 
 struct YK_CountTo
