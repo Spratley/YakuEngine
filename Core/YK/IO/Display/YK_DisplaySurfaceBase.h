@@ -31,7 +31,7 @@ public:
 
     void* GetNativeHandle() const;
 
-    YK_Callback<void, YK_Vector2i>& GetResizedCallback() { return m_onResizedCallback; }
+    YK_Callback<YK_Vector2i>& GetResizedCallback() { return m_onResizedCallback; }
     void OnSurfaceResized(YK_Vector2i p_dimensions)
     {
         m_dimensions = p_dimensions;
@@ -46,7 +46,7 @@ private:
     bool InitImpl(YK_Vector2i p_dimensions);
 
 private:
-    YK_Callback<void, YK_Vector2i> m_onResizedCallback;
+    YK_Callback<YK_Vector2i> m_onResizedCallback;
     PlatformSpecificData m_platformSpecificData;
     YK_Vector2i m_dimensions = YK_Vector2i::Zero();
     float m_aspectRatio = 1.0f;

@@ -4,30 +4,80 @@
 
 #include <type_traits>
 
-template <typename ReturnType, typename... Parameters>
-// Deny RValue parameters, if we have multiple callbacks and the first one consumes a parameter's values,
-// the rest will operate on invalid data
+template <typename... Parameters>
+// Deny RValue Parameters, if the first callback consumes the object then the rest operate on invalid data
 requires(!std::is_rvalue_reference_v<Parameters> && ...)
 class YK_Callback
 {
-public:
-    using FunctionSignature = ReturnType (*)(Parameters...);
+    using GlobalSignature = void (*)(Parameters...);
+    template <GlobalSignature Function>
+    static void InvokeGlobal(void*, Parameters... p_parameters)
+    {
+        Function(std::forward<Parameters>(p_parameters)...);
+    }
+
+    template <typename Type, auto Function>
+    static void InvokeMember(void* m_object, Parameters... p_parameters)
+    {
+        (static_cast<Type*>(m_object)->*Function)(std::forward<Parameters>(p_parameters)...);
+    }
+
+    struct Callback
+    {
+        using ThunkSignature = void (*)(void*, Parameters...);
+        Callback(void* p_instance, ThunkSignature p_thunk)
+            : m_instance(p_instance)
+            , m_thunk(p_thunk)
+        {}
+
+        Callback(Callback&& p_other)
+            : m_instance(p_other.m_instance)
+            , m_thunk(p_other.m_thunk)
+        {}
+
+        auto operator<=>(Callback const&) const = default;
+
+        void* m_instance = nullptr;
+        ThunkSignature m_thunk = nullptr;
+    };
 
 public:
-    void Attach(FunctionSignature const& p_callback) { m_callbacks.Insert(p_callback); }
-    void Detach(FunctionSignature const& p_callback) { m_callbacks.Remove(p_callback); }
+    // Global Functions
+    template <GlobalSignature Function>
+    void Attach()
+    {
+        m_callbacks.Insert(Callback{ nullptr, &InvokeGlobal<Function> });
+    }
+    template <GlobalSignature Function>
+    void Detach()
+    {
+        m_callbacks.Remove(Callback{ nullptr, &InvokeGlobal<Function> });
+    }
+
+    // Member Functions
+    template <typename Type, auto Function>
+    void Attach(Type* p_object)
+    {
+        m_callbacks.Insert(Callback{ static_cast<void*>(p_object), &InvokeMember<Type, Function> });
+    }
+
+    template <typename Type, auto Function>
+    void Detach(Type* p_object)
+    {
+        m_callbacks.Remove(Callback{static_cast<void*>(p_object), &InvokeMember<Type, Function>});
+    }
 
     template <typename... CallParameters>
     requires(sizeof...(Parameters) == sizeof...(CallParameters)
-             && (std::is_invocable_v<FunctionSignature, CallParameters&&> && ...))
+             && (std::is_invocable_v<GlobalSignature, CallParameters &&> && ...))
     void operator()(CallParameters&&... p_parameters) const
     {
-        for (FunctionSignature const& callback : m_callbacks)
+        for (Callback const& callback : m_callbacks)
         {
-            callback(std::forward<CallParameters>(p_parameters)...);
+            callback.m_thunk(callback.m_instance, std::forward<CallParameters>(p_parameters)...);
         }
     }
 
 private:
-    YK_FlatSet<FunctionSignature> m_callbacks;
+    YK_FlatSet<Callback> m_callbacks;
 };

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CG/RenderTarget/CG_RenderTarget.h"
 #include "CG/Renderer/2D/CG_2DRenderer.h"
 #include "CG/Renderer/3D/CG_3DRenderer.h"
 #include "CG/Renderer/CG_RenderBinding.h"
@@ -19,6 +20,7 @@ public:
 
 private:
     YK_DisplaySurface* m_display;
+    CG_RenderTarget m_displayRenderTarget;
 
     CG_3DRenderer m_3DRenderer;
     CG_2DRenderer m_2DRenderer;

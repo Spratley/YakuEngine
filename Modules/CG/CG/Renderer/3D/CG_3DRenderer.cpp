@@ -46,7 +46,7 @@ CG_3DRenderer::CG_3DRenderer(YK_DisplaySurface& p_displaySurface)
     GLint currentViewport[4];
     glGetIntegerv(GL_VIEWPORT, currentViewport);
     CG_3DRenderer_Private::RecalculateViewport(YK_Vector2i(currentViewport[2], currentViewport[3]));
-    p_displaySurface.GetResizedCallback().Attach(CG_3DRenderer_Private::RecalculateViewport);
+    p_displaySurface.GetResizedCallback().Attach<&CG_3DRenderer_Private::RecalculateViewport>();
 }
 
 void CG_3DRenderer::Render(CG_RenderBinding& p_bindings, CG_CameraComponent const& p_camera) const

@@ -4,10 +4,12 @@
 #include "YK/Utils/YK_AlgorithmUtils.h"
 
 #include <vector> // TODO: Replace with YK_DynamicArray
+#include <concepts>
 
 // Set that uses a continuous array under the hood
 // Used for small counts where a hash would be more work than its worth
 template <typename Type>
+requires(std::equality_comparable<Type>)
 struct YK_FlatSet
 {
 public:
@@ -30,6 +32,7 @@ private:
 };
 
 template <typename Type>
+requires(std::equality_comparable<Type>)
 bool YK_FlatSet<Type>::Insert(Type const& p_item)
 {
     if (Contains(p_item))
@@ -42,6 +45,7 @@ bool YK_FlatSet<Type>::Insert(Type const& p_item)
 }
 
 template <typename Type>
+requires(std::equality_comparable<Type>)
 bool YK_FlatSet<Type>::Insert(Type&& p_item)
 {
     if (Contains(p_item))
@@ -54,6 +58,7 @@ bool YK_FlatSet<Type>::Insert(Type&& p_item)
 }
 
 template <typename Type>
+requires(std::equality_comparable<Type>)
 bool YK_FlatSet<Type>::Contains(Type const& p_item) const
 {
     for (Type const& item : m_data)
@@ -67,6 +72,7 @@ bool YK_FlatSet<Type>::Contains(Type const& p_item) const
 }
 
 template <typename Type>
+requires(std::equality_comparable<Type>)
 void YK_FlatSet<Type>::Remove(Type const& p_item)
 {
     for (auto i : YK_CountTo(m_data.size()))

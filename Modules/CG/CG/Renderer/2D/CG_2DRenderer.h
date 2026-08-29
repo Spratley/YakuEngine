@@ -4,7 +4,7 @@
 #include "YK/Types/Math/YK_Integer.h"
 
 // Temp
-class CG_GLRenderTarget;
+class CG_RenderTarget;
 class CG_Shader;
 class CG_Texture;
 
@@ -29,5 +29,5 @@ private:
     CG_Shader const* m_2DShader = nullptr;
     CG_Shader const* m_fsqShader = nullptr;
 
-    CG_GLRenderTarget* m_renderTarget = nullptr; // I don't want this to be a pointer, it should be on board right?
+    CG_RenderTarget* m_renderTarget = nullptr; // I don't want this to be a pointer, it should be on board right?
 };

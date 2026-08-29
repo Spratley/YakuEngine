@@ -18,7 +18,7 @@
 #include "CG/2D/Canvas/CG_CanvasTextureItem.h"
 #include "CG/Matrix/CG_MatrixExtras.h"
 #include "CG/OpenGL/CG_GLTextureBuffer.h"
-#include "CG/RenderTarget/OpenGL/CG_GLRenderTarget.h"
+#include "CG/RenderTarget/CG_RenderTarget.h"
 #include "CG/Resource/Shader/CG_Shader.h"
 
 #include "YK/Core/YK_Core.h"
@@ -46,7 +46,8 @@ CG_2DRenderer::CG_2DRenderer()
     }
 
     // Temp, move this to window initialization
-    m_renderTarget = new CG_GLRenderTarget(YK_Vector2i(1920 / 2, 1080 / 2));
+    m_renderTarget = new CG_RenderTarget(YK_Vector2i(1920 / 2, 1080 / 2));
+    m_renderTarget->Initialize();
 
     m_canvases[0].AddItem(YK_FilePath("Textures/Splash/YakuEn_Logo_Dark.png"));
 }
@@ -64,7 +65,7 @@ void CG_2DRenderer::Render() const
     // TODO: Don't manually call this- I'm just clearing the data so that we don't have bunk data waiting on the GPU
     glBindVertexArray(g_nullVAO);
 
-    glBindTexture(GL_TEXTURE_2D, m_renderTarget->GetColorBufferID());
+    m_renderTarget->BindAsInputTexture(0);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glEnable(GL_DEPTH_TEST);
@@ -72,7 +73,7 @@ void CG_2DRenderer::Render() const
 
 void CG_2DRenderer::RenderToFramebuffer() const
 {
-    CG_GLRenderTarget::Binding renderTargetBinding = m_renderTarget->Bind();
+    m_renderTarget->Bind();
 
     constexpr float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
     glClearBufferfv(GL_COLOR, 0, clearColor);
@@ -94,4 +95,6 @@ void CG_2DRenderer::RenderToFramebuffer() const
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         }
     }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
