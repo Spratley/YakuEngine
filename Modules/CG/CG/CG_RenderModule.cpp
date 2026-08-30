@@ -19,10 +19,11 @@
 
 CG_RenderModule::CG_RenderModule(YK_DisplaySurface& p_displaySurface)
     : m_display(&p_displaySurface)
-    , m_displayRenderTarget(p_displaySurface.GetDimensions())
+    , m_displayRenderTarget()
     , m_3DRenderer(p_displaySurface)
     , m_2DRenderer()
 {
+    m_displayRenderTarget.SetSize(p_displaySurface.GetDimensions());
     p_displaySurface.GetResizedCallback().Attach<CG_RenderTarget, &CG_RenderTarget::SetSize>(&m_displayRenderTarget);
 
     // TODO: This should have a better home
@@ -35,8 +36,8 @@ void CG_RenderModule::Render(CG_CameraComponent const& p_camera) const
     m_displayRenderTarget.Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_3DRenderer.Render(m_renderBindingsCache, p_camera);
-    m_2DRenderer.Render();
+    m_3DRenderer.Render(m_displayRenderTarget, m_renderBindingsCache, p_camera);
+    m_2DRenderer.Render(m_displayRenderTarget);
 
     m_display->SwapBuffers();
 }

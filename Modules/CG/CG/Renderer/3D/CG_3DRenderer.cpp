@@ -3,8 +3,8 @@
 
 #include "CG/Camera/CG_CameraComponent.h"
 
-// Temp
 #include "CG/ECS/CG_Components.h"
+#include "CG/RenderTarget/CG_RenderTarget.h"
 #include "CG/Renderer/CG_RenderBinding.h"
 #include "CG/Renderer/CG_RenderQueue.h"
 #include "CG/Resource/Material/CG_Material.h"
@@ -25,7 +25,6 @@
 #include <emscripten.h>
 #else
 #include <YK/Libraries/OpenGL/GLAD/include/glad/glad.h>
-#include <YK/Libraries/OpenGL/GLFW/include/glfw3.h>
 #endif
 
 // TODO: Move to a better place
@@ -49,15 +48,15 @@ CG_3DRenderer::CG_3DRenderer(YK_DisplaySurface& p_displaySurface)
     p_displaySurface.GetResizedCallback().Attach<&CG_3DRenderer_Private::RecalculateViewport>();
 }
 
-void CG_3DRenderer::Render(CG_RenderBinding& p_bindings, CG_CameraComponent const& p_camera) const
+void CG_3DRenderer::Render(CG_RenderTarget const& p_target,
+                           CG_RenderBinding& p_bindings,
+                           CG_CameraComponent const& p_camera) const
 {
     Zen::Garden& entityGarden = YK_Core::GetEngine().GetZenGarden();
 
     Zen::EntityView renderableEntities =
       entityGarden.ViewComponents<YK_TransformComponent, CG_MeshComponent, CG_RendererComponent>();
 
-    // Previously I had this as a mutable member so we don't reallocate a buffer every frame
-    // Then I realized it's ONE buffer per frame... The difference is so small it's probably immesurable
     CG_RenderQueue renderQueue;
     renderQueue.Allocate(renderableEntities.CountU());
     for (auto [transform, meshComponent, rendererComponent] : renderableEntities)
@@ -68,6 +67,7 @@ void CG_3DRenderer::Render(CG_RenderBinding& p_bindings, CG_CameraComponent cons
 
     YK_Matrix44 const cameraMatrix = p_camera.CalculateCameraMatrix(CG_3DRenderer_Private::viewportAspectRatio);
 
+    p_target.Bind();
     for (CG_RenderQueue::Entry const& item : renderQueue)
     {
         p_bindings.Bind(*item.m_material);

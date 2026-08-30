@@ -16,13 +16,11 @@
 #include "YK/Types/Math/YK_Vector.h"
 
 template <>
-CG_RenderTargetBase<CG_RenderTargetData_OpenGL>::CG_RenderTargetBase(YK_Vector2i p_size)
-    : m_size(p_size)
-    , m_extraData()
+CG_RenderTargetBase<CG_RenderTargetData_OpenGL>::CG_RenderTargetBase()
 {}
 
 template <>
-CG_RenderTargetBase<CG_RenderTargetData_OpenGL>::~CG_RenderTargetBase<CG_RenderTargetData_OpenGL>()
+CG_RenderTargetBase<CG_RenderTargetData_OpenGL>::~CG_RenderTargetBase()
 {
     if (IsInitialized())
     {

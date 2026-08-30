@@ -6,7 +6,6 @@
 
 #include "YK/ECS/Components/YK_TransformComponent.h"
 #include "YK/Math/YK_MatrixMath.h"
-#include "YK/Utils/YK_AlgorithmUtils.h"
 
 #include <algorithm>
 #include <functional>

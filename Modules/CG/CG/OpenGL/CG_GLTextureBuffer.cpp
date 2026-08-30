@@ -13,6 +13,8 @@
 
 #include "CG/Resource/Texture/CG_Texture.h"
 
+#include "YK/Types/Math/YK_Integer.h"
+
 CG_GLTextureBuffer::CG_GLTextureBuffer(CG_Texture const& p_texture)
 {
     glGenTextures(1, &m_id);

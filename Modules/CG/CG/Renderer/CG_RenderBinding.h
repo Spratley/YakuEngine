@@ -1,5 +1,7 @@
 #pragma once
 
+#include "YK/Types/Math/YK_Integer.h"
+
 class CG_Shader;
 class CG_Material;
 class CG_Texture;
@@ -11,7 +13,7 @@ class CG_RenderBinding
 public:
     void Bind(CG_Shader const& p_shader);
     void Bind(CG_Material const& p_material);
-    void Bind(CG_Texture const& p_texture);
+    void Bind(CG_Texture const& p_texture, YK_U8 p_slot);
     void Bind(CG_Mesh const& p_mesh);
 
     CG_Mesh const* GetBoundMesh() const { return m_boundMesh; }

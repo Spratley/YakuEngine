@@ -7,7 +7,7 @@ template <typename ExtraData>
 class CG_RenderTargetBase
 {
 public:
-    CG_RenderTargetBase(YK_Vector2i p_size);
+    CG_RenderTargetBase();
     ~CG_RenderTargetBase();
 
     bool Initialize();
@@ -19,6 +19,6 @@ public:
     void BindAsInputTexture(YK_U32 p_slotIndex) const;
 
 private:
-    YK_Vector2i m_size;
+    YK_Vector2i m_size = YK_Vector2i::Zero();
     ExtraData m_extraData;
 };

@@ -8,10 +8,12 @@
 #include <emscripten.h>
 #else
 #include <YK/Libraries/OpenGL/GLAD/include/glad/glad.h>
-#include <YK/Libraries/OpenGL/GLFW/include/glfw3.h>
+//#include <YK/Libraries/OpenGL/GLFW/include/glfw3.h>
 #endif
 
 #include "CG/Resource/Mesh/CG_Mesh.h"
+
+#include "YK/Types/Math/YK_Integer.h"
 
 CG_GLMeshBuffer::CG_GLMeshBuffer(CG_Mesh const& p_sourceMesh)
 {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "YK/Types/Math/YK_Matrix.h"
+
 namespace YK_Matrix
 {
     template <typename DataType>
