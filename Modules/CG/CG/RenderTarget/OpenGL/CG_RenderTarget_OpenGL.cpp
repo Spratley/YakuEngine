@@ -14,6 +14,23 @@
 #include "YK/Debugging/YK_Assert.h"
 #include "YK/IO/Logging/YK_Logger.h"
 #include "YK/Types/Math/YK_Vector.h"
+#include "YK/Types/Math/YK_Integer.h"
+
+// IsInitialized() and Bind() have to be defined before they're used by the file, in order for Clang to not complain
+// At this point they're effectively free functions since I'm specializing them
+template <>
+bool CG_RenderTargetBase<CG_RenderTargetData_OpenGL>::IsInitialized() const
+{
+    return m_extraData.m_frameBufferID != 0;
+}
+
+template <>
+void CG_RenderTargetBase<CG_RenderTargetData_OpenGL>::Bind() const
+{
+    // If left uninitialized, m_frameBufferID will be 0, effectively binding the screen as the target
+    glBindFramebuffer(GL_FRAMEBUFFER, m_extraData.m_frameBufferID);
+    glViewport(0, 0, m_size.x, m_size.y);
+}
 
 template <>
 CG_RenderTargetBase<CG_RenderTargetData_OpenGL>::CG_RenderTargetBase()
@@ -66,20 +83,6 @@ bool CG_RenderTargetBase<CG_RenderTargetData_OpenGL>::Initialize()
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     return true;
-}
-
-template <>
-bool CG_RenderTargetBase<CG_RenderTargetData_OpenGL>::IsInitialized() const
-{
-    return m_extraData.m_frameBufferID != 0;
-}
-
-template <>
-void CG_RenderTargetBase<CG_RenderTargetData_OpenGL>::Bind() const
-{
-    // If left uninitialized, m_frameBufferID will be 0, effectively binding the screen as the target
-    glBindFramebuffer(GL_FRAMEBUFFER, m_extraData.m_frameBufferID);
-    glViewport(0, 0, m_size.x, m_size.y);
 }
 
 template <>

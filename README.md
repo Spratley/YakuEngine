@@ -4,7 +4,7 @@ This project started as a way for me to keep my engine development skills sharp 
 
 YakuEn is structured as a series of static libraries that link together like a pyramid to form the final game.
 - YakuCore (YK) holds the most basic core concepts that make the foundation of then engine
-- CG is the computer graphics layer that manages the rendering oop of the game
+- CG is the computer graphics layer that manages the rendering loop of the game
 - YakuEngine (EN) is the top layer that sits between the end user's gameplay code and the engine. It is also responsible for connecting together the other layers of the engine into a unified interface
 
 YakuEn also leverages:
