@@ -4,26 +4,13 @@
 #include "EN/Libraries/HIDra/HIDra.h"
 
 #include "CG/CG_RenderModule.h"
-#include "CG/Camera/CG_CameraComponent.h"
 #include "CG/Resource/CG_ResourceRegistry.h"
 
 #include "PP/PP_PhysicsModule.h"
 
 #include "YK/Core/YK_Core.h"
-#include "YK/Libraries/Zen/Entity/Zen_EntityView.h"
 #include "YK/Libraries/Zen/Zen_Garden.h"
 #include "YK/Time/YK_Time.h"
-
-namespace YakuEngine_Private
-{
-    // Temporary until I need to find a better solution
-    // This WILL return invalid data if there's no camera in the garden
-    CG_CameraComponent const& FindCamera(Zen::Garden const& p_entityGarden)
-    {
-        Zen::EntityView<CG_CameraComponent> cameras = p_entityGarden.ViewComponents<CG_CameraComponent>();
-        return *cameras.begin();
-    }
-} // namespace YakuEngine_Private
 
 void YakuEngine::Run()
 {
@@ -69,7 +56,7 @@ void YakuEngine::EngineLoop()
 
     m_modules.GetPhysicsModule().Update(m_zenGarden);
 
-    m_modules.GetRenderModule().Render(YakuEngine_Private::FindCamera(m_zenGarden));
+    m_modules.GetRenderModule().Render();
     EndFrame();
 }
 

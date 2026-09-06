@@ -7,6 +7,9 @@
 class YakuEngine : public YK_Core
 {
 public:
+    static YakuEngine& GetEngine() { return static_cast<YakuEngine&>(YK_Core::GetEngine()); }
+
+public:
     template <typename ComponentTypes, typename SystemTypes>
     YakuEngine(ComponentTypes p_componentTypes, SystemTypes p_systemTypes)
         : YK_Core(p_componentTypes, p_systemTypes)

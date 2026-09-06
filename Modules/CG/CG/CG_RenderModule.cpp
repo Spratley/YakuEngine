@@ -22,6 +22,7 @@ CG_RenderModule::CG_RenderModule(YK_DisplaySurface& p_displaySurface)
     , m_displayRenderTarget()
     , m_3DRenderer(p_displaySurface)
     , m_2DRenderer()
+    , m_activeCamera(nullptr)
 {
     m_displayRenderTarget.SetSize(p_displaySurface.GetDimensions());
     p_displaySurface.GetResizedCallback().Attach<CG_RenderTarget, &CG_RenderTarget::SetSize>(&m_displayRenderTarget);
@@ -31,12 +32,17 @@ CG_RenderModule::CG_RenderModule(YK_DisplaySurface& p_displaySurface)
     glClearColor(0.1133f, 0.1269f, 0.1122f, 1.0f);
 }
 
-void CG_RenderModule::Render(CG_CameraComponent const& p_camera) const
+void CG_RenderModule::Render() const
 {
+    if (!m_activeCamera)
+    {
+        return;
+    }
+
     m_displayRenderTarget.Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_3DRenderer.Render(m_displayRenderTarget, m_renderBindingsCache, p_camera);
+    m_3DRenderer.Render(m_displayRenderTarget, m_renderBindingsCache, *m_activeCamera);
     m_2DRenderer.Render(m_displayRenderTarget);
 
     m_display->SwapBuffers();
