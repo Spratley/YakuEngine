@@ -7,6 +7,8 @@
 #include "CG/Camera/CG_CameraComponent.h"
 #include "CG/Resource/CG_ResourceRegistry.h"
 
+#include "PP/PP_PhysicsModule.h"
+
 #include "YK/Core/YK_Core.h"
 #include "YK/Libraries/Zen/Entity/Zen_EntityView.h"
 #include "YK/Libraries/Zen/Zen_Garden.h"
@@ -64,6 +66,9 @@ void YakuEngine::EngineLoop()
     BeginFrame();
     m_engineSystemManager.UpdateSystems(*this);
     m_zenGarden.Tick();
+
+    m_modules.GetPhysicsModule().Update(m_zenGarden);
+
     m_modules.GetRenderModule().Render(YakuEngine_Private::FindCamera(m_zenGarden));
     EndFrame();
 }

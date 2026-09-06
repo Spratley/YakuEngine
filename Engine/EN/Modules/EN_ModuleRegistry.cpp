@@ -6,6 +6,8 @@
 
 #include "CG/CG_RenderModule.h"
 
+#include "PP/PP_PhysicsModule.h"
+
 #include "YK/IO/Display/YK_DisplaySurface.h"
 #include "YK/Types/Pointers/YK_UniquePointer.h"
 
@@ -17,6 +19,7 @@ bool EN_ModuleRegistry::InitializeModules(YakuEngine& p_engine)
     YK_DisplaySurface& mainDisplaySurface = p_engine.GetMainDisplaySurface();
 
     m_renderModule = YK_UniquePointer<CG_RenderModule>::Make(mainDisplaySurface);
+    m_physicsModule = YK_UniquePointer<PP_PhysicsModule>::Make(10 * 1024 * 1024); // 10 Mebibytes
 
     // HIDra isn't really a module, but this is convenient
     HIDra::Core_PlatformInitData initData;

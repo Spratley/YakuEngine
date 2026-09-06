@@ -9,6 +9,7 @@ private:
 
 public:
     static float DeltaTime() { return s_deltaTime; }
+    static float PhysicsDeltaTime() { return YK_Min(s_deltaTime, 1.0f / 60.0f); }
 
     static void OnFrameEnd();
 

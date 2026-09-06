@@ -1,3 +1,4 @@
+// @platform: WASM
 #include "PCH/YakuCore_PCH.h"
 
 #if YK_PLATFORM == YK_WASM
