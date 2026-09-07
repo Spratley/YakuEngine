@@ -1,6 +1,10 @@
 #pragma once
 
+#include "YK/Types/Math/YK_Integer.h"
+
+#include "CG/GPU/CG_GPUDataPolicy.h"
 #include "CG/GPU/CG_GPUResource.h"
+#include "CG/Resource/Mesh/CG_MeshLayout.h"
 
 // TODO: Decouple mesh and OpenGL
 struct CG_GLMeshBuffer;
@@ -30,11 +34,17 @@ public:
 
     CG_GLMeshBuffer const& GetGLData() const { return *m_glData; }
 
+    CG_MeshLayout& GetMeshLayout() { return m_meshLayout; }
+    CG_MeshLayout const& GetMeshLayout() const { return m_meshLayout; }
 
 private:
     CG_Mesh(CG_GPUDataPolicy::GPUDataPolicy p_dataPolicy);
 
-    void SetData(float* p_vertexBuffer, YK_U32 p_vertexBufferCount, YK_U32* p_indexBuffer, YK_U32 p_indexBufferCount);
+    void SetData(float const* p_vertexBuffer,
+                 YK_U32 p_vertexBufferCount,
+                 YK_U32 const* p_indexBuffer,
+                 YK_U32 p_indexBufferCount,
+                 CG_MeshLayout p_meshLayout);
 
     // CG_GPUResource implementations
     bool HasDataImpl() const { return m_vertexBuffer && m_indexBuffer; }
@@ -53,4 +63,6 @@ private:
     YK_U32 m_vertexBufferCount;
     YK_U32 m_indexBufferCount;
     YK_U32 m_triangleCount;
+
+    CG_MeshLayout m_meshLayout;
 };

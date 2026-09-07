@@ -1,15 +1,21 @@
 #include "PCH/CG_PCH.h"
 #include "CG_MeshLoader.h"
 
-#include "CG/Resource/Mesh/CG_Mesh.h"
-#include "CG/Resource/Mesh/CG_MeshFactory.h"
-
+#include "YK/Debugging/YK_Assert.h"
 #include "YK/IO/File/YK_FilePath.h"
 #include "YK/IO/File/YK_IOFile.h"
+#include "YK/IO/Logging/YK_Logger.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Math/YK_Vector.h"
+#include "YK/Utils/YK_AlgorithmUtils.h"
+
+#include "CG/Libraries/TinyGLTF/tiny_gltf_v3.h"
+#include "CG/Resource/Mesh/CG_Mesh.h"
+#include "CG/Resource/Mesh/CG_MeshFactory.h"
+#include "CG_MeshLayout.h"
 
 #include <charconv>
+#include <cstring>
 #include <map>
 #include <sstream>
 #include <string>
@@ -18,8 +24,24 @@
 #include <utility>
 #include <vector>
 
-// TODO: This needs SUPER improvement. It's not good as it stands
 CG_Mesh CG_MeshLoader::Load(YK_FilePath const& p_path)
+{
+    std::string_view const& pathExtension = p_path.Extension();
+    if (pathExtension == "obj")
+    {
+        return LoadOBJ(p_path);
+    }
+    else if (pathExtension == "glb" || pathExtension == "gltf")
+    {
+        return LoadGLTF(p_path);
+    }
+
+    YK_LOG_ERROR_PARAM("Attempting to load a mesh with an unsupported format!\n{}", p_path.CString());
+    return CG_Mesh();
+}
+
+// TODO: This needs SUPER improvement. It's not good as it stands
+CG_Mesh CG_MeshLoader::LoadOBJ(YK_FilePath const& p_path)
 {
     std::stringstream objFileContents;
     YK_IFile::GetFileContents(p_path.CString(), objFileContents);
@@ -102,8 +124,120 @@ CG_Mesh CG_MeshLoader::Load(YK_FilePath const& p_path)
         }
     }
 
+    // Right now this is hard-coded to ONLY load position and UV
+    constexpr CG_MeshLayout layout{ CG_MeshAttribute::POSITION, CG_MeshAttribute::UV };
+
     return CG_MeshFactory::FromData(vertices.data(),
                                     static_cast<YK_U32>(vertices.size()),
                                     indices.data(),
-                                    static_cast<YK_U32>(indices.size()));
+                                    static_cast<YK_U32>(indices.size()),
+                                    layout);
+}
+
+CG_Mesh CG_MeshLoader::LoadGLTF(YK_FilePath const& p_path)
+{
+    tg3_parse_options options;
+    tg3_error_stack errors;
+    tg3_model model;
+
+    tg3_parse_options_init(&options);
+    tg3_error_stack_init(&errors);
+
+    tg3_error_code result =
+      tg3_parse_file(&model, &errors, p_path.CString(), static_cast<YK_U32>(p_path.Length()), &options);
+    if (result != TG3_OK)
+    {
+        for (auto i : YK_CountTo(errors.count))
+        {
+            tg3_error_entry const& error = errors.entries[i];
+            YK_LOG_ERROR_PARAM("GLTF Error [{}]: {}",
+                               static_cast<YK_U32>(error.severity),
+                               error.message ? error.message : "No Message");
+        }
+
+        tg3_model_free(&model);
+        tg3_error_stack_free(&errors);
+        return CG_Mesh();
+    }
+
+    YK_ASSERT(model.meshes_count == 1 && model.meshes[0].primitives_count == 1,
+              "YakuEn doesn't support multi-mesh files yet!");
+    tg3_primitive const& primitive = model.meshes[0].primitives[0];
+
+    YK_SizeT vertCount = 0;
+    YK_Vector3f const* vertices = nullptr;
+    YK_SizeT uvCount = 0;
+    YK_Vector2f const* uvs = nullptr;
+
+    for (auto i : YK_CountTo(primitive.attributes_count))
+    {
+        auto [name, value] = primitive.attributes[i];
+
+        tg3_accessor const& accessor = model.accessors[value];
+        tg3_buffer_view const& bufferView = model.buffer_views[accessor.buffer_view];
+        tg3_buffer const& buffer = model.buffers[bufferView.buffer];
+
+        YK_ASSERT(accessor.sparse.count == 0, "YakuEn doesn't support sparse GLTF data!");
+        YK_ASSERT(bufferView.byte_stride == 0, "YakuEn doesn't support non-continuous GLTF data!");
+
+        YK_U8 const* bufferStart = buffer.data.data + accessor.byte_offset + bufferView.byte_offset;
+
+        if (std::strcmp(name.data, "POSITION") == 0)
+        {
+            vertices = reinterpret_cast<YK_Vector3f const*>(bufferStart);
+            vertCount = accessor.count;
+
+            YK_ASSERT(accessor.type == TG3_TYPE_VEC3, "Expected Vector3 data for positions!");
+        }
+        if (std::strcmp(name.data, "TEXCOORD_0") == 0)
+        {
+            uvs = reinterpret_cast<YK_Vector2f const*>(bufferStart);
+            uvCount = accessor.count;
+
+            YK_ASSERT(accessor.type == TG3_TYPE_VEC2, "Expected Vector2 data for positions!");
+        }
+    }
+
+    YK_ASSERT(vertCount == uvCount, "What? The number of UVs and vertex positions don't match?");
+
+    std::vector<float> interleavedData;
+    interleavedData.resize(vertCount * 5);
+
+    for (auto i : YK_CountTo(vertCount))
+    {
+        YK_SizeT baseIndex = i * 5;
+        interleavedData[baseIndex + 0] = vertices[i].x;
+        interleavedData[baseIndex + 1] = vertices[i].y;
+        interleavedData[baseIndex + 2] = vertices[i].z;
+        interleavedData[baseIndex + 3] = uvs[i].x;
+        interleavedData[baseIndex + 4] = uvs[i].y;
+    }
+
+    tg3_accessor const& accessor = model.accessors[primitive.indices];
+    tg3_buffer_view const& bufferView = model.buffer_views[accessor.buffer_view];
+    tg3_buffer const& indexBuffer = model.buffers[bufferView.buffer];
+
+    YK_ASSERT(accessor.type == TG3_TYPE_SCALAR, "Expected scalar data for index array!");
+    YK_ASSERT(accessor.component_type == TG3_COMPONENT_TYPE_UNSIGNED_SHORT, "Expected UInt16 type for index array!");
+
+    YK_U16 const* indexBufferData =
+      reinterpret_cast<YK_U16 const*>(indexBuffer.data.data + accessor.byte_offset + bufferView.byte_offset);
+    std::vector<YK_U32> indices;
+    indices.resize(accessor.count);
+    for (auto i : YK_CountTo(accessor.count))
+    {
+        indices[i] = static_cast<YK_U32>(indexBufferData[i]);
+    }
+
+    tg3_model_free(&model);
+    tg3_error_stack_free(&errors);
+
+    // Right now this is hard-coded to ONLY load position and UV
+    constexpr CG_MeshLayout layout{ CG_MeshAttribute::POSITION, CG_MeshAttribute::UV };
+
+    return CG_MeshFactory::FromData(interleavedData.data(),
+                                    static_cast<YK_U32>(interleavedData.size()),
+                                    indices.data(),
+                                    static_cast<YK_U32>(indices.size()),
+                                    layout);
 }

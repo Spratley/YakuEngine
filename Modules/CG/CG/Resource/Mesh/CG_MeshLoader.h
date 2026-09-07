@@ -7,4 +7,8 @@
 struct CG_MeshLoader
 {
     static CG_Mesh Load(YK_FilePath const& p_path);
+
+private:
+    static CG_Mesh LoadOBJ(YK_FilePath const& p_path);
+    static CG_Mesh LoadGLTF(YK_FilePath const& p_path);
 };

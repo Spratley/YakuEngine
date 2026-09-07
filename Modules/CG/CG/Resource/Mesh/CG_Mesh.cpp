@@ -1,13 +1,15 @@
 #include "PCH/CG_PCH.h"
 #include "CG_Mesh.h"
 
-#include "CG/GPU/CG_GPUDataPolicy.h"
-#include "CG/GPU/CG_GPUResource.h"
-#include "CG/OpenGL/CG_GLMeshBuffer.h"
-
+#include "YK/Debugging/YK_Assert.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Utils/YK_AlgorithmUtils.h"
 #include "YK/Utils/YK_MemoryUtils.h"
+
+#include "CG/GPU/CG_GPUDataPolicy.h"
+#include "CG/GPU/CG_GPUResource.h"
+#include "CG/OpenGL/CG_GLMeshBuffer.h"
+#include "CG_MeshLayout.h"
 
 #include <cstring>
 #include <utility>
@@ -72,17 +74,13 @@ CG_Mesh& CG_Mesh::operator=(CG_Mesh&& p_otherMesh) noexcept
     return *this;
 }
 
-void CG_Mesh::SetData(float* p_vertexBuffer,
+void CG_Mesh::SetData(float const* p_vertexBuffer,
                       YK_U32 p_vertexBufferCount,
-                      YK_U32* p_indexBuffer,
-                      YK_U32 p_indexBufferCount)
+                      YK_U32 const* p_indexBuffer,
+                      YK_U32 p_indexBufferCount,
+                      CG_MeshLayout p_meshLayout)
 {
-    // TODO: Assert when vertex data exists
-    if (m_vertexBuffer)
-    {
-        // __debugbreak();
-        return;
-    }
+    YK_ASSERT(m_vertexBuffer == nullptr, "Attempting to overwrite existing vertex data!");
 
     m_vertexBufferCount = p_vertexBufferCount;
     m_indexBufferCount = p_indexBufferCount;
@@ -94,6 +92,8 @@ void CG_Mesh::SetData(float* p_vertexBuffer,
 
     memcpy(m_vertexBuffer, p_vertexBuffer, sizeof(float) * p_vertexBufferCount);
     memcpy(m_indexBuffer, p_indexBuffer, sizeof(YK_U32) * p_indexBufferCount);
+
+    m_meshLayout = p_meshLayout;
 
     OnDataSet();
 }

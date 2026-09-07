@@ -2,6 +2,7 @@
 
 #include "YK/Types/Math/YK_Integer.h"
 
+#include "YK/Types/Traits/YK_Concepts.h"
 #include "YK/Types/Traits/YK_TypeTraits.h"
 
 #include <type_traits>
@@ -35,8 +36,9 @@ constexpr void YK_Swap(Type& p_a, Type& p_b)
 
 struct YK_CountTo
 {
-    constexpr YK_CountTo(YK_SizeT p_limit)
-        : m_limit(p_limit)
+    template <YK_SizeTConvertible Type>
+    constexpr YK_CountTo(Type p_limit)
+        : m_limit(static_cast<YK_SizeT>(p_limit))
     {}
 
     struct Iterator

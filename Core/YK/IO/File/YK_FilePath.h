@@ -13,18 +13,28 @@ public:
     YK_FilePath(std::string_view p_localPath)
     {
         constexpr std::string_view rootDataPath("J:/Harbourfront/Data/");
-        m_fullPath = std::string("J:/Harbourfront/Data/");
+        m_fullPath = rootDataPath;
         m_fullPath.append(p_localPath);
+
+        YK_SizeT dotOffset = m_fullPath.find_last_of('.');
+        if (dotOffset != std::string::npos)
+        {
+            m_extension = std::string_view(m_fullPath.begin() + dotOffset + 1, m_fullPath.end());
+        }
     }
 
     ~YK_FilePath() = default;
 
     char const* CString() const { return m_fullPath.c_str(); }
+    YK_SizeT Length() const { return m_fullPath.size(); }
+
+    std::string_view const& Extension() const { return m_extension; }
 
     bool operator==(YK_FilePath const& p_rhs) const { return m_fullPath == p_rhs.m_fullPath; }
 
 private:
     std::string m_fullPath;
+    std::string_view m_extension = "";
 };
 
 namespace std
