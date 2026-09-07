@@ -8,7 +8,7 @@
 class CG_MeshFactory
 {
 public:
-    static CG_Mesh FromData(float const* p_vertexData,
+    static CG_Mesh FromData(YK_Byte const* p_vertexData,
                             YK_U32 p_vertexDataCount,
                             YK_U32 const* p_indexData,
                             YK_U32 p_indexCount,

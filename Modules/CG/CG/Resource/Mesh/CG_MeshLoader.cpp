@@ -127,12 +127,23 @@ CG_Mesh CG_MeshLoader::LoadOBJ(YK_FilePath const& p_path)
     // Right now this is hard-coded to ONLY load position and UV
     constexpr CG_MeshLayout layout{ CG_MeshAttribute::POSITION, CG_MeshAttribute::UV };
 
-    return CG_MeshFactory::FromData(vertices.data(),
+    return CG_MeshFactory::FromData(reinterpret_cast<YK_Byte const*>(vertices.data()),
                                     static_cast<YK_U32>(vertices.size()),
                                     indices.data(),
                                     static_cast<YK_U32>(indices.size()),
                                     layout);
 }
+
+template <typename T>
+struct DataView
+{
+    constexpr bool IsUsed() const { return m_count != 0; }
+    constexpr YK_SizeT SizeBytes() const { return m_count * sizeof(T); }
+    constexpr YK_SizeT GetTypeOffset() const { return IsUsed() ? sizeof(T) : 0; }
+
+    T const* m_buffer = nullptr;
+    YK_SizeT m_count = 0;
+};
 
 CG_Mesh CG_MeshLoader::LoadGLTF(YK_FilePath const& p_path)
 {
@@ -164,10 +175,12 @@ CG_Mesh CG_MeshLoader::LoadGLTF(YK_FilePath const& p_path)
               "YakuEn doesn't support multi-mesh files yet!");
     tg3_primitive const& primitive = model.meshes[0].primitives[0];
 
-    YK_SizeT vertCount = 0;
-    YK_Vector3f const* vertices = nullptr;
-    YK_SizeT uvCount = 0;
-    YK_Vector2f const* uvs = nullptr;
+    CG_MeshLayout layout;
+    DataView<YK_Vector3f> vertices;
+    DataView<YK_Vector3f> normals;
+    DataView<YK_Vector2f> uvs;
+    DataView<YK_Vector4i> joints;
+    DataView<YK_Vector4f> weights;
 
     for (auto i : YK_CountTo(primitive.attributes_count))
     {
@@ -184,35 +197,82 @@ CG_Mesh CG_MeshLoader::LoadGLTF(YK_FilePath const& p_path)
 
         if (std::strcmp(name.data, "POSITION") == 0)
         {
-            vertices = reinterpret_cast<YK_Vector3f const*>(bufferStart);
-            vertCount = accessor.count;
-
+            layout.SetEnabled(CG_MeshAttribute::POSITION);
+            vertices = { .m_buffer = reinterpret_cast<YK_Vector3f const*>(bufferStart), .m_count = accessor.count };
             YK_ASSERT(accessor.type == TG3_TYPE_VEC3, "Expected Vector3 data for positions!");
         }
-        if (std::strcmp(name.data, "TEXCOORD_0") == 0)
+        else if (std::strcmp(name.data, "NORMAL") == 0)
         {
-            uvs = reinterpret_cast<YK_Vector2f const*>(bufferStart);
-            uvCount = accessor.count;
+            layout.SetEnabled(CG_MeshAttribute::NORMAL);
+            normals = { .m_buffer = reinterpret_cast<YK_Vector3f const*>(bufferStart), .m_count = accessor.count };
+            YK_ASSERT(accessor.type == TG3_TYPE_VEC3, "Expected Vector3 data for normals!");
+        }
+        else if (std::strcmp(name.data, "TEXCOORD_0") == 0)
+        {
+            layout.SetEnabled(CG_MeshAttribute::UV);
+            uvs = { .m_buffer = reinterpret_cast<YK_Vector2f const*>(bufferStart), .m_count = accessor.count };
+            YK_ASSERT(accessor.type == TG3_TYPE_VEC2, "Expected Vector2 data for UVs!");
+        }
+        else if (std::strcmp(name.data, "JOINTS_0") == 0)
+        {
+            layout.SetEnabled(CG_MeshAttribute::JOINT);
+            joints = { .m_buffer = reinterpret_cast<YK_Vector4i const*>(bufferStart), .m_count = accessor.count };
+            YK_ASSERT(accessor.type == TG3_TYPE_VEC4, "Expected Vector4 data for Joints!");
+        }
+        else if (std::strcmp(name.data, "WEIGHTS_0") == 0)
+        {
+            layout.SetEnabled(CG_MeshAttribute::WEIGHT);
+            weights = { .m_buffer = reinterpret_cast<YK_Vector4f const*>(bufferStart), .m_count = accessor.count };
+            YK_ASSERT(accessor.type == TG3_TYPE_VEC4, "Expected Vector4 data for Weights!");
+        }
 
-            YK_ASSERT(accessor.type == TG3_TYPE_VEC2, "Expected Vector2 data for positions!");
+        YK_LOG(name.data);
+    }
+
+    // TODO: Assert enabled buffers have the same count
+    // YK_ASSERT(, "What? The number of UVs and vertex positions don't match?");
+
+    YK_SizeT dataArrayByteCount =
+      vertices.SizeBytes() + normals.SizeBytes() + uvs.SizeBytes() + joints.SizeBytes() + weights.SizeBytes();
+
+    std::vector<YK_Byte> interleavedData;
+    interleavedData.resize(dataArrayByteCount);
+
+    YK_SizeT baseOffset = vertices.GetTypeOffset() + normals.GetTypeOffset() + uvs.GetTypeOffset()
+                          + joints.GetTypeOffset() + weights.GetTypeOffset();
+
+    for (auto i : YK_CountTo(vertices.m_count))
+    {
+        YK_SizeT baseIndex = i * baseOffset;
+
+        if (vertices.IsUsed())
+        {
+            memcpy(static_cast<void*>(&interleavedData[baseIndex]), &vertices.m_buffer[i], vertices.GetTypeOffset());
+            baseIndex += vertices.GetTypeOffset();
+        }
+        if (normals.IsUsed())
+        {
+            memcpy(static_cast<void*>(&interleavedData[baseIndex]), &normals.m_buffer[i], normals.GetTypeOffset());
+            baseIndex += normals.GetTypeOffset();
+        }
+        if (uvs.IsUsed())
+        {
+            memcpy(static_cast<void*>(&interleavedData[baseIndex]), &uvs.m_buffer[i], uvs.GetTypeOffset());
+            baseIndex += uvs.GetTypeOffset();
+        }
+        if (joints.IsUsed())
+        {
+            memcpy(static_cast<void*>(&interleavedData[baseIndex]), &joints.m_buffer[i], joints.GetTypeOffset());
+            baseIndex += joints.GetTypeOffset();
+        }
+        if (weights.IsUsed())
+        {
+            memcpy(static_cast<void*>(&interleavedData[baseIndex]), &weights.m_buffer[i], weights.GetTypeOffset());
+            baseIndex += weights.GetTypeOffset();
         }
     }
 
-    YK_ASSERT(vertCount == uvCount, "What? The number of UVs and vertex positions don't match?");
-
-    std::vector<float> interleavedData;
-    interleavedData.resize(vertCount * 5);
-
-    for (auto i : YK_CountTo(vertCount))
-    {
-        YK_SizeT baseIndex = i * 5;
-        interleavedData[baseIndex + 0] = vertices[i].x;
-        interleavedData[baseIndex + 1] = vertices[i].y;
-        interleavedData[baseIndex + 2] = vertices[i].z;
-        interleavedData[baseIndex + 3] = uvs[i].x;
-        interleavedData[baseIndex + 4] = uvs[i].y;
-    }
-
+    // Extract index data
     tg3_accessor const& accessor = model.accessors[primitive.indices];
     tg3_buffer_view const& bufferView = model.buffer_views[accessor.buffer_view];
     tg3_buffer const& indexBuffer = model.buffers[bufferView.buffer];
@@ -232,11 +292,8 @@ CG_Mesh CG_MeshLoader::LoadGLTF(YK_FilePath const& p_path)
     tg3_model_free(&model);
     tg3_error_stack_free(&errors);
 
-    // Right now this is hard-coded to ONLY load position and UV
-    constexpr CG_MeshLayout layout{ CG_MeshAttribute::POSITION, CG_MeshAttribute::UV };
-
     return CG_MeshFactory::FromData(interleavedData.data(),
-                                    static_cast<YK_U32>(interleavedData.size()),
+                                    static_cast<YK_U32>(interleavedData.size() / sizeof(float)),
                                     indices.data(),
                                     static_cast<YK_U32>(indices.size()),
                                     layout);

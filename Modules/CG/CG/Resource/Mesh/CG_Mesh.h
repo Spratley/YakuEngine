@@ -17,14 +17,14 @@ class CG_Mesh : public CG_GPUResource<CG_Mesh>
 public:
     CG_Mesh();
     CG_Mesh(CG_Mesh&& p_otherMesh) noexcept;
-    // TODO: Destructor
+    virtual ~CG_Mesh() = default;
 
     CG_Mesh& operator=(CG_Mesh& p_otherMesh) = delete;
     CG_Mesh& operator=(CG_Mesh&& p_otherMesh) noexcept;
 
     inline bool IsValid() const { return m_vertexBuffer || m_glData; } // Check if there is at least SOME data
 
-    float* GetVertexBuffer() const { return m_vertexBuffer; }
+    YK_Byte* GetVertexBuffer() const { return m_vertexBuffer; }
     YK_U32 GetVertexBufferSize() const { return m_vertexBufferCount; }
 
     YK_U32* GetIndexBuffer() const { return m_indexBuffer; }
@@ -40,7 +40,7 @@ public:
 private:
     CG_Mesh(CG_GPUDataPolicy::GPUDataPolicy p_dataPolicy);
 
-    void SetData(float const* p_vertexBuffer,
+    void SetData(YK_Byte const* p_vertexBuffer,
                  YK_U32 p_vertexBufferCount,
                  YK_U32 const* p_indexBuffer,
                  YK_U32 p_indexBufferCount,
@@ -57,7 +57,7 @@ private:
 private:
     CG_GLMeshBuffer* m_glData;
 
-    float* m_vertexBuffer;
+    YK_Byte* m_vertexBuffer;
     YK_U32* m_indexBuffer;
 
     YK_U32 m_vertexBufferCount;

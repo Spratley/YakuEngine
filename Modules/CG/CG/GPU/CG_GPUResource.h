@@ -20,7 +20,7 @@ public:
     CG_GPUResource& operator=(CG_GPUResource<ResourceType> const&) = delete;
     CG_GPUResource& operator=(CG_GPUResource<ResourceType>&& p_otherResource) noexcept;
 
-    ~CG_GPUResource() { FlushResources(); }
+    virtual ~CG_GPUResource() { FlushResources(); }
 
     inline bool HasData() const { return YK_CRTPCast<ResourceType const>(this)->HasDataImpl(); }
     inline bool HasGPUData() const { return YK_CRTPCast<ResourceType const>(this)->HasGPUDataImpl(); }

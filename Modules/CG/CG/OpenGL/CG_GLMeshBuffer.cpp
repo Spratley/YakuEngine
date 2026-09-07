@@ -1,19 +1,21 @@
 #include "PCH/CG_PCH.h"
 #include "CG_GLMeshBuffer.h"
 
+#include "YK/Platforms/YK_PlatformDefines.h"
+#include "YK/Types/Math/YK_Integer.h"
+#include "YK/Utils/YK_AlgorithmUtils.h"
+
+#include "CG/Resource/Mesh/CG_Mesh.h"
+#include "CG/Resource/Mesh/CG_MeshLayout.h"
+
 #if YK_PLATFORM == YK_WASM
 // Emscripten specific GL headers
 #include <GLES3/gl3.h>
 #include <GLFW/glfw3.h>
 #include <emscripten.h>
 #else
-#include <YK/Libraries/OpenGL/GLAD/include/glad/glad.h>
+#include "YK/Libraries/OpenGL/GLAD/include/glad/glad.h"
 #endif
-
-#include "CG/Resource/Mesh/CG_Mesh.h"
-
-#include "YK/Types/Math/YK_Integer.h"
-#include "YK/Utils/YK_AlgorithmUtils.h"
 
 CG_GLMeshBuffer::CG_GLMeshBuffer(CG_Mesh const& p_sourceMesh)
 {

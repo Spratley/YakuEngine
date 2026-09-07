@@ -74,7 +74,7 @@ CG_Mesh& CG_Mesh::operator=(CG_Mesh&& p_otherMesh) noexcept
     return *this;
 }
 
-void CG_Mesh::SetData(float const* p_vertexBuffer,
+void CG_Mesh::SetData(YK_Byte const* p_vertexBuffer,
                       YK_U32 p_vertexBufferCount,
                       YK_U32 const* p_indexBuffer,
                       YK_U32 p_indexBufferCount,
@@ -87,7 +87,7 @@ void CG_Mesh::SetData(float const* p_vertexBuffer,
     m_triangleCount = p_indexBufferCount / 3;
 
     // TODO: Steal the pointer instead of copying?
-    m_vertexBuffer = new float[m_vertexBufferCount];
+    m_vertexBuffer = new YK_Byte[m_vertexBufferCount * sizeof(float)];
     m_indexBuffer = new YK_U32[m_indexBufferCount];
 
     memcpy(m_vertexBuffer, p_vertexBuffer, sizeof(float) * p_vertexBufferCount);

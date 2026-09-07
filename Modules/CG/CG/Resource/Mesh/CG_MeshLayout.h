@@ -25,7 +25,7 @@ struct CG_MeshLayout
         switch (p_attribute)
         {
             case CG_MeshAttribute::POSITION: return 3u;
-            case CG_MeshAttribute::NORMAL:   return 2u;
+            case CG_MeshAttribute::NORMAL:   return 3u;
             case CG_MeshAttribute::UV:       return 2u;
             case CG_MeshAttribute::JOINT:    return 4u;
             case CG_MeshAttribute::WEIGHT:   return 4u;

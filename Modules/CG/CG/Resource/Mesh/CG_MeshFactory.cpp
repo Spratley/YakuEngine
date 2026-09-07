@@ -7,7 +7,7 @@
 #include "CG_Mesh.h"
 #include "CG_MeshLayout.h"
 
-CG_Mesh CG_MeshFactory::FromData(float const* p_vertexData,
+CG_Mesh CG_MeshFactory::FromData(YK_Byte const* p_vertexData,
                                  YK_U32 p_vertexDataCount,
                                  YK_U32 const* p_indexData,
                                  YK_U32 p_indexCount,
@@ -23,8 +23,8 @@ CG_Mesh CG_MeshFactory::Quad()
 {
     // Packed position and UV data
     constexpr float vertices[] = { 0.5f,  0.5f,  0.0f, 1.0f, 1.0f, 0.5f,  -0.5f, 0.0f, 1.0f, 0.0f,
-                         -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, -0.5f, 0.5f,  0.0f, 0.0f, 1.0f };
+                                   -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, -0.5f, 0.5f,  0.0f, 0.0f, 1.0f };
     constexpr unsigned int indices[] = { 0, 1, 3, 1, 2, 3 };
     constexpr CG_MeshLayout meshLayout{ CG_MeshAttribute::POSITION, CG_MeshAttribute::UV };
-    return FromData(vertices, 20, indices, 6, meshLayout);
+    return FromData(reinterpret_cast<YK_Byte const*>(vertices), 20, indices, 6, meshLayout);
 }
