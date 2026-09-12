@@ -46,12 +46,26 @@ CG_GLMeshBuffer::CG_GLMeshBuffer(CG_Mesh const& p_sourceMesh)
         if (meshLayout.IsEnabled(attribute))
         {
             YK_SizeT attributeSize = CG_MeshLayout::AttributeSize(attribute);
-            glVertexAttribPointer(static_cast<GLuint>(i),
-                                  static_cast<GLint>(attributeSize),
-                                  GL_FLOAT,
-                                  GL_FALSE,
-                                  static_cast<GLsizei>(stride),
-                                  pointerOffset);
+
+            if (attribute == CG_MeshAttribute::JOINT)
+            {
+                glVertexAttribIPointer(static_cast<GLuint>(i),
+                                       static_cast<GLint>(attributeSize),
+                                       GL_UNSIGNED_INT,
+                                       static_cast<GLsizei>(stride),
+                                       pointerOffset);
+            }
+            else
+            {
+                // Floating point data for everything else
+                glVertexAttribPointer(static_cast<GLuint>(i),
+                                      static_cast<GLint>(attributeSize),
+                                      GL_FLOAT,
+                                      GL_FALSE,
+                                      static_cast<GLsizei>(stride),
+                                      pointerOffset);
+            }
+
             glEnableVertexAttribArray(static_cast<GLint>(i));
             pointerOffset += attributeSize * sizeof(float);
         }

@@ -1,6 +1,13 @@
 #include "PCH/CG_PCH.h"
 #include "CG_Shader.h"
 
+#include "YK/Debugging/YK_Assert.h"
+#include "YK/IO/File/YK_IOFile.h"
+#include "YK/IO/Logging/YK_Logger.h"
+#include "YK/Platforms/YK_PlatformDefines.h"
+#include "YK/Types/Math/YK_Integer.h"
+#include "YK/Types/Math/YK_Matrix.h"
+
 #if YK_PLATFORM == YK_WASM
 // Emscripten specific GL headers
 #include <GLES3/gl3.h>
@@ -10,26 +17,32 @@
 #include <YK/Libraries/OpenGL/GLAD/include/glad/glad.h>
 #endif
 
-#include "YK/IO/File/YK_IOFile.h"
-#include "YK/Types/Math/YK_Integer.h"
-
-#include <string>
 #include <sstream>
+#include <string>
+#include <vector>
 
 namespace CG_Shader_Private
 {
 #if YK_PLATFORM == YK_WASM
     constexpr char const* shaderVersion = "#version 300 es\n";
 #else
-    constexpr char const* shaderVersion = "#version 330 core\n";
+    constexpr char const* shaderVersion = "#version 430 core\n";
 #endif
     constexpr YK_SizeT shaderVersionLength = std::char_traits<char>::length(shaderVersion);
+
+    constexpr GLuint SkeletonBindingSlot = 0;
 } // namespace CG_Shader_Private
 
-CG_Shader::CG_Shader(char const* p_vertexPath, char const* p_fragmentPath)
-    : m_id(0)
+CG_Shader::CG_Shader(char const* p_vertexPath, char const* p_fragmentPath, bool p_isSkeletal)
 {
     InitShader(p_vertexPath, p_fragmentPath);
+
+    if (p_isSkeletal)
+    {
+        GLuint skeletonBlockIndex = glGetUniformBlockIndex(m_id, "SkeletonData");
+        glUniformBlockBinding(m_id, skeletonBlockIndex, CG_Shader_Private::SkeletonBindingSlot);
+        glGenBuffers(1, &m_skeletonUBOID);
+    }
 }
 
 void CG_Shader::Use() const { glUseProgram(m_id); }
@@ -53,6 +66,19 @@ void CG_Shader::SetMatrix44(char const* p_name, float const* p_buffer) const
 {
     const YK_U32 matrixLocation = glGetUniformLocation(m_id, p_name);
     glUniformMatrix4fv(matrixLocation, 1, GL_FALSE, p_buffer);
+}
+
+void CG_Shader::SetSkeletonData(std::vector<YK_Matrix44> const& p_bones) const
+{
+    YK_ASSERT(m_skeletonUBOID != 0, "Attempting to upload skeleton data to a non-skeletal shader!");
+
+    YK_SizeT const bufferSize = p_bones.size() * sizeof(YK_Matrix44);
+
+    glBindBuffer(GL_UNIFORM_BUFFER, m_skeletonUBOID);
+    glBufferData(GL_UNIFORM_BUFFER, bufferSize, nullptr, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, bufferSize, p_bones.data());
+    glBindBufferBase(GL_UNIFORM_BUFFER, CG_Shader_Private::SkeletonBindingSlot, m_skeletonUBOID);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void CG_Shader::InitShader(char const* p_vertexPath, char const* p_fragmentPath)
@@ -91,7 +117,8 @@ void CG_Shader::CompileShader(YK_U32& p_outID, std::string const& p_shaderCode, 
     p_outID = glCreateShader(p_shaderType);
 
     char const* sources[]{ CG_Shader_Private::shaderVersion, p_shaderCode.c_str() };
-    YK_Int32 const sourceLengths[]{ CG_Shader_Private::shaderVersionLength, static_cast<YK_Int32>(p_shaderCode.length()) };
+    YK_Int32 const sourceLengths[]{ CG_Shader_Private::shaderVersionLength,
+                                    static_cast<YK_Int32>(p_shaderCode.length()) };
     glShaderSource(p_outID, 2, sources, sourceLengths);
     glCompileShader(p_outID);
 

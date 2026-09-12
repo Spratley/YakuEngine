@@ -3,15 +3,25 @@
 #include "YK/IO/Logging/YK_Logger.h"
 
 #if !YAKU_RETAIL
-static inline void YK_AssertImpl(bool p_condition, char const* p_message)
+static constexpr inline void YK_AssertImpl(bool p_condition, char const* p_message)
 {
     if (!p_condition)
     {
-        YK_LOG_ERROR(p_message);
+        if consteval
+        {
+            // Constexpr Assert
+            static_cast<void const*>(p_message);
+            throw "Failed Constexpr Assertion";
+        }
+        else
+        {
+            // Runtime Assert
+            YK_LOG_ERROR(p_message);
 #if _MSC_VER
-        __debugbreak();
-#endif // YK_PLATFORM != YK_WASM
-        abort();
+            __debugbreak();
+#endif // _MSC_VER
+            abort();
+        }
     }
 }
 

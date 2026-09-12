@@ -12,6 +12,8 @@ YakuEn also leverages:
 - [HIDra](https://github.com/Spratley/HIDra) for HID polling and user input
 - [Zen](https://github.com/Spratley/Zen) for the Entity Component System backbone
 (Both of which were custom made for the engine, but designed to stand alone for use in other projects)
+- stbimage for loading images
+- TinyGLTF for loading GLTF files
 
 As mentioned, the physics solver for YakuEn is [Jolt](https://github.com/jrouwe/joltphysics) an open source and Web Assembly compatible codebase that has been used in AAA projects.
 

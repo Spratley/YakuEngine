@@ -1,9 +1,8 @@
 #pragma once
 
+#include "YK/Math/YK_AngleMath.h"
 #include "YK/Types/Math/YK_Vector.h"
 #include "YK/Utils/YK_AlgorithmUtils.h"
-
-#include <cmath>
 
 namespace YK_Vector
 {
@@ -19,26 +18,26 @@ namespace YK_Vector
     }
 
     template <YK_VectorType Vector>
-    /*constexpr*/ float Magnitude(Vector const& p_vector)
+    constexpr float Magnitude(Vector const& p_vector)
     {
-        return std::sqrt(SqrMagnitude(p_vector));
+        return YK_SquareRoot(SqrMagnitude(p_vector));
     }
 
     template <YK_VectorType Vector>
-    /*constexpr*/ YK_Vector_N<typename Vector::DataType_T, Vector::Count> GetNormalized(Vector const& p_vector)
+    constexpr YK_Vector_N<typename Vector::DataType_T, Vector::Count> GetNormalized(Vector const& p_vector)
     {
         return p_vector / Magnitude(p_vector);
     }
 
     template <YK_VectorType Vector>
-    /*constexpr*/ Vector& Normalize(Vector& p_vector)
+    constexpr Vector& Normalize(Vector& p_vector)
     {
         p_vector /= Magnitude(p_vector);
         return p_vector;
     }
 
     template <YK_VectorType Vector>
-    /*constexpr*/ typename Vector::DataType_T NormalizeAndGetMagnitude(Vector& p_vector)
+    constexpr typename Vector::DataType_T NormalizeAndGetMagnitude(Vector& p_vector)
     {
         float const magnitude = Magnitude(p_vector);
         p_vector /= magnitude;
@@ -47,7 +46,8 @@ namespace YK_Vector
 
     template <YK_VectorType VectorA, YK_VectorType VectorB>
     requires(YK_AreVectorsCompatible<VectorA, VectorB>::value)
-    constexpr YK_Vector_N<typename VectorA::DataType_T, VectorA::Count> Scale(VectorA const& p_lhs, VectorB const& p_rhs)
+    constexpr YK_Vector_N<typename VectorA::DataType_T, VectorA::Count> Scale(VectorA const& p_lhs,
+                                                                              VectorB const& p_rhs)
     {
         YK_Vector_N<typename VectorA::DataType_T, VectorA::Count> result;
         for (auto i : YK_CountTo(VectorA::Count))

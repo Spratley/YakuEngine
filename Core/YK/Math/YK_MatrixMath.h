@@ -1,7 +1,11 @@
 #pragma once
 
 #include "YK/Math/YK_MathUtils.h"
+#include "YK/Math/YK_VectorMath.h"
 #include "YK/Types/Math/YK_Matrix.h"
+#include "YK/Types/Math/YK_Quaternion.h"
+#include "YK/Types/Math/YK_Vector.h"
+#include "YK/Utils/YK_AlgorithmUtils.h"
 
 namespace YK_Matrix
 {
@@ -44,7 +48,7 @@ namespace YK_Matrix
     }
 
     template <typename DataType>
-    /*constexpr*/ YK_Quaternion_T<DataType> ToQuaternion(YK_Matrix_R_C<DataType, 3, 3> const& p_matrix)
+    constexpr YK_Quaternion_T<DataType> ToQuaternion(YK_Matrix_R_C<DataType, 3, 3> const& p_matrix)
     {
         // Based on GLM
         DataType const fourXSquaredMinus1 = p_matrix[0][0] - p_matrix[1][1] - p_matrix[2][2];
@@ -71,32 +75,32 @@ namespace YK_Matrix
         }
 
         DataType const biggestValue =
-          std::sqrt(fourBiggestSquaredMinus1 + static_cast<DataType>(1)) * static_cast<DataType>(0.5);
+          YK_SquareRoot(fourBiggestSquaredMinus1 + static_cast<DataType>(1)) * static_cast<DataType>(0.5);
         DataType multiplier = static_cast<DataType>(0.25) / biggestValue;
 
         switch (biggestIndex)
         {
             default: return YK_Quaternion_T<DataType>{};
             case 0:
-                return YK_Quaternion_T<DataType>{ biggestValue,
-                                                  (p_matrix[1][2] - p_matrix[2][1]) * multiplier,
-                                                  (p_matrix[2][0] - p_matrix[0][2]) * multiplier,
-                                                  (p_matrix[0][1] - p_matrix[1][0]) * multiplier };
-            case 1:
                 return YK_Quaternion_T<DataType>{ (p_matrix[1][2] - p_matrix[2][1]) * multiplier,
-                                                  biggestValue,
-                                                  (p_matrix[0][1] + p_matrix[1][0]) * multiplier,
-                                                  (p_matrix[2][0] + p_matrix[0][2]) * multiplier };
-            case 2:
-                return YK_Quaternion_T<DataType>{ (p_matrix[2][0] - p_matrix[0][2]) * multiplier,
-                                                  (p_matrix[0][1] + p_matrix[1][0]) * multiplier,
-                                                  biggestValue,
-                                                  (p_matrix[1][2] + p_matrix[2][1]) * multiplier };
-            case 3:
-                return YK_Quaternion_T<DataType>{ (p_matrix[0][1] - p_matrix[1][0]) * multiplier,
-                                                  (p_matrix[2][0] + p_matrix[0][2]) * multiplier,
-                                                  (p_matrix[1][2] + p_matrix[2][1]) * multiplier,
+                                                  (p_matrix[2][0] - p_matrix[0][2]) * multiplier,
+                                                  (p_matrix[0][1] - p_matrix[1][0]) * multiplier,
                                                   biggestValue };
+            case 1:
+                return YK_Quaternion_T<DataType>{ biggestValue,
+                                                  (p_matrix[0][1] + p_matrix[1][0]) * multiplier,
+                                                  (p_matrix[2][0] + p_matrix[0][2]) * multiplier,
+                                                  (p_matrix[1][2] - p_matrix[2][1]) * multiplier };
+            case 2:
+                return YK_Quaternion_T<DataType>{ (p_matrix[0][1] + p_matrix[1][0]) * multiplier,
+                                                  biggestValue,
+                                                  (p_matrix[1][2] + p_matrix[2][1]) * multiplier,
+                                                  (p_matrix[2][0] - p_matrix[0][2]) * multiplier };
+            case 3:
+                return YK_Quaternion_T<DataType>{ (p_matrix[2][0] + p_matrix[0][2]) * multiplier,
+                                                  (p_matrix[1][2] + p_matrix[2][1]) * multiplier,
+                                                  biggestValue,
+                                                  (p_matrix[0][1] - p_matrix[1][0]) * multiplier };
         }
     }
 

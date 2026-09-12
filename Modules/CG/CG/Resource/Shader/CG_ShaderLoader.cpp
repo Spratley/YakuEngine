@@ -48,6 +48,7 @@ CG_Shader CG_ShaderLoader::Load(YK_FilePath const& p_shaderPath)
 
     std::string vertex;
     std::string fragment;
+    bool isSkeletal = false;
 
     std::string fileLine;
     while (std::getline(shaderFile, fileLine))
@@ -68,10 +69,14 @@ CG_Shader CG_ShaderLoader::Load(YK_FilePath const& p_shaderPath)
         {
             fragment = value;
         }
+        else if (attribute == "skeletal")
+        {
+            isSkeletal = value == "true";
+        }
     }
 
     YK_FilePath vertexPath(vertex);
     YK_FilePath fragmentPath(fragment);
 
-    return CG_Shader(vertexPath.CString(), fragmentPath.CString());
+    return CG_Shader(vertexPath.CString(), fragmentPath.CString(), isSkeletal);
 }

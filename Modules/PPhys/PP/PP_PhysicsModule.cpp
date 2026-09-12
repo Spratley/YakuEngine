@@ -127,7 +127,7 @@ void PP_PhysicsModule::Update(Zen::Garden& p_entityGarden)
             bodyInterface.GetPositionAndRotation(id, position, orientation);
             // TODO: Find a better way to convert between Jolt's and my types
             transform.m_orientation =
-              YK_Quaternion(orientation.GetW(), orientation.GetX(), orientation.GetY(), orientation.GetZ());
+              YK_Quaternion(orientation.GetX(), orientation.GetY(), orientation.GetZ(), orientation.GetW());
 
             transform.m_position = YK_Vector3f(position.GetX(), position.GetY(), position.GetZ())
                                    - (transform.m_orientation * rigidBody.m_bodyOffset);

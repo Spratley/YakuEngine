@@ -6,12 +6,13 @@
 // per-platform
 
 #include <string>
+#include <vector>
 
 class CG_Shader
 {
 public:
     CG_Shader() = default;
-    CG_Shader(char const* p_vertexPath, char const* p_fragmentPath);
+    CG_Shader(char const* p_vertexPath, char const* p_fragmentPath, bool p_isSkeletal);
 
     CG_Shader& operator=(CG_Shader const& p_otherShader)
     {
@@ -33,11 +34,15 @@ public:
         SetInt(p_textureSamplerName, p_slot);
     }
 
+    bool IsSkeletal() const { return m_skeletonUBOID != 0; }
+    void SetSkeletonData(std::vector<YK_Matrix44> const& p_bones) const;
+
 private:
     void InitShader(char const* p_vertexPath, char const* p_fragmentPath);
     void CompileShader(YK_U32& p_outID, std::string const& p_shaderCode, YK_U32 p_shaderType) const;
     void LogShaderErrors(YK_U32 p_shaderID, YK_U32 p_errorType) const;
 
 private:
-    YK_U32 m_id;
+    YK_U32 m_id = 0;
+    YK_U32 m_skeletonUBOID = 0;
 };

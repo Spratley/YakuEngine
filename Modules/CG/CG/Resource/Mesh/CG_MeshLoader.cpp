@@ -9,10 +9,11 @@
 #include "YK/Types/Math/YK_Vector.h"
 #include "YK/Utils/YK_AlgorithmUtils.h"
 
+#include "CG/IO/CG_GLTF.h"
 #include "CG/Libraries/TinyGLTF/tiny_gltf_v3.h"
 #include "CG/Resource/Mesh/CG_Mesh.h"
 #include "CG/Resource/Mesh/CG_MeshFactory.h"
-#include "CG_MeshLayout.h"
+#include "CG/Resource/Mesh/CG_MeshLayout.h"
 
 #include <charconv>
 #include <cstring>
@@ -135,7 +136,7 @@ CG_Mesh CG_MeshLoader::LoadOBJ(YK_FilePath const& p_path)
 }
 
 template <typename T>
-struct DataView
+struct ModelDataView
 {
     constexpr bool IsUsed() const { return m_count != 0; }
     constexpr YK_SizeT SizeBytes() const { return m_count * sizeof(T); }
@@ -147,40 +148,24 @@ struct DataView
 
 CG_Mesh CG_MeshLoader::LoadGLTF(YK_FilePath const& p_path)
 {
-    tg3_parse_options options;
-    tg3_error_stack errors;
-    tg3_model model;
-
-    tg3_parse_options_init(&options);
-    tg3_error_stack_init(&errors);
-
-    tg3_error_code result =
-      tg3_parse_file(&model, &errors, p_path.CString(), static_cast<YK_U32>(p_path.Length()), &options);
-    if (result != TG3_OK)
+    CG_GLTF gltfMesh(p_path);
+    if (gltfMesh.CheckErrors() || !gltfMesh.HasMesh())
     {
-        for (auto i : YK_CountTo(errors.count))
-        {
-            tg3_error_entry const& error = errors.entries[i];
-            YK_LOG_ERROR_PARAM("GLTF Error [{}]: {}",
-                               static_cast<YK_U32>(error.severity),
-                               error.message ? error.message : "No Message");
-        }
-
-        tg3_model_free(&model);
-        tg3_error_stack_free(&errors);
         return CG_Mesh();
     }
 
-    YK_ASSERT(model.meshes_count == 1 && model.meshes[0].primitives_count == 1,
-              "YakuEn doesn't support multi-mesh files yet!");
+    tg3_model const& model = gltfMesh.GetModel();
     tg3_primitive const& primitive = model.meshes[0].primitives[0];
 
+    // Joints are stored as 8 bit integers in GLTF exported from Blender, so we need a vector to store them
+    using YK_Vector4b = YK_Vector_N<YK_Byte, 4>;
+
     CG_MeshLayout layout;
-    DataView<YK_Vector3f> vertices;
-    DataView<YK_Vector3f> normals;
-    DataView<YK_Vector2f> uvs;
-    DataView<YK_Vector4i> joints;
-    DataView<YK_Vector4f> weights;
+    ModelDataView<YK_Vector3f> vertices;
+    ModelDataView<YK_Vector3f> normals;
+    ModelDataView<YK_Vector2f> uvs;
+    ModelDataView<YK_Vector4b> joints;
+    ModelDataView<YK_Vector4f> weights;
 
     for (auto i : YK_CountTo(primitive.attributes_count))
     {
@@ -216,30 +201,29 @@ CG_Mesh CG_MeshLoader::LoadGLTF(YK_FilePath const& p_path)
         else if (std::strcmp(name.data, "JOINTS_0") == 0)
         {
             layout.SetEnabled(CG_MeshAttribute::JOINT);
-            joints = { .m_buffer = reinterpret_cast<YK_Vector4i const*>(bufferStart), .m_count = accessor.count };
-            YK_ASSERT(accessor.type == TG3_TYPE_VEC4, "Expected Vector4 data for Joints!");
+            joints = { .m_buffer = reinterpret_cast<YK_Vector4b const*>(bufferStart), .m_count = accessor.count };
+            YK_ASSERT(accessor.type == TG3_TYPE_VEC4 && accessor.component_type == TG3_COMPONENT_TYPE_UNSIGNED_BYTE,
+                      "Expected Vector4 of Byte data for Joints!");
         }
         else if (std::strcmp(name.data, "WEIGHTS_0") == 0)
         {
             layout.SetEnabled(CG_MeshAttribute::WEIGHT);
             weights = { .m_buffer = reinterpret_cast<YK_Vector4f const*>(bufferStart), .m_count = accessor.count };
-            YK_ASSERT(accessor.type == TG3_TYPE_VEC4, "Expected Vector4 data for Weights!");
+            YK_ASSERT(accessor.type == TG3_TYPE_VEC4 && accessor.component_type == TG3_COMPONENT_TYPE_FLOAT,
+                      "Expected Vector4 data for Weights!");
         }
-
-        YK_LOG(name.data);
     }
 
-    // TODO: Assert enabled buffers have the same count
-    // YK_ASSERT(, "What? The number of UVs and vertex positions don't match?");
-
+    // Joints needs 4x the contribution since we're increasing the size of each member to a full 32 bit integer
     YK_SizeT dataArrayByteCount =
-      vertices.SizeBytes() + normals.SizeBytes() + uvs.SizeBytes() + joints.SizeBytes() + weights.SizeBytes();
+      vertices.SizeBytes() + normals.SizeBytes() + uvs.SizeBytes() + (joints.SizeBytes() * 4) + weights.SizeBytes();
 
     std::vector<YK_Byte> interleavedData;
     interleavedData.resize(dataArrayByteCount);
 
+    // Joints needs to manually offset by a Vector4
     YK_SizeT baseOffset = vertices.GetTypeOffset() + normals.GetTypeOffset() + uvs.GetTypeOffset()
-                          + joints.GetTypeOffset() + weights.GetTypeOffset();
+                          + (joints.IsUsed() ? sizeof(YK_Vector4i) : 0) + weights.GetTypeOffset();
 
     for (auto i : YK_CountTo(vertices.m_count))
     {
@@ -262,8 +246,13 @@ CG_Mesh CG_MeshLoader::LoadGLTF(YK_FilePath const& p_path)
         }
         if (joints.IsUsed())
         {
-            memcpy(static_cast<void*>(&interleavedData[baseIndex]), &joints.m_buffer[i], joints.GetTypeOffset());
-            baseIndex += joints.GetTypeOffset();
+            // Manually upcast to a 32 bit integer for creating the buffer
+            YK_Vector4i joint{ static_cast<YK_Int32>(joints.m_buffer[i].x),
+                               static_cast<YK_Int32>(joints.m_buffer[i].y),
+                               static_cast<YK_Int32>(joints.m_buffer[i].z),
+                               static_cast<YK_Int32>(joints.m_buffer[i].w) };
+            memcpy(static_cast<void*>(&interleavedData[baseIndex]), &joint, sizeof(YK_Vector4i));
+            baseIndex += sizeof(YK_Vector4i);
         }
         if (weights.IsUsed())
         {
@@ -288,9 +277,6 @@ CG_Mesh CG_MeshLoader::LoadGLTF(YK_FilePath const& p_path)
     {
         indices[i] = static_cast<YK_U32>(indexBufferData[i]);
     }
-
-    tg3_model_free(&model);
-    tg3_error_stack_free(&errors);
 
     return CG_MeshFactory::FromData(interleavedData.data(),
                                     static_cast<YK_U32>(interleavedData.size() / sizeof(float)),
