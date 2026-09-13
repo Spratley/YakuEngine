@@ -31,6 +31,7 @@ namespace CG_RenderQueue_Private
 void CG_RenderQueue::Push(CG_Material const& p_material,
                           CG_Mesh const& p_mesh,
                           CG_Skeleton const* p_skeleton,
+                          CG_Animation const* p_animation,
                           YK_TransformComponent const& p_transform)
 {
     if (p_skeleton)
@@ -41,6 +42,7 @@ void CG_RenderQueue::Push(CG_Material const& p_material,
         entry.m_transform =
           YK_Matrix::Construct(p_transform.m_position, p_transform.m_orientation, p_transform.m_scale);
         entry.m_skeleton = p_skeleton;
+        entry.m_animation = p_animation;
         m_skeletalQueue.emplace_back(std::move(entry));
     }
     else

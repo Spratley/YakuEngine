@@ -4,14 +4,32 @@
 #include "YK/Types/Math/YK_Vector.h"
 #include "YK/Types/Traits/YK_Concepts.h"
 
+#include <concepts>
+
+// A matrix type requires:
+//  - A nested typename "DataType_T" that is numeric
+//  - The ability to be indexed, returning an instance of DataType_T
+//  - A static member "RowCount_V" that should return the dimension count of the matrix rows
+//  - A static member "ColumnCount_V" that should return the dimension count of the matrix columns
+template <typename Matrix>
+concept YK_MatrixType = requires(Matrix m) {
+    typename Matrix::DataType_T;
+    requires YK_NumericType<typename Matrix::DataType_T>;
+    { m[0][0] } -> std::convertible_to<typename Matrix::DataType_T>;
+    Matrix::RowCount_V;
+    Matrix::ColumnCount_V;
+};
+
 // TODO: Do a once over and improve where possible with SIMD
 template <YK_NumericType DataType, YK_U32 RowCount, YK_U32 ColumnCount>
 struct YK_Matrix_R_C
 {
-private:
-    using ColumnVector = YK_Vector_N<DataType, RowCount>;
-
 public:
+    using ColumnVector = YK_Vector_N<DataType, RowCount>;
+    using DataType_T = DataType;
+    static constexpr YK_U32 RowCount_V = RowCount;
+    static constexpr YK_U32 ColumnCount_V = ColumnCount;
+
     static const YK_Matrix_R_C Identity;
 
 public:

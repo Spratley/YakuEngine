@@ -3,8 +3,8 @@
 #include "YK/Types/Containers/Iterator/YK_FlatIterator.h"
 #include "YK/Utils/YK_AlgorithmUtils.h"
 
-#include <vector> // TODO: Replace with YK_DynamicArray
 #include <concepts>
+#include <vector> // TODO: Replace with YK_DynamicArray
 
 // Set that uses a continuous array under the hood
 // Used for small counts where a hash would be more work than its worth
@@ -15,6 +15,11 @@ struct YK_FlatSet
 public:
     YK_FlatSet() = default;
     ~YK_FlatSet() = default;
+
+    YK_FlatSet(YK_FlatSet const&) = delete;
+    YK_FlatSet(YK_FlatSet&& p_other)
+        : m_data(YK_Exchange(p_other.m_data, std::vector<Type>()))
+    {}
 
     bool Insert(Type const& p_item);
     bool Insert(Type&& p_item);

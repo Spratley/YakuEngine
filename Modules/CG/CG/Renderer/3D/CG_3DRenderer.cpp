@@ -1,25 +1,32 @@
 #include "PCH/CG_PCH.h"
 #include "CG_3DRenderer.h"
 
-#include "CG/Camera/CG_CameraComponent.h"
+#include "YK/Core/YK_Core.h"
+#include "YK/ECS/Components/YK_TransformComponent.h"
+#include "YK/IO/Display/GLFW/YK_DisplaySurface_GLFW.hpp"
+#include "YK/IO/Display/YK_DisplaySurface.h"
+#include "YK/Libraries/Zen/Zen_Garden.h"
+#include "YK/Math/YK_MatrixMath.h"
+#include "YK/Platforms/YK_PlatformDefines.h"
+#include "YK/Time/YK_Time.h"
+#include "YK/Types/Math/YK_Integer.h"
+#include "YK/Types/Math/YK_Matrix.h"
+#include "YK/Types/Math/YK_Quaternion.h"
+#include "YK/Types/Math/YK_Vector.h"
+#include "YK/Utils/YK_AlgorithmUtils.h"
 
+#include "CG/Camera/CG_CameraComponent.h"
 #include "CG/ECS/CG_Components.h"
 #include "CG/RenderTarget/CG_RenderTarget.h"
 #include "CG/Renderer/CG_RenderBinding.h"
 #include "CG/Renderer/CG_RenderQueue.h"
+#include "CG/Resource/Animation/CG_Animation.h"
 #include "CG/Resource/Material/CG_Material.h"
 #include "CG/Resource/Mesh/CG_Mesh.h"
 #include "CG/Resource/Shader/CG_Shader.h"
 #include "CG/Resource/Skeleton/CG_Skeleton.h"
 
-#include "YK/Core/YK_Core.h"
-#include "YK/ECS/Components/YK_TransformComponent.h"
-#include "YK/IO/Display/YK_DisplaySurface.h"
-#include "YK/Libraries/Zen/Zen_Garden.h"
-#include "YK/Math/YK_MatrixMath.h"
-#include "YK/Time/YK_Time.h"
-#include "YK/Types/Math/YK_Matrix.h"
-#include "YK/Types/Math/YK_Vector.h"
+#include <vector>
 
 #if YK_PLATFORM == YK_WASM
 // Emscripten specific GL headers
@@ -43,17 +50,46 @@ namespace CG_3DRenderer_Private
     }
 
     // TEMP
-    YK_Matrix44 GetGlobalJointMatrix(CG_Skeleton::Bone const& p_bone)
+    YK_Matrix44 GetGlobalJointMatrix(CG_Animation const& p_animation, CG_Skeleton::Bone const& p_bone)
     {
-        float t = std::sin(YK_Time::ElapsedTime() * 3.0f);
-        YK_Matrix44 result =
-          YK_Matrix::Construct(p_bone.m_bindPoseTransform.m_position,
-                               YK_Quaternion(YK_Vector3f::Forward(), t * 0.1f) * p_bone.m_bindPoseTransform.m_orientation,
-                               p_bone.m_bindPoseTransform.m_scale);
+        float t = YK_Time::ElapsedTime();
+        t = YK_FloatModulo(t, 3.0f); // Out of sync with test animation to see sampling out of range
 
+        YK_Vector3f position;
+        YK_Quaternion orientation;
+        YK_Vector3f scale = YK_Vector3f::One();
+
+        for (auto const& positionChannel : p_animation.m_positionChannels)
+        {
+            if (positionChannel.m_boneIndex == p_bone.m_index)
+            {
+                position = positionChannel.Sample(t);
+                break;
+            }
+        }
+
+        for (auto const& orientationChannel : p_animation.m_orientationChannels)
+        {
+            if (orientationChannel.m_boneIndex == p_bone.m_index)
+            {
+                orientation = orientationChannel.Sample(t);
+                break;
+            }
+        }
+
+        for (auto const& scaleChannel : p_animation.m_scaleChannels)
+        {
+            if (scaleChannel.m_boneIndex == p_bone.m_index)
+            {
+                scale = scaleChannel.Sample(t);
+                break;
+            }
+        }
+
+        YK_Matrix44 result = YK_Matrix::Construct(position, orientation, scale);
         if (p_bone.m_parent)
         {
-            result = GetGlobalJointMatrix(*p_bone.m_parent) * result;
+            result = GetGlobalJointMatrix(p_animation, *p_bone.m_parent) * result;
         }
         return result;
     }
@@ -80,7 +116,11 @@ void CG_3DRenderer::Render(CG_RenderTarget const& p_target,
     renderQueue.Allocate(renderableEntities.CountU());
     for (auto [transform, meshComponent, rendererComponent] : renderableEntities)
     {
-        renderQueue.Push(*rendererComponent.m_material, *meshComponent.m_mesh, meshComponent.m_skeleton, transform);
+        renderQueue.Push(*rendererComponent.m_material,
+                         *meshComponent.m_mesh,
+                         meshComponent.m_skeleton,
+                         meshComponent.m_animation,
+                         transform);
     }
     renderQueue.Bake();
 
@@ -106,15 +146,15 @@ void CG_3DRenderer::Render(CG_RenderTarget const& p_target,
         shader->SetMatrix44("u_mvp", perspectiveTransform.GetData());
 
         // Temp
-        //YK_Matrix44 inverseTransform = YK_Matrix::Inverse(skeletalItem.m_transform);
         std::vector<YK_Matrix44> bones;
-        bones.resize(skeletalItem.m_skeleton->m_bones.size());
+        bones.resize(64);
 
-        for (auto i : YK_CountTo(bones.size()))
+        for (auto i : YK_CountTo(skeletalItem.m_skeleton->m_bones.size()))
         {
             YK_Matrix44 jointTransform =
-              CG_3DRenderer_Private::GetGlobalJointMatrix(skeletalItem.m_skeleton->m_bones[i]);
-            bones[i] = /*inverseTransform **/ jointTransform * skeletalItem.m_skeleton->m_inverseBindMatrices[i];
+              CG_3DRenderer_Private::GetGlobalJointMatrix(*skeletalItem.m_animation,
+                                                          skeletalItem.m_skeleton->m_bones[i]);
+            bones[i] = jointTransform * skeletalItem.m_skeleton->m_inverseBindMatrices[i];
         }
 
         shader->SetSkeletonData(bones);

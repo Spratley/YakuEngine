@@ -1,6 +1,7 @@
 #pragma once
 
 #include "YK/IO/Logging/YK_Logger.h"
+#include "YK/Utils/YK_MemoryUtils.h"
 
 #if !YAKU_RETAIL
 static constexpr inline void YK_AssertImpl(bool p_condition, char const* p_message)
@@ -10,7 +11,7 @@ static constexpr inline void YK_AssertImpl(bool p_condition, char const* p_messa
         if consteval
         {
             // Constexpr Assert
-            static_cast<void const*>(p_message);
+            YK_Unused(p_message);
             throw "Failed Constexpr Assertion";
         }
         else

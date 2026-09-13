@@ -26,7 +26,7 @@ CG_Skeleton CG_SkeletonLoader::Load(YK_FilePath const& p_skeletonPath)
     YK_ASSERT(p_skeletonPath.Extension() == "gltf" || p_skeletonPath.Extension() == "glb",
               "YakuEn only supports GLTF skeletons!");
 
-    CG_GLTF gltfSkeleton(p_skeletonPath);
+    CG_GLTF::File gltfSkeleton(p_skeletonPath);
     if (gltfSkeleton.CheckErrors() || !gltfSkeleton.HasSkeleton())
     {
         return CG_Skeleton();
@@ -43,25 +43,14 @@ CG_Skeleton CG_SkeletonLoader::Load(YK_FilePath const& p_skeletonPath)
         return CG_Skeleton();
     }
 
-    tg3_accessor const& inverseBindMatrixAccessor = model.accessors[skin.inverse_bind_matrices];
-    tg3_buffer_view const& inverseBindMatrixView = model.buffer_views[inverseBindMatrixAccessor.buffer_view];
-    tg3_buffer const& inverseBindMatrixBuffer = model.buffers[inverseBindMatrixView.buffer];
-
-    YK_U8 const* bufferStart =
-      inverseBindMatrixBuffer.data.data + inverseBindMatrixAccessor.byte_offset + inverseBindMatrixView.byte_offset;
-
-    struct SkeletonDataView
-    {
-        YK_Matrix44 const* m_buffer = nullptr;
-        YK_SizeT m_count = 0;
-    } inverseBindMatrices{ .m_buffer = reinterpret_cast<YK_Matrix44 const*>(bufferStart),
-                           .m_count = inverseBindMatrixAccessor.count };
+    CG_GLTF::DataView<YK_Matrix44> const inverseBindMatrixBuffer =
+      gltfSkeleton.ViewData<YK_Matrix44>(skin.inverse_bind_matrices);
 
     CG_Skeleton skeleton;
-    skeleton.m_inverseBindMatrices.resize(inverseBindMatrices.m_count);
-    std::memcpy(skeleton.m_inverseBindMatrices.data(),
-                inverseBindMatrices.m_buffer,
-                sizeof(YK_Matrix44) * inverseBindMatrices.m_count);
+    skeleton.m_inverseBindMatrices.resize(inverseBindMatrixBuffer.m_count);
+    std::memcpy(static_cast<void*>(skeleton.m_inverseBindMatrices.data()),
+                static_cast<void const*>(inverseBindMatrixBuffer.m_buffer),
+                sizeof(YK_Matrix44) * inverseBindMatrixBuffer.m_count);
 
     skeleton.m_bones.resize(skin.joints_count);
 
@@ -75,6 +64,7 @@ CG_Skeleton CG_SkeletonLoader::Load(YK_FilePath const& p_skeletonPath)
     {
         CG_Skeleton::Bone& bone = skeleton.m_bones[i];
         tg3_node const& joint = model.nodes[skin.joints[i]];
+        bone.m_index = static_cast<YK_U8>(i);
 #if !YAKU_RETAIL
         bone.m_name = std::string(joint.name.data);
 #endif // !YAKU_RETAIL

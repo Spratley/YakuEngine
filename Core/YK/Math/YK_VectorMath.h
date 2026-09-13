@@ -1,6 +1,6 @@
 #pragma once
 
-#include "YK/Math/YK_AngleMath.h"
+#include "YK/Math/YK_MathUtils.h"
 #include "YK/Types/Math/YK_Vector.h"
 #include "YK/Utils/YK_AlgorithmUtils.h"
 

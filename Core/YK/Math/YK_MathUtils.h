@@ -1,11 +1,11 @@
 #pragma once
 
 #include "YK/Debugging/YK_Assert.h"
+#include "YK/Types/Math/YK_Integer.h"
 
 #include <cmath>
 #include <concepts>
 #include <type_traits>
-#include "YK/Types/Math/YK_Integer.h"
 
 // -=-=-= Squares =-=-=-
 template <typename Type>

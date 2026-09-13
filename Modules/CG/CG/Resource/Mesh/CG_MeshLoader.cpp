@@ -135,20 +135,9 @@ CG_Mesh CG_MeshLoader::LoadOBJ(YK_FilePath const& p_path)
                                     layout);
 }
 
-template <typename T>
-struct ModelDataView
-{
-    constexpr bool IsUsed() const { return m_count != 0; }
-    constexpr YK_SizeT SizeBytes() const { return m_count * sizeof(T); }
-    constexpr YK_SizeT GetTypeOffset() const { return IsUsed() ? sizeof(T) : 0; }
-
-    T const* m_buffer = nullptr;
-    YK_SizeT m_count = 0;
-};
-
 CG_Mesh CG_MeshLoader::LoadGLTF(YK_FilePath const& p_path)
 {
-    CG_GLTF gltfMesh(p_path);
+    CG_GLTF::File gltfMesh(p_path);
     if (gltfMesh.CheckErrors() || !gltfMesh.HasMesh())
     {
         return CG_Mesh();
@@ -158,59 +147,43 @@ CG_Mesh CG_MeshLoader::LoadGLTF(YK_FilePath const& p_path)
     tg3_primitive const& primitive = model.meshes[0].primitives[0];
 
     // Joints are stored as 8 bit integers in GLTF exported from Blender, so we need a vector to store them
-    using YK_Vector4b = YK_Vector_N<YK_Byte, 4>;
+    using YK_Vector4U8 = YK_Vector_N<YK_U8, 4>;
 
     CG_MeshLayout layout;
-    ModelDataView<YK_Vector3f> vertices;
-    ModelDataView<YK_Vector3f> normals;
-    ModelDataView<YK_Vector2f> uvs;
-    ModelDataView<YK_Vector4b> joints;
-    ModelDataView<YK_Vector4f> weights;
+    CG_GLTF::DataView<YK_Vector3f> vertices;
+    CG_GLTF::DataView<YK_Vector3f> normals;
+    CG_GLTF::DataView<YK_Vector2f> uvs;
+    CG_GLTF::DataView<YK_Vector4U8> joints;
+    CG_GLTF::DataView<YK_Vector4f> weights;
 
     for (auto i : YK_CountTo(primitive.attributes_count))
     {
-        auto [name, value] = primitive.attributes[i];
+        auto [name, accessorIndex] = primitive.attributes[i];
 
-        tg3_accessor const& accessor = model.accessors[value];
-        tg3_buffer_view const& bufferView = model.buffer_views[accessor.buffer_view];
-        tg3_buffer const& buffer = model.buffers[bufferView.buffer];
-
-        YK_ASSERT(accessor.sparse.count == 0, "YakuEn doesn't support sparse GLTF data!");
-        YK_ASSERT(bufferView.byte_stride == 0, "YakuEn doesn't support non-continuous GLTF data!");
-
-        YK_U8 const* bufferStart = buffer.data.data + accessor.byte_offset + bufferView.byte_offset;
-
-        if (std::strcmp(name.data, "POSITION") == 0)
+        if (name.len == 8 && std::strcmp(name.data, "POSITION") == 0)
         {
             layout.SetEnabled(CG_MeshAttribute::POSITION);
-            vertices = { .m_buffer = reinterpret_cast<YK_Vector3f const*>(bufferStart), .m_count = accessor.count };
-            YK_ASSERT(accessor.type == TG3_TYPE_VEC3, "Expected Vector3 data for positions!");
+            vertices = gltfMesh.ViewData<YK_Vector3f>(accessorIndex);
         }
-        else if (std::strcmp(name.data, "NORMAL") == 0)
+        else if (name.len == 6 && std::strcmp(name.data, "NORMAL") == 0)
         {
             layout.SetEnabled(CG_MeshAttribute::NORMAL);
-            normals = { .m_buffer = reinterpret_cast<YK_Vector3f const*>(bufferStart), .m_count = accessor.count };
-            YK_ASSERT(accessor.type == TG3_TYPE_VEC3, "Expected Vector3 data for normals!");
+            normals = gltfMesh.ViewData<YK_Vector3f>(accessorIndex);
         }
-        else if (std::strcmp(name.data, "TEXCOORD_0") == 0)
+        else if (name.len == 10 && std::strcmp(name.data, "TEXCOORD_0") == 0)
         {
             layout.SetEnabled(CG_MeshAttribute::UV);
-            uvs = { .m_buffer = reinterpret_cast<YK_Vector2f const*>(bufferStart), .m_count = accessor.count };
-            YK_ASSERT(accessor.type == TG3_TYPE_VEC2, "Expected Vector2 data for UVs!");
+            uvs = gltfMesh.ViewData<YK_Vector2f>(accessorIndex);
         }
-        else if (std::strcmp(name.data, "JOINTS_0") == 0)
+        else if (name.len == 8 && std::strcmp(name.data, "JOINTS_0") == 0)
         {
             layout.SetEnabled(CG_MeshAttribute::JOINT);
-            joints = { .m_buffer = reinterpret_cast<YK_Vector4b const*>(bufferStart), .m_count = accessor.count };
-            YK_ASSERT(accessor.type == TG3_TYPE_VEC4 && accessor.component_type == TG3_COMPONENT_TYPE_UNSIGNED_BYTE,
-                      "Expected Vector4 of Byte data for Joints!");
+            joints = gltfMesh.ViewData<YK_Vector4U8>(accessorIndex);
         }
-        else if (std::strcmp(name.data, "WEIGHTS_0") == 0)
+        else if (name.len == 9 && std::strcmp(name.data, "WEIGHTS_0") == 0)
         {
             layout.SetEnabled(CG_MeshAttribute::WEIGHT);
-            weights = { .m_buffer = reinterpret_cast<YK_Vector4f const*>(bufferStart), .m_count = accessor.count };
-            YK_ASSERT(accessor.type == TG3_TYPE_VEC4 && accessor.component_type == TG3_COMPONENT_TYPE_FLOAT,
-                      "Expected Vector4 data for Weights!");
+            weights = gltfMesh.ViewData<YK_Vector4f>(accessorIndex);
         }
     }
 
@@ -222,29 +195,29 @@ CG_Mesh CG_MeshLoader::LoadGLTF(YK_FilePath const& p_path)
     interleavedData.resize(dataArrayByteCount);
 
     // Joints needs to manually offset by a Vector4
-    YK_SizeT baseOffset = vertices.GetTypeOffset() + normals.GetTypeOffset() + uvs.GetTypeOffset()
-                          + (joints.IsUsed() ? sizeof(YK_Vector4i) : 0) + weights.GetTypeOffset();
+    YK_SizeT baseOffset = vertices.GetOffsetBytes() + normals.GetOffsetBytes() + uvs.GetOffsetBytes()
+                          + (joints.IsEmpty() ? 0 : sizeof(YK_Vector4i)) + weights.GetOffsetBytes();
 
     for (auto i : YK_CountTo(vertices.m_count))
     {
         YK_SizeT baseIndex = i * baseOffset;
 
-        if (vertices.IsUsed())
+        if (!vertices.IsEmpty())
         {
-            memcpy(static_cast<void*>(&interleavedData[baseIndex]), &vertices.m_buffer[i], vertices.GetTypeOffset());
-            baseIndex += vertices.GetTypeOffset();
+            memcpy(static_cast<void*>(&interleavedData[baseIndex]), &vertices.m_buffer[i], vertices.GetOffsetBytes());
+            baseIndex += vertices.GetOffsetBytes();
         }
-        if (normals.IsUsed())
+        if (!normals.IsEmpty())
         {
-            memcpy(static_cast<void*>(&interleavedData[baseIndex]), &normals.m_buffer[i], normals.GetTypeOffset());
-            baseIndex += normals.GetTypeOffset();
+            memcpy(static_cast<void*>(&interleavedData[baseIndex]), &normals.m_buffer[i], normals.GetOffsetBytes());
+            baseIndex += normals.GetOffsetBytes();
         }
-        if (uvs.IsUsed())
+        if (!uvs.IsEmpty())
         {
-            memcpy(static_cast<void*>(&interleavedData[baseIndex]), &uvs.m_buffer[i], uvs.GetTypeOffset());
-            baseIndex += uvs.GetTypeOffset();
+            memcpy(static_cast<void*>(&interleavedData[baseIndex]), &uvs.m_buffer[i], uvs.GetOffsetBytes());
+            baseIndex += uvs.GetOffsetBytes();
         }
-        if (joints.IsUsed())
+        if (!joints.IsEmpty())
         {
             // Manually upcast to a 32 bit integer for creating the buffer
             YK_Vector4i joint{ static_cast<YK_Int32>(joints.m_buffer[i].x),
@@ -254,28 +227,20 @@ CG_Mesh CG_MeshLoader::LoadGLTF(YK_FilePath const& p_path)
             memcpy(static_cast<void*>(&interleavedData[baseIndex]), &joint, sizeof(YK_Vector4i));
             baseIndex += sizeof(YK_Vector4i);
         }
-        if (weights.IsUsed())
+        if (!weights.IsEmpty())
         {
-            memcpy(static_cast<void*>(&interleavedData[baseIndex]), &weights.m_buffer[i], weights.GetTypeOffset());
-            baseIndex += weights.GetTypeOffset();
+            memcpy(static_cast<void*>(&interleavedData[baseIndex]), &weights.m_buffer[i], weights.GetOffsetBytes());
+            baseIndex += weights.GetOffsetBytes();
         }
     }
 
-    // Extract index data
-    tg3_accessor const& accessor = model.accessors[primitive.indices];
-    tg3_buffer_view const& bufferView = model.buffer_views[accessor.buffer_view];
-    tg3_buffer const& indexBuffer = model.buffers[bufferView.buffer];
-
-    YK_ASSERT(accessor.type == TG3_TYPE_SCALAR, "Expected scalar data for index array!");
-    YK_ASSERT(accessor.component_type == TG3_COMPONENT_TYPE_UNSIGNED_SHORT, "Expected UInt16 type for index array!");
-
-    YK_U16 const* indexBufferData =
-      reinterpret_cast<YK_U16 const*>(indexBuffer.data.data + accessor.byte_offset + bufferView.byte_offset);
+    // Extract index data and upcast to 32 bit integers
+    CG_GLTF::DataView<YK_U16> const indexBuffer = gltfMesh.ViewData<YK_U16>(primitive.indices);
     std::vector<YK_U32> indices;
-    indices.resize(accessor.count);
-    for (auto i : YK_CountTo(accessor.count))
+    indices.resize(indexBuffer.m_count);
+    for (auto i : YK_CountTo(indexBuffer.m_count))
     {
-        indices[i] = static_cast<YK_U32>(indexBufferData[i]);
+        indices[i] = static_cast<YK_U32>(indexBuffer.m_buffer[i]);
     }
 
     return CG_MeshFactory::FromData(interleavedData.data(),

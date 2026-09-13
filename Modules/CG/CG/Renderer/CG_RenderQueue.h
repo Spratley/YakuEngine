@@ -10,6 +10,8 @@ class CG_Mesh;
 struct CG_Skeleton;
 struct YK_TransformComponent;
 
+struct CG_Animation;
+
 class CG_RenderQueue
 {
 public:
@@ -22,6 +24,7 @@ public:
     void Push(CG_Material const& p_material,
               CG_Mesh const& p_mesh,
               CG_Skeleton const* p_skeleton,
+              CG_Animation const* p_animation,
               YK_TransformComponent const& p_transform);
     void Bake();
 
@@ -35,6 +38,7 @@ public:
     struct SkeletalEntry : public Entry
     {
         CG_Skeleton const* m_skeleton;
+        CG_Animation const* m_animation;
     };
 
     std::vector<Entry> const& GetQueue() const { return m_queue; }
