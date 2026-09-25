@@ -2,10 +2,6 @@
 #include "YK/Utils/YK_AlgorithmUtils.h"
 
 template <YK_NumericType DataType, YK_U32 RowCount, YK_U32 ColumnCount>
-inline constexpr YK_Matrix_R_C<DataType, RowCount, ColumnCount>
-  YK_Matrix_R_C<DataType, RowCount, ColumnCount>::Identity{ 1 };
-
-template <YK_NumericType DataType, YK_U32 RowCount, YK_U32 ColumnCount>
 constexpr YK_Matrix_R_C<DataType, RowCount, ColumnCount>::YK_Matrix_R_C()
     : YK_Matrix_R_C(1)
 {}

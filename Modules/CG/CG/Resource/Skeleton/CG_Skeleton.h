@@ -1,6 +1,7 @@
 #pragma once
 
 #include "YK/ECS/Components/YK_TransformComponent.h"
+#include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Math/YK_Matrix.h"
 
 // TODO: Replace with YK_DynamicArray

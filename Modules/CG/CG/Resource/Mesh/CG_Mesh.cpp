@@ -22,6 +22,8 @@ CG_Mesh::CG_Mesh()
     , m_vertexBufferCount(0)
     , m_indexBufferCount(0)
     , m_triangleCount(0)
+    , m_boneCount(0)
+    , m_meshLayout()
 {}
 
 CG_Mesh::CG_Mesh(CG_GPUDataPolicy::GPUDataPolicy p_dataPolicy)
@@ -32,25 +34,21 @@ CG_Mesh::CG_Mesh(CG_GPUDataPolicy::GPUDataPolicy p_dataPolicy)
     , m_vertexBufferCount(0)
     , m_indexBufferCount(0)
     , m_triangleCount(0)
+    , m_boneCount(0)
+    , m_meshLayout()
 {}
 
 CG_Mesh::CG_Mesh(CG_Mesh&& p_otherMesh) noexcept
     : CG_GPUResource<CG_Mesh>(std::move(p_otherMesh))
-    , m_glData(p_otherMesh.m_glData)
-    , m_vertexBuffer(p_otherMesh.m_vertexBuffer)
-    , m_indexBuffer(p_otherMesh.m_indexBuffer)
-    , m_vertexBufferCount(p_otherMesh.m_vertexBufferCount)
-    , m_indexBufferCount(p_otherMesh.m_indexBufferCount)
-    , m_triangleCount(p_otherMesh.m_triangleCount)
-{
-    p_otherMesh.m_glData = nullptr;
-    p_otherMesh.m_vertexBuffer = nullptr;
-    p_otherMesh.m_indexBuffer = nullptr;
-
-    p_otherMesh.m_vertexBufferCount = 0;
-    p_otherMesh.m_indexBufferCount = 0;
-    p_otherMesh.m_triangleCount = 0;
-}
+    , m_glData(YK_Exchange(p_otherMesh.m_glData, nullptr))
+    , m_vertexBuffer(YK_Exchange(p_otherMesh.m_vertexBuffer, nullptr))
+    , m_indexBuffer(YK_Exchange(p_otherMesh.m_indexBuffer, nullptr))
+    , m_vertexBufferCount(YK_Exchange(p_otherMesh.m_vertexBufferCount, 0))
+    , m_indexBufferCount(YK_Exchange(p_otherMesh.m_indexBufferCount, 0))
+    , m_triangleCount(YK_Exchange(p_otherMesh.m_triangleCount, 0))
+    , m_boneCount(YK_Exchange(p_otherMesh.m_boneCount, 0))
+    , m_meshLayout(YK_Exchange(p_otherMesh.m_meshLayout, CG_MeshLayout()))
+{}
 
 CG_Mesh& CG_Mesh::operator=(CG_Mesh&& p_otherMesh) noexcept
 {
@@ -71,6 +69,10 @@ CG_Mesh& CG_Mesh::operator=(CG_Mesh&& p_otherMesh) noexcept
     m_indexBufferCount = YK_Exchange(p_otherMesh.m_indexBufferCount, 0);
     m_triangleCount = YK_Exchange(p_otherMesh.m_triangleCount, 0);
 
+    m_boneCount = YK_Exchange(p_otherMesh.m_boneCount, 0);
+
+    m_meshLayout = YK_Exchange(p_otherMesh.m_meshLayout, CG_MeshLayout());
+
     return *this;
 }
 
@@ -78,6 +80,7 @@ void CG_Mesh::SetData(YK_Byte const* p_vertexBuffer,
                       YK_U32 p_vertexBufferCount,
                       YK_U32 const* p_indexBuffer,
                       YK_U32 p_indexBufferCount,
+                      YK_U32 p_boneCount,
                       CG_MeshLayout p_meshLayout)
 {
     YK_ASSERT(m_vertexBuffer == nullptr, "Attempting to overwrite existing vertex data!");
@@ -85,6 +88,8 @@ void CG_Mesh::SetData(YK_Byte const* p_vertexBuffer,
     m_vertexBufferCount = p_vertexBufferCount;
     m_indexBufferCount = p_indexBufferCount;
     m_triangleCount = p_indexBufferCount / 3;
+
+    m_boneCount = p_boneCount;
 
     // TODO: Steal the pointer instead of copying?
     m_vertexBuffer = new YK_Byte[m_vertexBufferCount * sizeof(float)];

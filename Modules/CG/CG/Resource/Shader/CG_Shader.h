@@ -5,8 +5,11 @@
 // We need to separate the rendering API and the user-facing code so we can swap what renderer is being used
 // per-platform
 
+#include "YK/Types/Containers/YK_StaticArray.h"
+#include "YK/Types/Math/YK_Integer.h"
+#include "YK/Types/Math/YK_Matrix.h"
+
 #include <string>
-#include <vector>
 
 class CG_Shader
 {
@@ -35,7 +38,7 @@ public:
     }
 
     bool IsSkeletal() const { return m_skeletonUBOID != 0; }
-    void SetSkeletonData(std::vector<YK_Matrix44> const& p_bones) const;
+    void SetSkeletonData(YK_StaticArray<YK_Matrix44, 64> const& p_bones) const;
 
 private:
     void InitShader(char const* p_vertexPath, char const* p_fragmentPath);

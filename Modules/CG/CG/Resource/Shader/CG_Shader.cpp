@@ -5,6 +5,7 @@
 #include "YK/IO/File/YK_IOFile.h"
 #include "YK/IO/Logging/YK_Logger.h"
 #include "YK/Platforms/YK_PlatformDefines.h"
+#include "YK/Types/Containers/YK_StaticArray.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Math/YK_Matrix.h"
 
@@ -19,7 +20,6 @@
 
 #include <sstream>
 #include <string>
-#include <vector>
 
 namespace CG_Shader_Private
 {
@@ -68,15 +68,15 @@ void CG_Shader::SetMatrix44(char const* p_name, float const* p_buffer) const
     glUniformMatrix4fv(matrixLocation, 1, GL_FALSE, p_buffer);
 }
 
-void CG_Shader::SetSkeletonData(std::vector<YK_Matrix44> const& p_bones) const
+void CG_Shader::SetSkeletonData(YK_StaticArray<YK_Matrix44, 64> const& p_bones) const
 {
     YK_ASSERT(m_skeletonUBOID != 0, "Attempting to upload skeleton data to a non-skeletal shader!");
 
-    YK_SizeT const bufferSize = p_bones.size() * sizeof(YK_Matrix44);
+    YK_SizeT const bufferSize = 64 * sizeof(YK_Matrix44);
 
     glBindBuffer(GL_UNIFORM_BUFFER, m_skeletonUBOID);
     glBufferData(GL_UNIFORM_BUFFER, bufferSize, nullptr, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, bufferSize, p_bones.data());
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, bufferSize, &p_bones);
     glBindBufferBase(GL_UNIFORM_BUFFER, CG_Shader_Private::SkeletonBindingSlot, m_skeletonUBOID);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }

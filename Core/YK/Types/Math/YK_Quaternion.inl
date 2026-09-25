@@ -59,6 +59,12 @@ constexpr YK_Vector_N<DataType, 3> YK_Quaternion_T<DataType>::operator*(YK_Vecto
 }
 
 template <YK_NumericType DataType>
+constexpr YK_Quaternion_T<DataType> YK_Quaternion_T<DataType>::operator-() const
+{
+    return YK_Quaternion_T<DataType>(-x, -y, -z, -w);
+}
+
+template <YK_NumericType DataType>
 constexpr YK_Quaternion_T<DataType> YK_Quaternion_T<DataType>::GetNormalized() const
 {
     return YK_Quaternion_T{ YK_Vector::GetNormalized(YK_Vector_N<DataType, 4>{ x, y, z, w }) };

@@ -1,7 +1,10 @@
 #pragma once
 
+#include "YK/Math/YK_NumericLimits.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Math/YK_Matrix.h"
+
+#include "CG/ECS/CG_Components.h"
 
 #include <vector>
 
@@ -12,39 +15,45 @@ struct YK_TransformComponent;
 
 struct CG_Animation;
 
-class CG_RenderQueue
+struct CG_RenderQueue
 {
-public:
-    void Clear() { m_queue.clear(); }
-    void Allocate(YK_SizeT p_count)
-    {
-        m_queue.reserve(p_count);
-        m_skeletalQueue.reserve(p_count);
-    }
-    void Push(CG_Material const& p_material,
-              CG_Mesh const& p_mesh,
-              CG_Skeleton const* p_skeleton,
-              CG_Animation const* p_animation,
-              YK_TransformComponent const& p_transform);
-    void Bake();
+    friend class CG_RenderQueueBuilder;
 
+    template <typename DataType>
     struct Entry
     {
-        CG_Material const* m_material;
-        CG_Mesh const* m_mesh;
-        YK_Matrix44 m_transform;
+        DataType const* m_data = nullptr;
+        YK_SizeT m_endIndex = YK_NumericLimits<YK_SizeT>::Max;
     };
+    using MaterialEntry = Entry<CG_Material>;
+    using MeshEntry = Entry<CG_Mesh>;
 
-    struct SkeletalEntry : public Entry
-    {
-        CG_Skeleton const* m_skeleton;
-        CG_Animation const* m_animation;
-    };
+    std::vector<MaterialEntry> m_materialEntries;
+    std::vector<MeshEntry> m_meshEntries;
+    std::vector<YK_Matrix44> m_transforms;
+    YK_SizeT m_itemCount = 0;
+};
 
-    std::vector<Entry> const& GetQueue() const { return m_queue; }
-    std::vector<SkeletalEntry> const& GetSkeletalQueue() const { return m_skeletalQueue; }
+class CG_RenderQueueBuilder
+{
+public:
+    CG_RenderQueue const Build();
+
+    void PushEntry(YK_TransformComponent const& p_transform, CG_RendererComponent const& p_rendererComponent);
+    void SetMesh(CG_MeshComponent const& p_mesh);
+    void SetMesh(CG_SkeletalMeshComponent const& p_skeletalMesh, CG_PoseComponent const& p_pose);
 
 private:
-    std::vector<Entry> m_queue;
-    std::vector<SkeletalEntry> m_skeletalQueue;
+    struct Entry
+    {
+        YK_TransformComponent const* m_transform = nullptr;
+        CG_Material const* m_material = nullptr;
+        CG_Mesh const* m_mesh = nullptr;
+        CG_Skeleton const* m_skeleton = nullptr;
+        CG_PoseComponent const* m_pose = nullptr;
+    };
+
+    Entry* m_workingEntry = nullptr;
+    std::vector<Entry> m_entries;
+    YK_SizeT m_bonesInQueue = 0;
 };

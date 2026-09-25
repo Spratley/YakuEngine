@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+// TODO: This should be migrated to AniMagic
 struct CG_Animation
 {
     template <YK_Lerpable DataType>

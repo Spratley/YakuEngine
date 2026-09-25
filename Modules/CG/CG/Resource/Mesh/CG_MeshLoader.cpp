@@ -132,6 +132,7 @@ CG_Mesh CG_MeshLoader::LoadOBJ(YK_FilePath const& p_path)
                                     static_cast<YK_U32>(vertices.size()),
                                     indices.data(),
                                     static_cast<YK_U32>(indices.size()),
+                                    0, // No bones for OBJs
                                     layout);
 }
 
@@ -214,7 +215,11 @@ CG_Mesh CG_MeshLoader::LoadGLTF(YK_FilePath const& p_path)
         }
         if (!uvs.IsEmpty())
         {
-            memcpy(static_cast<void*>(&interleavedData[baseIndex]), &uvs.m_buffer[i], uvs.GetOffsetBytes());
+            // OpenGL expects [0,0] to be the bottom left
+            // Apparently GLTF saves it as the top left
+            YK_Vector2f uv{ uvs.m_buffer[i] };
+            uv.y = 1.0f - uv.y;
+            memcpy(static_cast<void*>(&interleavedData[baseIndex]), &uv, sizeof(YK_Vector2f));
             baseIndex += uvs.GetOffsetBytes();
         }
         if (!joints.IsEmpty())
@@ -243,9 +248,11 @@ CG_Mesh CG_MeshLoader::LoadGLTF(YK_FilePath const& p_path)
         indices[i] = static_cast<YK_U32>(indexBuffer.m_buffer[i]);
     }
 
+    YK_U32 const boneCount = gltfMesh.HasSkeleton() ? gltfMesh.GetModel().skins[0].joints_count : 0;
     return CG_MeshFactory::FromData(interleavedData.data(),
                                     static_cast<YK_U32>(interleavedData.size() / sizeof(float)),
                                     indices.data(),
                                     static_cast<YK_U32>(indices.size()),
+                                    boneCount,
                                     layout);
 }

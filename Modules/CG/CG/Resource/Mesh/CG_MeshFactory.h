@@ -12,6 +12,7 @@ public:
                             YK_U32 p_vertexDataCount,
                             YK_U32 const* p_indexData,
                             YK_U32 p_indexCount,
+                            YK_U32 p_boneCount,
                             CG_MeshLayout p_meshLayout);
     static CG_Mesh Quad();
 };

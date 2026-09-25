@@ -34,6 +34,8 @@ public:
 
     CG_GLMeshBuffer const& GetGLData() const { return *m_glData; }
 
+    YK_U32 GetBoneCount() const { return m_boneCount; }
+
     CG_MeshLayout& GetMeshLayout() { return m_meshLayout; }
     CG_MeshLayout const& GetMeshLayout() const { return m_meshLayout; }
 
@@ -44,6 +46,7 @@ private:
                  YK_U32 p_vertexBufferCount,
                  YK_U32 const* p_indexBuffer,
                  YK_U32 p_indexBufferCount,
+                 YK_U32 p_boneCount,
                  CG_MeshLayout p_meshLayout);
 
     // CG_GPUResource implementations
@@ -63,6 +66,8 @@ private:
     YK_U32 m_vertexBufferCount;
     YK_U32 m_indexBufferCount;
     YK_U32 m_triangleCount;
+
+    YK_U32 m_boneCount = 0;
 
     CG_MeshLayout m_meshLayout;
 };

@@ -30,7 +30,7 @@ public:
     static constexpr YK_U32 RowCount_V = RowCount;
     static constexpr YK_U32 ColumnCount_V = ColumnCount;
 
-    static const YK_Matrix_R_C Identity;
+    static consteval YK_Matrix_R_C Identity() { return YK_Matrix_R_C{ static_cast<DataType>(1) }; }
 
 public:
     constexpr YK_Matrix_R_C(); // Returns Identity
