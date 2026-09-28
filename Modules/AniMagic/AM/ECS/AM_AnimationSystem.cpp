@@ -19,7 +19,7 @@ void AM_AnimationSystem::Tick(ComponentView p_components)
         }
 
         animationComponent.m_sampleTime += deltaTime;
-        if (animationComponent.m_sampleTime > 4.0f)
+        if (animationComponent.m_sampleTime > animationComponent.m_animation->m_duration)
         {
             animationComponent.m_sampleTime = 0.0f;
         }
@@ -27,19 +27,19 @@ void AM_AnimationSystem::Tick(ComponentView p_components)
         CG_Animation const* animation = animationComponent.m_animation;
         for (CG_Animation::PositionChannel const& positionChannel : animation->m_positionChannels)
         {
-            YK_TransformComponent& boneTransform = poseComponent.m_pose[positionChannel.m_boneIndex];
+            YK_Transform& boneTransform = poseComponent.m_pose[positionChannel.m_boneIndex];
             boneTransform.m_position = positionChannel.Sample(animationComponent.m_sampleTime);
         }
 
         for (CG_Animation::OrientationChannel const& orientationChannel : animation->m_orientationChannels)
         {
-            YK_TransformComponent& boneTransform = poseComponent.m_pose[orientationChannel.m_boneIndex];
+            YK_Transform& boneTransform = poseComponent.m_pose[orientationChannel.m_boneIndex];
             boneTransform.m_orientation = orientationChannel.Sample(animationComponent.m_sampleTime);
         }
 
         for (CG_Animation::ScaleChannel const& scaleChannel : animation->m_scaleChannels)
         {
-            YK_TransformComponent& boneTransform = poseComponent.m_pose[scaleChannel.m_boneIndex];
+            YK_Transform& boneTransform = poseComponent.m_pose[scaleChannel.m_boneIndex];
             boneTransform.m_scale = scaleChannel.Sample(animationComponent.m_sampleTime);
         }
     }

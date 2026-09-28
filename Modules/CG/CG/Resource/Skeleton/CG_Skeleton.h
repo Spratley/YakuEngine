@@ -13,9 +13,7 @@ struct CG_Skeleton
     struct Bone
     {
         Bone const* m_parent = nullptr;
-        // I'm not the biggest fan of using the transform component here because techncially it's supposed to be FOR the
-        // ECS, but really it's exactly what a bone needs
-        YK_TransformComponent m_bindPoseTransform{};
+        YK_Transform m_bindPoseTransform{};
         YK_U8 m_index;
 #if !YAKU_RETAIL
         std::string m_name = "?";

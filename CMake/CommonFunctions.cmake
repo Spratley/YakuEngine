@@ -34,7 +34,7 @@ endfunction()
 # TARGET_NAME	-> The project to modify
 
 function(yaku_project_body TARGET_NAME)
-	set(CMAKE_CXX_STANDARD 20)
+	set(CMAKE_CXX_STANDARD 23)
 	# Gather all code files
 	file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS
 		${CMAKE_CURRENT_SOURCE_DIR}/*.cpp

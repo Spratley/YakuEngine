@@ -58,22 +58,17 @@ CG_3DRenderer::CG_3DRenderer(YK_DisplaySurface& p_displaySurface)
 
 void CG_3DRenderer::Render(CG_RenderTarget const& p_target,
                            CG_RenderBinding& p_bindings,
-                           CG_CameraComponent const& p_camera) const
+                           CG_Camera const& p_camera) const
 {
     Zen::Garden& entityGarden = YK_Core::GetEngine().GetZenGarden();
 
-    Zen::EntityView renderableEntities =
-      entityGarden.ViewComponents<YK_TransformComponent, CG_MeshComponent, CG_RendererComponent>();
-
     CG_RenderQueueBuilder renderQueueBuilder;
-
     for (auto [transform, renderer, mesh] :
          entityGarden.ViewComponents<YK_TransformComponent, CG_RendererComponent, CG_MeshComponent>())
     {
         renderQueueBuilder.PushEntry(transform, renderer);
         renderQueueBuilder.SetMesh(mesh);
     }
-
     for (auto [transform, renderer, skeletalMesh, pose] :
          entityGarden
            .ViewComponents<YK_TransformComponent, CG_RendererComponent, CG_SkeletalMeshComponent, CG_PoseComponent>())
@@ -81,7 +76,6 @@ void CG_3DRenderer::Render(CG_RenderTarget const& p_target,
         renderQueueBuilder.PushEntry(transform, renderer);
         renderQueueBuilder.SetMesh(skeletalMesh, pose);
     }
-
     CG_RenderQueue renderQueue = renderQueueBuilder.Build();
 
     YK_Matrix44 const cameraMatrix = p_camera.CalculateCameraMatrix(CG_3DRenderer_Private::viewportAspectRatio);
@@ -100,13 +94,14 @@ void CG_3DRenderer::Render(CG_RenderTarget const& p_target,
             auto const& [mesh, meshEndIndex] = renderQueue.m_meshEntries[meshEntryIndex++];
             p_bindings.Bind(*mesh);
             endIndex = meshEndIndex;
+            YK_U32 const boneCount = mesh->GetBoneCount();
+            YK_Matrix44 perspectiveTransform;
 
             for (; itemIndex <= endIndex; ++itemIndex)
             {
-                YK_Matrix44 perspectiveTransform = cameraMatrix * renderQueue.m_transforms[itemIndex];
+                perspectiveTransform = cameraMatrix * renderQueue.m_transforms[itemIndex];
                 shader.SetMatrix44("u_mvp", perspectiveTransform.GetData());
 
-                YK_U32 const boneCount = mesh->GetBoneCount();
                 if (boneCount > 0)
                 {
                     YK_ASSERT(shader.IsSkeletal(), "Non-Skeletal shader being used with a skeleton!");
@@ -117,6 +112,7 @@ void CG_3DRenderer::Render(CG_RenderTarget const& p_target,
                            static_cast<void const*>(&renderQueue.m_transforms[itemIndex + 1]),
                            sizeof(YK_Matrix44) * boneCount);
                     shader.SetSkeletonData(Bones);
+                    itemIndex += boneCount;
                 }
 
                 glDrawElements(GL_TRIANGLES, p_bindings.GetBoundMesh()->GetIndexBufferSize(), GL_UNSIGNED_INT, 0);

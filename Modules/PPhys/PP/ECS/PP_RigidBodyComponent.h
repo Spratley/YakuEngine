@@ -5,6 +5,7 @@
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Math/YK_Vector.h"
 #include "YK/Utils/YK_AlgorithmUtils.h"
+#include "YK/Utils/YK_TypeUtils.h"
 
 // This is very cluttered, this should be moved to a factory class
 namespace JPH
@@ -20,22 +21,20 @@ enum PP_BodyType
     Dynamic,
 };
 
-struct PP_RigidBodyComponent
+struct PP_RigidBodyComponent : public YK_NotCopyable
 {
     PP_RigidBodyComponent() = default;
     PP_RigidBodyComponent(JPH::Shape* p_shape,
-                          YK_TransformComponent const& p_transform,
+                          YK_Transform const& p_transform,
                           PP_BodyType p_bodyType,
                           bool p_active = true);
 
-    PP_RigidBodyComponent(PP_RigidBodyComponent const&) = delete;
     PP_RigidBodyComponent(PP_RigidBodyComponent&& p_other) noexcept
         : m_joltBodyID(YK_Exchange(p_other.m_joltBodyID, YK_NumericLimits<YK_U32>::Max))
     {}
 
     ~PP_RigidBodyComponent();
 
-    PP_RigidBodyComponent& operator=(PP_RigidBodyComponent const&) = delete;
     PP_RigidBodyComponent& operator=(PP_RigidBodyComponent&& p_other) noexcept
     {
         m_joltBodyID = YK_Exchange(p_other.m_joltBodyID, YK_NumericLimits<YK_U32>::Max);

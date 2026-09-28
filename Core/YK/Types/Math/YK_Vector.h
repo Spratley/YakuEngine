@@ -44,7 +44,7 @@ public:
         : m_start(p_start)
     {}
 
-    constexpr DataType& operator[](size_t const p_index) const { return *(m_start + (p_index * Offset)); }
+    constexpr DataType& operator[](YK_SizeT const p_index) const { return *(m_start + (p_index * Offset)); }
 
 private:
     DataType* m_start;
@@ -86,8 +86,8 @@ public:
         }
     }
 
-    constexpr DataType& operator[](size_t const p_index) { return m_data[p_index]; }
-    constexpr DataType const& operator[](size_t const p_index) const { return m_data[p_index]; }
+    constexpr DataType& operator[](YK_SizeT const p_index) { return m_data[p_index]; }
+    constexpr DataType const& operator[](YK_SizeT const p_index) const { return m_data[p_index]; }
 
 public:
     DataType m_data[DimensionCount];
@@ -117,8 +117,8 @@ public:
         : m_data{ p_x, p_y }
     {}
 
-    constexpr DataType& operator[](size_t const p_index) { return m_data[p_index]; }
-    constexpr DataType const& operator[](size_t const p_index) const { return m_data[p_index]; }
+    constexpr DataType& operator[](YK_SizeT const p_index) { return m_data[p_index]; }
+    constexpr DataType const& operator[](YK_SizeT const p_index) const { return m_data[p_index]; }
 
 public:
     union
@@ -164,8 +164,8 @@ public:
         : m_data{ p_x, p_y, p_z }
     {}
 
-    constexpr DataType& operator[](size_t const p_index) { return m_data[p_index]; }
-    constexpr DataType const& operator[](size_t const p_index) const { return m_data[p_index]; }
+    constexpr DataType& operator[](YK_SizeT const p_index) { return m_data[p_index]; }
+    constexpr DataType const& operator[](YK_SizeT const p_index) const { return m_data[p_index]; }
 
 public:
     union
@@ -208,8 +208,8 @@ public:
         : m_data{ p_x, p_y, p_z, p_w }
     {}
 
-    constexpr DataType& operator[](size_t const p_index) { return m_data[p_index]; }
-    constexpr DataType const& operator[](size_t const p_index) const { return m_data[p_index]; }
+    constexpr DataType& operator[](YK_SizeT const p_index) { return m_data[p_index]; }
+    constexpr DataType const& operator[](YK_SizeT const p_index) const { return m_data[p_index]; }
 
 public:
     union

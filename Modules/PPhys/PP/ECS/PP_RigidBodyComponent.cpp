@@ -19,7 +19,7 @@
 #include "Jolt/Physics/EActivation.h"
 
 PP_RigidBodyComponent::PP_RigidBodyComponent(JPH::Shape* p_shape,
-                                             YK_TransformComponent const& p_transform,
+                                             YK_Transform const& p_transform,
                                              PP_BodyType p_bodyType,
                                              bool p_active)
 {

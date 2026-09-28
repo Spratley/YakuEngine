@@ -1,20 +1,23 @@
 #pragma once
 
-#include "CG/Matrix/CG_MatrixExtras.h"
-
+#include "YK/ECS/Components/YK_TransformComponent.h"
+#include "YK/Math/YK_MatrixMath.h"
 #include "YK/Types/Math/YK_Matrix.h"
 
-struct CG_CameraComponent
-{
-    YK_Matrix44 m_viewMatrix;
-    float m_fov;
-    float m_nearPlane;
-    float m_farPlane;
+#include "CG/Matrix/CG_MatrixExtras.h"
 
-public:
-    // Yeah I know this aint true ECS anymore, do I care though?
+struct CG_Camera
+{
     constexpr YK_Matrix44 CalculateCameraMatrix(float p_aspectRatio) const
     {
-        return YK_Matrix::Perspective<float>(m_fov, p_aspectRatio, m_nearPlane, m_farPlane) * m_viewMatrix;
+        return YK_Matrix::Perspective<float>(m_fov, p_aspectRatio, m_nearPlane, m_farPlane)
+               * YK_Matrix::Inverse(YK_Matrix::Construct(m_transform));
     }
+
+    YK_Transform m_transform;
+    float m_fov = 60.0f;
+    float m_nearPlane = 0.1f;
+    float m_farPlane = 100.0f;
 };
+
+using CG_CameraComponent = CG_Camera;

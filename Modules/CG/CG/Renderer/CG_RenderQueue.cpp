@@ -61,9 +61,8 @@ namespace CG_RenderQueue_Private
     // 100% bad, but also good enough for the scale this is operating at FOR NOW
     YK_Matrix44 CalculateBoneMatrix(CG_PoseComponent const& p_pose, CG_Skeleton::Bone const& p_bone)
     {
-        YK_TransformComponent const& boneTransform = p_pose.m_pose[p_bone.m_index];
-        YK_Matrix44 result =
-          YK_Matrix::Construct(boneTransform.m_position, boneTransform.m_orientation, boneTransform.m_scale);
+        YK_Transform const& boneTransform = p_pose.m_pose[p_bone.m_index];
+        YK_Matrix44 result = YK_Matrix::Construct(boneTransform);
         if (p_bone.m_parent)
         {
             result = CalculateBoneMatrix(p_pose, *p_bone.m_parent) * result;
@@ -93,9 +92,7 @@ CG_RenderQueue const CG_RenderQueueBuilder::Build()
         }
         meshHelper.PushToQueue(entry.m_mesh, renderQueue.m_meshEntries, transformIndex);
 
-        renderQueue.m_transforms[transformIndex] = YK_Matrix::Construct(entry.m_transform->m_position,
-                                                                        entry.m_transform->m_orientation,
-                                                                        entry.m_transform->m_scale);
+        renderQueue.m_transforms[transformIndex] = YK_Matrix::Construct(*entry.m_transform);
 
         if (entry.m_skeleton && entry.m_pose)
         {
@@ -104,14 +101,15 @@ CG_RenderQueue const CG_RenderQueueBuilder::Build()
                 CG_Skeleton::Bone const& bone = entry.m_skeleton->m_bones[boneIndex];
                 YK_Matrix44 boneMatrix = CG_RenderQueue_Private::CalculateBoneMatrix(*entry.m_pose, bone);
                 transformIndex++;
-                renderQueue.m_transforms[transformIndex] = boneMatrix * entry.m_skeleton->m_inverseBindMatrices[boneIndex];
+                renderQueue.m_transforms[transformIndex] =
+                  boneMatrix * entry.m_skeleton->m_inverseBindMatrices[boneIndex];
             }
         }
 
         ++transformIndex;
     }
 
-    YK_SizeT const lastIndex = renderQueue.m_itemCount - 1;
+    YK_SizeT const lastIndex = renderQueue.m_transforms.size() - 1;
     renderQueue.m_materialEntries.back().m_endIndex = lastIndex;
     renderQueue.m_meshEntries.back().m_endIndex = lastIndex;
 

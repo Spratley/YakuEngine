@@ -38,6 +38,7 @@ struct CG_Animation
     YK_FlatSet<PositionChannel> m_positionChannels;
     YK_FlatSet<OrientationChannel> m_orientationChannels;
     YK_FlatSet<ScaleChannel> m_scaleChannels;
+    double m_duration;
 };
 
 template <YK_Lerpable DataType>

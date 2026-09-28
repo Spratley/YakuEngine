@@ -1,5 +1,6 @@
 #pragma once
 
+#include "YK/ECS/Components/YK_TransformComponent.h"
 #include "YK/Math/YK_NumericLimits.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Math/YK_Matrix.h"
@@ -11,7 +12,6 @@
 class CG_Material;
 class CG_Mesh;
 struct CG_Skeleton;
-struct YK_TransformComponent;
 
 struct CG_Animation;
 

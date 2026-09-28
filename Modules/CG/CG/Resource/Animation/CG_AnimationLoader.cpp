@@ -3,7 +3,9 @@
 
 #include "YK/Debugging/YK_Assert.h"
 #include "YK/IO/File/YK_FilePath.h"
+#include "YK/IO/File/YK_IOFile.h"
 #include "YK/IO/Logging/YK_Logger.h"
+#include "YK/Math/YK_MathUtils.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Math/YK_Quaternion.h"
 #include "YK/Types/Math/YK_Vector.h"
@@ -14,6 +16,7 @@
 #include "CG/Resource/Animation/CG_Animation.h"
 
 #include <cstring>
+#include <string>
 #include <unordered_map>
 #include <utility>
 
@@ -22,6 +25,27 @@
 
 namespace CG_AnimationLoader_Private
 {
+    YK_SizeT FindAnimation(CG_GLTF::File const& p_file, std::string const& p_animationName)
+    {
+        if (p_animationName == "")
+        {
+            return 0;
+        }
+
+        tg3_model const& model = p_file.GetModel();
+        for (auto i : YK_CountTo(model.animations_count))
+        {
+            tg3_animation const& animation = model.animations[i];
+
+            if (p_animationName == std::string(animation.name.data, animation.name.len))
+            {
+                return i;
+            }
+        }
+        YK_LOG_ERROR_PARAM("Failed to find animation [{}] in file", p_animationName);
+        return 0;
+    }
+
     enum AnimationChannel
     {
         POSITION,
@@ -51,7 +75,8 @@ namespace CG_AnimationLoader_Private
     CG_Animation::Channel<ChannelDataType> ExtractChannel(CG_GLTF::File const& p_gltfData,
                                                           tg3_animation const& p_gltfAnimation,
                                                           std::unordered_map<YK_U32, YK_U8> p_nodeIDToBoneIndex,
-                                                          YK_SizeT p_channelIndex)
+                                                          YK_SizeT p_channelIndex,
+                                                          double& p_outDuration)
     {
         tg3_animation_channel const& channel = p_gltfAnimation.channels[p_channelIndex];
         tg3_animation_sampler const& sampler = p_gltfAnimation.samplers[channel.sampler];
@@ -69,11 +94,77 @@ namespace CG_AnimationLoader_Private
             resultChannel.m_keyframes[keyIndex] =
               std::pair<float, ChannelDataType>{ keys.m_buffer[keyIndex], values.m_buffer[keyIndex] };
         }
+        p_outDuration = YK_Max(p_outDuration, static_cast<double>(resultChannel.m_keyframes.back().first));
         return resultChannel;
+    }
+
+    static void StripWhitespace(std::string& p_string)
+    {
+        bool inQuotes = false;
+        YK_SizeT writeIndex = 0;
+
+        for (YK_SizeT readIndex = 0; readIndex < p_string.size(); ++readIndex)
+        {
+            char c = p_string[readIndex];
+
+            if (c == '"')
+            {
+                inQuotes = !inQuotes;
+            }
+
+            if (!inQuotes && std::isspace(c))
+            {
+                continue;
+            }
+
+            p_string[writeIndex++] = c;
+        }
+
+        YK_ASSERT(!inQuotes, "Unclosed quotation found!");
+        p_string.resize(writeIndex);
     }
 } // namespace CG_AnimationLoader_Private
 
 CG_Animation CG_AnimationLoader::Load(YK_FilePath const& p_animationPath)
+{
+    if (p_animationPath.Extension() == "gltf" || p_animationPath.Extension() == "glb")
+    {
+        return LoadFromGLTF(p_animationPath, "");
+    }
+
+    YK_ASSERT(p_animationPath.Extension() == "YKA", "Expected YakuAnimation file! (.YKA)");
+
+    std::stringstream animationDescriptorFile;
+    YK_IFile::GetFileContents(p_animationPath.CString(), animationDescriptorFile);
+
+    std::string gltfFile;
+    std::string animationName;
+
+    std::string fileLine;
+    while (std::getline(animationDescriptorFile, fileLine))
+    {
+        CG_AnimationLoader_Private::StripWhitespace(fileLine);
+
+        YK_SizeT equalsPos = fileLine.find_first_of('=');
+
+        std::string_view attribute(fileLine.begin(), fileLine.begin() + equalsPos);
+        // Trim quotation marks - Assumes there are quotation marks
+        std::string_view value(fileLine.begin() + equalsPos + 2, fileLine.end() - 1);
+
+        if (attribute == "file")
+        {
+            gltfFile = value;
+        }
+        else if (attribute == "animation")
+        {
+            animationName = value;
+        }
+    }
+
+    return LoadFromGLTF(YK_FilePath(gltfFile), animationName);
+}
+
+CG_Animation CG_AnimationLoader::LoadFromGLTF(YK_FilePath const& p_animationPath, std::string const& p_animationName)
 {
     YK_ASSERT(p_animationPath.Extension() == "gltf" || p_animationPath.Extension() == "glb",
               "YakuEn only supports GLTF animations!");
@@ -87,7 +178,8 @@ CG_Animation CG_AnimationLoader::Load(YK_FilePath const& p_animationPath)
 
     // Right now this only loads the first animation
     tg3_model const& model = gltfAnimation.GetModel();
-    tg3_animation const& animation = model.animations[0];
+    tg3_animation const& animation =
+      model.animations[CG_AnimationLoader_Private::FindAnimation(gltfAnimation, p_animationName)];
     tg3_skin const& skin = model.skins[0];
 
     std::unordered_map<YK_U32, YK_U8> nodeIDToBoneIndex;
@@ -106,7 +198,11 @@ CG_Animation CG_AnimationLoader::Load(YK_FilePath const& p_animationPath)
         if (channelType == CG_AnimationLoader_Private::POSITION)
         {
             result.m_positionChannels.Insert(
-              CG_AnimationLoader_Private::ExtractChannel<YK_Vector3f>(gltfAnimation, animation, nodeIDToBoneIndex, i));
+              CG_AnimationLoader_Private::ExtractChannel<YK_Vector3f>(gltfAnimation,
+                                                                      animation,
+                                                                      nodeIDToBoneIndex,
+                                                                      i,
+                                                                      result.m_duration));
         }
         else if (channelType == CG_AnimationLoader_Private::ORIENTATION)
         {
@@ -114,12 +210,16 @@ CG_Animation CG_AnimationLoader::Load(YK_FilePath const& p_animationPath)
               CG_AnimationLoader_Private::ExtractChannel<YK_Quaternion, YK_Vector4f>(gltfAnimation,
                                                                                      animation,
                                                                                      nodeIDToBoneIndex,
-                                                                                     i));
+                                                                                     i,
+                                                                                     result.m_duration));
         }
         else if (channelType == CG_AnimationLoader_Private::SCALE)
         {
-            result.m_scaleChannels.Insert(
-              CG_AnimationLoader_Private::ExtractChannel<YK_Vector3f>(gltfAnimation, animation, nodeIDToBoneIndex, i));
+            result.m_scaleChannels.Insert(CG_AnimationLoader_Private::ExtractChannel<YK_Vector3f>(gltfAnimation,
+                                                                                                  animation,
+                                                                                                  nodeIDToBoneIndex,
+                                                                                                  i,
+                                                                                                  result.m_duration));
         }
     }
     return result;

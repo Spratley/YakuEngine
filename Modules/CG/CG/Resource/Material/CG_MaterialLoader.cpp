@@ -12,7 +12,7 @@
 #include <string>
 #include <string_view>
 
-namespace
+namespace CG_MaterialLoader_Private
 {
     static void StripWhitespace(std::string& p_string)
     {
@@ -39,7 +39,7 @@ namespace
         YK_ASSERT(!inQuotes, "Unclosed quotation found!");
         p_string.resize(writeIndex);
     }
-} // namespace
+} // namespace CG_MaterialLoader_Private
 
 // This is a very temporary loader while material files have zero complexity
 CG_Material CG_MaterialLoader::Load(YK_FilePath const& p_materialPath)
@@ -53,7 +53,7 @@ CG_Material CG_MaterialLoader::Load(YK_FilePath const& p_materialPath)
     std::string fileLine;
     while (std::getline(shaderFile, fileLine))
     {
-        StripWhitespace(fileLine);
+        CG_MaterialLoader_Private::StripWhitespace(fileLine);
 
         YK_SizeT equalsPos = fileLine.find_first_of('=');
 

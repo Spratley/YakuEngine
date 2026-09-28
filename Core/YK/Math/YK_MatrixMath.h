@@ -1,5 +1,6 @@
 #pragma once
 
+#include "YK/ECS/Components/YK_TransformComponent.h"
 #include "YK/Math/YK_MathUtils.h"
 #include "YK/Math/YK_VectorMath.h"
 #include "YK/Types/Math/YK_Matrix.h"
@@ -184,5 +185,11 @@ namespace YK_Matrix
                                               zero,         p_scale.y,    zero,         zero,
                                               zero,         zero,         p_scale.z,    zero,
                                               p_position.x, p_position.y, p_position.z, static_cast<DataType>(1) };
+    }
+
+    template <typename DataType>
+    constexpr YK_Matrix_R_C<DataType, 4, 4> Construct(YK_Transform_T<DataType> const& p_transform)
+    {
+        return Construct(p_transform.m_position, p_transform.m_orientation, p_transform.m_scale);
     }
 } // namespace YK_Matrix

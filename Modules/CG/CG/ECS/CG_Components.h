@@ -12,7 +12,7 @@ struct CG_Skeleton;
 
 struct CG_RendererComponent
 {
-    CG_Material const* m_material;
+    CG_Material const* m_material = nullptr;
 };
 
 struct CG_MeshComponent
@@ -27,5 +27,5 @@ struct CG_SkeletalMeshComponent : public CG_MeshComponent
 
 struct CG_PoseComponent
 {
-    std::vector<YK_TransformComponent> m_pose;
+    std::vector<YK_Transform> m_pose;
 };
