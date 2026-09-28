@@ -49,6 +49,13 @@ constexpr YK_Quaternion_T<DataType> YK_Quaternion_T<DataType>::operator*(YK_Quat
 }
 
 template <YK_NumericType DataType>
+constexpr YK_Quaternion_T<DataType>& YK_Quaternion_T<DataType>::operator*=(YK_Quaternion_T const& p_rhs)
+{
+    *this = *this * p_rhs;
+    return *this;
+}
+
+template <YK_NumericType DataType>
 constexpr YK_Vector_N<DataType, 3> YK_Quaternion_T<DataType>::operator*(YK_Vector_N<DataType, 3> const& p_vector) const
 {
     YK_Vector_N<DataType, 3> const vectorizedQuaternion{ x, y, z };

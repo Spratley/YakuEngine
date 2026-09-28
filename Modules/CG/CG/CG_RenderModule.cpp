@@ -4,6 +4,7 @@
 #include "YK/IO/Display/GLFW/YK_DisplaySurface_GLFW.hpp"
 #include "YK/IO/Display/YK_DisplaySurface.h"
 #include "YK/Libraries/Zen/Entity/Zen_Entity.h"
+#include "YK/Libraries/Zen/Zen_Garden.h"
 #include "YK/Platforms/YK_PlatformDefines.h"
 
 #include "CG/Camera/CG_CameraComponent.h"

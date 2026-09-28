@@ -140,3 +140,17 @@ template <typename Type>
 concept YK_Lerpable = requires(Type t, float f) {
     { YK_Lerp(t, t, f) } -> std::same_as<Type>;
 };
+
+template <YK_Lerpable Type>
+constexpr Type YK_LerpClamped(Type const& p_a, Type const& p_b, float p_t)
+{
+    if (p_t <= 0.0f)
+    {
+        return p_a;
+    }
+    if (p_t >= 1.0f)
+    {
+        return p_b;
+    }
+    return YK_Lerp(p_a, p_b, p_t);
+}
