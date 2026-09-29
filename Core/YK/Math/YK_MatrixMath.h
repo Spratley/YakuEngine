@@ -124,6 +124,8 @@ namespace YK_Matrix
                                                YK_Vector_N<DataType, 3> const& p_lookTarget,
                                                YK_Vector_N<DataType, 3> const& p_up = YK_Vector_N<DataType, 3>::Up())
     {
+        // TODO: This should be a graceful failure, not a hard stop
+        YK_ASSERT(YK_Vector::SqrMagnitude(p_lookTarget - p_eyePosition) > 0.0f, "Eye position and look target are exactly overlapped!");
         YK_Vector_N<DataType, 3> const forward = -YK_Vector::GetNormalized(p_lookTarget - p_eyePosition);
         YK_Vector_N<DataType, 3> const right = YK_Vector::Cross(p_up, forward);
         YK_Vector_N<DataType, 3> const up = YK_Vector::Cross(forward, right);

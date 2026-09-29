@@ -98,7 +98,7 @@ namespace CG_AnimationLoader_Private
         return resultChannel;
     }
 
-    static void StripWhitespace(std::string& p_string)
+    void StripWhitespace(std::string& p_string)
     {
         bool inQuotes = false;
         YK_SizeT writeIndex = 0;
@@ -122,6 +122,12 @@ namespace CG_AnimationLoader_Private
 
         YK_ASSERT(!inQuotes, "Unclosed quotation found!");
         p_string.resize(writeIndex);
+    }
+
+    bool IsRoot(tg3_animation_channel const& p_channel, CG_GLTF::File const& p_file)
+    {
+        tg3_node const& bone = p_file.GetModel().nodes[p_channel.target.node];
+        return std::strcmp("Root", bone.name.data) == 0;
     }
 } // namespace CG_AnimationLoader_Private
 
@@ -164,7 +170,9 @@ CG_Animation CG_AnimationLoader::Load(YK_FilePath const& p_animationPath)
     return LoadFromGLTF(YK_FilePath(gltfFile), animationName);
 }
 
-CG_Animation CG_AnimationLoader::LoadFromGLTF(YK_FilePath const& p_animationPath, std::string const& p_animationName)
+CG_Animation CG_AnimationLoader::LoadFromGLTF(YK_FilePath const& p_animationPath,
+                                              std::string const& p_animationName,
+                                              bool m_ignoreRootMotion)
 {
     YK_ASSERT(p_animationPath.Extension() == "gltf" || p_animationPath.Extension() == "glb",
               "YakuEn only supports GLTF animations!");
@@ -192,6 +200,12 @@ CG_Animation CG_AnimationLoader::LoadFromGLTF(YK_FilePath const& p_animationPath
     for (auto i : YK_CountTo(animation.channels_count))
     {
         tg3_animation_channel const& channel = animation.channels[i];
+
+        if (m_ignoreRootMotion && CG_AnimationLoader_Private::IsRoot(channel, gltfAnimation))
+        {
+            continue;
+        }
+
         CG_AnimationLoader_Private::AnimationChannel channelType =
           CG_AnimationLoader_Private::GetChannelFromString(channel.target.path.data);
 

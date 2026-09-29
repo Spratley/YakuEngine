@@ -42,6 +42,8 @@ bool YakuEngine::Init()
     m_modules.InitializeModules(*this);
     m_engineSystemManager.InitSystems(*this);
 
+    YK_Time::ProgramStart();
+
     return true;
 }
 

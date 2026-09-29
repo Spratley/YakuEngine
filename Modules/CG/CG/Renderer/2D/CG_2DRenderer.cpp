@@ -42,8 +42,6 @@ CG_2DRenderer::CG_2DRenderer()
     // Temp, move this to window initialization
     m_framebuffer.SetSize(YK_Vector2i(1920 / 2, 1080 / 2));
     m_framebuffer.Initialize();
-
-    m_canvases[0].AddItem(YK_FilePath("Textures/Splash/YakuEn_Logo_Dark.png"));
 }
 
 void CG_2DRenderer::Render(CG_RenderTarget const& p_target) const

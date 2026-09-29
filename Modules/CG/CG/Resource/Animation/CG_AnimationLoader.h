@@ -12,5 +12,5 @@ public:
     static CG_Animation Load(YK_FilePath const& p_animationPath);
 
 private:
-    static CG_Animation LoadFromGLTF(YK_FilePath const& p_animationPath, std::string const& p_animationName);
+    static CG_Animation LoadFromGLTF(YK_FilePath const& p_animationPath, std::string const& p_animationName, bool m_ignoreRootMotion = true);
 };

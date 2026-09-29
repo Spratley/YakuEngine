@@ -11,6 +11,13 @@ public:
     static float DeltaTime() { return s_deltaTime; }
     static float PhysicsDeltaTime() { return YK_Min(s_deltaTime, 1.0f / 60.0f); }
 
+    static void ProgramStart()
+    {
+        Clock::time_point const now = Clock::now();
+        s_programStart = now;
+        s_lastFrameEnd = now;
+    }
+
     static void OnFrameEnd();
 
     // Note: This is frame constant
