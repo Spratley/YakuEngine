@@ -1,5 +1,6 @@
 #pragma once
 
+#include "YK/Math/YK_QuaternionMath.h"
 #include "YK/Math/YK_VectorMath.h"
 #include "YK/Types/Math/YK_Quaternion.h"
 #include "YK/Types/Math/YK_Vector.h"
@@ -9,6 +10,16 @@ template <YK_NumericType DataType>
 struct YK_Transform_T
 {
     using Vector3Type = YK_Vector_N<DataType, 3>;
+
+public:
+    constexpr YK_Transform_T() = default;
+    constexpr YK_Transform_T(Vector3Type const& p_position,
+                             YK_Quaternion_T<DataType> const& p_orientation,
+                             Vector3Type const& p_scale)
+        : m_position(p_position)
+        , m_orientation(p_orientation)
+        , m_scale(p_scale)
+    {}
 
     constexpr Vector3Type Forward() const
     {
@@ -39,3 +50,11 @@ struct YK_Transform_T
 
 using YK_Transform = YK_Transform_T<float>;
 using YK_TransformComponent = YK_Transform;
+
+template <YK_FloatingPointType FactorType>
+constexpr YK_Transform YK_Lerp(YK_Transform const& p_a, YK_Transform const& p_b, FactorType p_t)
+{
+    return YK_Transform(YK_Lerp(p_a.m_position, p_b.m_position, p_t),
+                        YK_Lerp(p_a.m_orientation, p_b.m_orientation, p_t),
+                        YK_Lerp(p_a.m_scale, p_b.m_scale, p_t));
+}

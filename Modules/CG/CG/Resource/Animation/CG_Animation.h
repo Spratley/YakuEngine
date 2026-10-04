@@ -25,7 +25,7 @@ struct CG_Animation
 
         bool operator==(Channel const& p_rhs) const { return m_boneIndex == p_rhs.m_boneIndex; }
 
-        DataType Sample(float p_time) const;
+        DataType Sample(double p_time) const;
 
         YK_U8 m_boneIndex;
         std::vector<std::pair<float, DataType>> m_keyframes;
@@ -42,7 +42,7 @@ struct CG_Animation
 };
 
 template <YK_Lerpable DataType>
-DataType CG_Animation::Channel<DataType>::Sample(float p_time) const
+DataType CG_Animation::Channel<DataType>::Sample(double p_time) const
 {
     // TODO: Replace with binary search to find keyframe range more efficently
     // I also feel like there's probably some kind of keyframe collapsing I could do so that we don't have to sample the
@@ -57,7 +57,7 @@ DataType CG_Animation::Channel<DataType>::Sample(float p_time) const
 
         auto const& [startTime, startValue] = m_keyframes[i - 1];
         auto const& [endTime, endValue] = m_keyframes[i];
-        float const lerpFactor = (p_time - startTime) / (endTime - startTime);
+        double const lerpFactor = (p_time - startTime) / (endTime - startTime);
         return YK_Lerp(startValue, endValue, lerpFactor);
     }
 

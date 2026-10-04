@@ -2,14 +2,14 @@
 
 #include "YK/Debugging/YK_Assert.h"
 #include "YK/Types/Math/YK_Integer.h"
+#include "YK/Types/Traits/YK_Concepts.h"
 
 #include <cmath>
 #include <concepts>
 #include <type_traits>
 
 // -=-=-= Squares =-=-=-
-template <typename Type>
-requires(std::is_floating_point_v<Type>)
+template <YK_FloatingPointType Type>
 constexpr Type YK_SquareRoot(Type p_value)
 {
     YK_ASSERT(p_value >= static_cast<Type>(0),
@@ -57,8 +57,7 @@ constexpr Type const& YK_Max(Type const& p_lhs, Type const& p_rhs)
     return (p_lhs > p_rhs) ? p_lhs : p_rhs;
 }
 
-template <typename Type>
-requires(std::is_floating_point_v<Type>)
+template <YK_FloatingPointType Type>
 constexpr Type YK_Truncate(Type p_value)
 {
 #if _MSC_VER
@@ -73,8 +72,7 @@ constexpr Type YK_Truncate(Type p_value)
     }
 }
 
-template <typename Type>
-requires(std::is_floating_point_v<Type>)
+template <YK_FloatingPointType Type>
 constexpr Type YK_Floor(Type p_value)
 {
 #if _MSC_VER
@@ -92,8 +90,7 @@ constexpr Type YK_Floor(Type p_value)
     }
 }
 
-template <typename Type>
-requires(std::is_floating_point_v<Type>)
+template <YK_FloatingPointType Type>
 constexpr Type YK_Ceiling(Type p_value)
 {
 #if _MSC_VER
@@ -109,8 +106,7 @@ constexpr Type YK_Ceiling(Type p_value)
     }
 }
 
-template <typename Type>
-requires(std::is_floating_point_v<Type>)
+template <YK_FloatingPointType Type>
 constexpr Type YK_FloatModulo(Type p_numerator, Type p_denominator)
 {
     if consteval
@@ -129,11 +125,11 @@ concept YK_NativelyLerpable = requires(Type t, float f) {
     { t + ((t - t) * f) } -> std::same_as<Type>;
 };
 
-template <typename Type>
+template <typename Type, YK_FloatingPointType FactorType>
 requires(YK_NativelyLerpable<Type>)
-constexpr Type YK_Lerp(Type const& p_a, Type const& p_b, float p_t)
+constexpr Type YK_Lerp(Type const& p_a, Type const& p_b, FactorType p_t)
 {
-    return p_a + ((p_b - p_a) * p_t);
+    return p_a + static_cast<Type>((p_b - p_a) * p_t);
 }
 
 template <typename Type>
@@ -141,8 +137,8 @@ concept YK_Lerpable = requires(Type t, float f) {
     { YK_Lerp(t, t, f) } -> std::same_as<Type>;
 };
 
-template <YK_Lerpable Type>
-constexpr Type YK_LerpClamped(Type const& p_a, Type const& p_b, float p_t)
+template <YK_Lerpable Type, YK_FloatingPointType FactorType>
+constexpr Type YK_LerpClamped(Type const& p_a, Type const& p_b, FactorType p_t)
 {
     if (p_t <= 0.0f)
     {

@@ -1,11 +1,9 @@
 #include "PCH/AniMagic_PCH.h"
 #include "AM_AnimationSystem.h"
 
-#include "YK/ECS/Components/YK_TransformComponent.h"
 #include "YK/Libraries/Zen/System/Zen_System.h"
 #include "YK/Time/YK_Time.h"
-
-#include "CG/Resource/Animation/CG_Animation.h"
+#include "YK/Utils/YK_AlgorithmUtils.h"
 
 void AM_AnimationSystem::Tick(ComponentView p_components)
 {
@@ -13,34 +11,11 @@ void AM_AnimationSystem::Tick(ComponentView p_components)
 
     for (auto [poseComponent, animationComponent] : p_components)
     {
-        if (!animationComponent.m_animation)
-        {
-            continue;
-        }
-
         animationComponent.m_sampleTime += deltaTime;
-        if (animationComponent.m_sampleTime > animationComponent.m_animation->m_duration)
+        for (auto i : YK_CountTo(poseComponent.m_pose.size()))
         {
-            animationComponent.m_sampleTime = 0.0f;
-        }
-
-        CG_Animation const* animation = animationComponent.m_animation;
-        for (CG_Animation::PositionChannel const& positionChannel : animation->m_positionChannels)
-        {
-            YK_Transform& boneTransform = poseComponent.m_pose[positionChannel.m_boneIndex];
-            boneTransform.m_position = positionChannel.Sample(animationComponent.m_sampleTime);
-        }
-
-        for (CG_Animation::OrientationChannel const& orientationChannel : animation->m_orientationChannels)
-        {
-            YK_Transform& boneTransform = poseComponent.m_pose[orientationChannel.m_boneIndex];
-            boneTransform.m_orientation = orientationChannel.Sample(animationComponent.m_sampleTime);
-        }
-
-        for (CG_Animation::ScaleChannel const& scaleChannel : animation->m_scaleChannels)
-        {
-            YK_Transform& boneTransform = poseComponent.m_pose[scaleChannel.m_boneIndex];
-            boneTransform.m_scale = scaleChannel.Sample(animationComponent.m_sampleTime);
+            poseComponent.m_pose[i] =
+              animationComponent.m_poseSampler.Sample(static_cast<YK_U8>(i), animationComponent.m_sampleTime);
         }
     }
 }

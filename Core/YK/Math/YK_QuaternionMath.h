@@ -1,6 +1,7 @@
 #pragma once
 
 #include "YK/Types/Math/YK_Quaternion.h"
+#include "YK/Types/Traits/YK_Concepts.h"
 
 namespace YK_QuaternionMath
 {
@@ -10,9 +11,10 @@ namespace YK_QuaternionMath
     }
 } // namespace YK_QuaternionMath
 
-inline constexpr YK_Quaternion YK_Lerp(YK_Quaternion const& p_a,
-                                       YK_Quaternion /* Pass by copy so we can invert if needed */ p_b,
-                                       float p_t)
+template <YK_FloatingPointType FactorType>
+constexpr YK_Quaternion YK_Lerp(YK_Quaternion const& p_a,
+                                YK_Quaternion /* Pass by copy so we can invert if needed */ p_b,
+                                FactorType p_t)
 {
     // Overload instead of specialization. Thanks Raymond Chen for the reality check!
     float dotQuat = YK_QuaternionMath::Dot(p_a, p_b);

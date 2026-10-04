@@ -45,7 +45,7 @@ namespace CG_GLTF
         constexpr bool ValidateComponentType(YK_U32 p_componentType)
         {
             constexpr bool isUnsigned = std::is_unsigned_v<DataType>;
-            constexpr bool isFloatingPoint = std::is_floating_point_v<DataType>;
+            constexpr bool isFloatingPoint = YK_FloatingPointType<DataType>;
             constexpr YK_SizeT size = sizeof(DataType);
 
             static_assert(!(isUnsigned && isFloatingPoint), "GLTF doesn't support unsigned floating point values!");
@@ -87,7 +87,9 @@ namespace CG_GLTF
               ValidateType<DataType>(accessor.type) && ValidateComponentType<DataType>(accessor.component_type);
             if (!valid)
             {
-                YK_LOG_ERROR_PARAM("Type Validation Failed! Expected type: {} {}", accessor.type, accessor.component_type);
+                YK_LOG_ERROR_PARAM("Type Validation Failed! Expected type: {} {}",
+                                   accessor.type,
+                                   accessor.component_type);
             }
             return valid;
         }

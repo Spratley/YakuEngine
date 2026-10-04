@@ -83,7 +83,7 @@ constexpr YK_Vector_N<typename Vector::DataType_T, Vector::Count> operator*(Vect
     YK_Vector_N<typename Vector::DataType_T, Vector::Count> result;
     for (auto i : YK_CountTo(Vector::Count))
     {
-        result[i] = p_vector[i] * p_scalar;
+        result[i] = static_cast<Vector::DataType_T>(p_vector[i] * p_scalar);
     }
     return result;
 }
