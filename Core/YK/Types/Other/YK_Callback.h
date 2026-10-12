@@ -30,7 +30,7 @@ class YK_Callback
             , m_thunk(p_thunk)
         {}
 
-        Callback(Callback&& p_other)
+        Callback(Callback&& p_other) noexcept
             : m_instance(p_other.m_instance)
             , m_thunk(p_other.m_thunk)
         {}

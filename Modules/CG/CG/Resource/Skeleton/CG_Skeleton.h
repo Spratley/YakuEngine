@@ -13,8 +13,8 @@ struct CG_Skeleton
     struct Bone
     {
         Bone const* m_parent = nullptr;
-        YK_Transform m_bindPoseTransform{};
-        YK_U8 m_index;
+        YK_Transform m_bindPoseTransform = {};
+        YK_U8 m_index = 0;
 #if !YAKU_RETAIL
         std::string m_name = "?";
 #endif // !YAKU_RETAIL

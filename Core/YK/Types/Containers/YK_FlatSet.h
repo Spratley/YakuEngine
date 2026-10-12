@@ -17,7 +17,7 @@ public:
     ~YK_FlatSet() = default;
 
     YK_FlatSet(YK_FlatSet const&) = delete;
-    YK_FlatSet(YK_FlatSet&& p_other)
+    YK_FlatSet(YK_FlatSet&& p_other) noexcept
         : m_data(YK_Exchange(p_other.m_data, std::vector<Type>()))
     {}
 

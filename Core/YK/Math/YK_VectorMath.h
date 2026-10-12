@@ -1,8 +1,12 @@
 #pragma once
 
-#include "YK/Math/YK_MathUtils.h"
+#include "YK/Math/YK_FloatMath.h"
+#include "YK/Math/YK_NumericLimits.h"
 #include "YK/Types/Math/YK_Vector.h"
+#include "YK/Types/Traits/YK_Concepts.h"
 #include "YK/Utils/YK_AlgorithmUtils.h"
+
+#include <concepts>
 
 namespace YK_Vector
 {
@@ -124,7 +128,7 @@ namespace YK_Vector
     {
         for (auto i : YK_CountTo(VectorA::Count))
         {
-            if (!YK_ApproximatelyEqual(p_lhs[i], p_rhs[i]))
+            if (!YK_FloatingPointMath<typename VectorA::DataType_T>::ApproximatelyEqual(p_lhs[i], p_rhs[i]))
             {
                 return false;
             }

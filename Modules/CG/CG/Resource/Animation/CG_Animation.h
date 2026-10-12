@@ -27,7 +27,7 @@ struct CG_Animation
 
         DataType Sample(double p_time) const;
 
-        YK_U8 m_boneIndex;
+        YK_U8 m_boneIndex = 0;
         std::vector<std::pair<float, DataType>> m_keyframes;
     };
 
@@ -38,7 +38,7 @@ struct CG_Animation
     YK_FlatSet<PositionChannel> m_positionChannels;
     YK_FlatSet<OrientationChannel> m_orientationChannels;
     YK_FlatSet<ScaleChannel> m_scaleChannels;
-    double m_duration;
+    double m_duration = 0.0;
 };
 
 template <YK_Lerpable DataType>

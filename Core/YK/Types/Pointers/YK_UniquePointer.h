@@ -16,14 +16,14 @@ public:
 public:
     YK_UniquePointer() = default;
 
-    YK_UniquePointer(YK_UniquePointer&& p_other)
+    YK_UniquePointer(YK_UniquePointer&& p_other) noexcept
     {
         delete m_item;
         m_item = p_other.m_item;
         p_other.m_item = nullptr;
     }
 
-    YK_UniquePointer& operator=(YK_UniquePointer&& p_other)
+    YK_UniquePointer& operator=(YK_UniquePointer&& p_other) noexcept
     {
         delete m_item;
         m_item = p_other.m_item;
