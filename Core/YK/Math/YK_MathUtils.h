@@ -58,6 +58,12 @@ constexpr Type const& YK_Max(Type const& p_lhs, Type const& p_rhs)
 }
 
 template <typename Type>
+constexpr Type YK_Clamp(Type const& p_value, Type const& p_min, Type const& p_max)
+{
+    return YK_Min(YK_Max(p_value, p_min), p_max);
+}
+
+template <typename Type>
 constexpr Type YK_Abs(Type const& p_value)
 {
     if consteval

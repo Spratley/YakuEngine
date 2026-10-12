@@ -118,6 +118,11 @@ public:
         : m_data{ p_x, p_y }
     {}
 
+    // Truncate Y axis to convert to 2D
+    /*explicit*/ constexpr YK_Vector_N(YK_Vector_N<DataType, 3> const& p_3dVector)
+        : m_data{ p_3dVector.m_data[0], p_3dVector.m_data[2] }
+    {}
+
     constexpr DataType& operator[](YK_SizeT const p_index) { return m_data[p_index]; }
     constexpr DataType const& operator[](YK_SizeT const p_index) const { return m_data[p_index]; }
 
