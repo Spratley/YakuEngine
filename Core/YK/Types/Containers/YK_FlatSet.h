@@ -29,6 +29,7 @@ public:
     void Remove(Type const& p_item);
 
     YK_FlatIterator<Type> begin() { return YK_FlatIterator<Type>(m_data.data(), 0); }
+    YK_FlatIterator<Type> end() { return YK_FlatIterator<Type>(m_data.data(), m_data.size()); }
     YK_FlatIterator<Type const> begin() const { return YK_FlatIterator<Type const>(m_data.data(), 0); }
     YK_FlatIterator<Type const> end() const { return YK_FlatIterator<Type const>(m_data.data(), m_data.size()); }
 

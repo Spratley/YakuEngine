@@ -5,7 +5,9 @@
 #include "YK/IO/File/YK_FilePath.h"
 #include "YK/IO/File/YK_IOFile.h"
 #include "YK/IO/Logging/YK_Logger.h"
+#include "YK/Math/YK_FloatMath.h"
 #include "YK/Math/YK_MathUtils.h"
+#include "YK/Math/YK_VectorMath.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Math/YK_Quaternion.h"
 #include "YK/Types/Math/YK_Vector.h"
@@ -15,8 +17,11 @@
 #include "CG/Libraries/TinyGLTF/tiny_gltf_v3.h"
 #include "CG/Resource/Animation/CG_Animation.h"
 
+#include <cctype>
 #include <cstring>
+#include <sstream>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 
@@ -103,7 +108,7 @@ namespace CG_AnimationLoader_Private
         bool inQuotes = false;
         YK_SizeT writeIndex = 0;
 
-        for (YK_SizeT readIndex = 0; readIndex < p_string.size(); ++readIndex)
+        for (auto readIndex : YK_CountTo(p_string.size()))
         {
             char c = p_string[readIndex];
 
@@ -236,5 +241,27 @@ CG_Animation CG_AnimationLoader::LoadFromGLTF(YK_FilePath const& p_animationPath
                                                                                                   result.m_duration));
         }
     }
+
+#if !YAKU_RETAIL
+    // GLTF breaks HARD when there's non-unform scale
+    for (CG_Animation::ScaleChannel& scaleChannel : result.m_scaleChannels)
+    {
+        for (std::pair<float, YK_Vector3f>& keyframe : scaleChannel.m_keyframes)
+        {
+            YK_Vector3f& scale = keyframe.second;
+            if (YK_FloatMath::ApproximatelyEqual(scale.x, scale.y)
+                && YK_FloatMath::ApproximatelyEqual(scale.x, scale.z))
+            {
+                continue;
+            }
+            YK_LOG_ERROR_PARAM(
+              "GLTF Error: Non-uniform scale detected when loading animation {} in file {}! (Scale was {})",
+              p_animationName,
+              p_animationPath.CString(),
+              scale);
+        }
+    }
+#endif // !YAKU_RETAIL
+
     return result;
 }

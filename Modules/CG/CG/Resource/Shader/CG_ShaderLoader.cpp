@@ -1,9 +1,13 @@
 #include "PCH/CG_PCH.h"
 #include "CG_ShaderLoader.h"
 
-#include "CG/Resource/Shader/CG_Shader.h"
-
+#include "YK/Debugging/YK_Assert.h"
+#include "YK/IO/File/YK_FilePath.h"
 #include "YK/IO/File/YK_IOFile.h"
+#include "YK/Types/Math/YK_Integer.h"
+#include "YK/Utils/YK_AlgorithmUtils.h"
+
+#include "CG/Resource/Shader/CG_Shader.h"
 
 #include <cctype>
 #include <sstream>
@@ -17,7 +21,7 @@ namespace
         bool inQuotes = false;
         YK_SizeT writeIndex = 0;
 
-        for (YK_SizeT readIndex = 0; readIndex < p_string.size(); ++readIndex)
+        for (auto readIndex : YK_CountTo(p_string.size()))
         {
             char c = p_string[readIndex];
 

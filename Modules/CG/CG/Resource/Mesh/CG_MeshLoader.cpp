@@ -86,8 +86,10 @@ CG_Mesh CG_MeshLoader::LoadOBJ(YK_FilePath const& p_path)
         }
         else if (linePrefix.compare("f ") == 0)
         {
-            for (int i = 0; i < 3; ++i)
+            for (auto i : YK_CountTo(3))
             {
+                YK_Unused(i);
+
                 YK_U32 vertexPositionIndex;
                 YK_U32 texCoordIndex;
                 YK_U32 normalIndex;

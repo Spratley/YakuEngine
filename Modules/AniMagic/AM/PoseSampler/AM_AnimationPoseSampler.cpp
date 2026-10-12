@@ -2,7 +2,7 @@
 #include "AM_AnimationPoseSampler.h"
 
 #include "YK/ECS/Components/YK_TransformComponent.h"
-#include "YK/Math/YK_MathUtils.h"
+#include "YK/Math/YK_FloatMath.h"
 #include "YK/Types/Math/YK_Integer.h"
 
 #include "CG/Resource/Animation/CG_Animation.h"
@@ -15,7 +15,7 @@ YK_Transform AM_AnimationPoseSampler::Sample(YK_U8 p_boneIndex, double p_sampleT
         return result;
     }
 
-    p_sampleTime = YK_FloatModulo(p_sampleTime, m_animation->m_duration);
+    p_sampleTime = YK_DoubleMath::Modulo(p_sampleTime, m_animation->m_duration);
 
     // TODO: Re-organize channel data so bone lookups are fast
     // Looping here is just awful

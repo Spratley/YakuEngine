@@ -62,13 +62,13 @@ namespace CG_RenderQueue_Private
     YK_Matrix44 CalculateBoneMatrix(CG_PoseComponent const& p_pose, CG_Skeleton::Bone const& p_bone)
     {
         YK_Transform const& boneTransform = p_pose.m_pose[p_bone.m_index];
-        YK_Matrix44 result = YK_Matrix::Construct(boneTransform);
         if (p_bone.m_parent)
         {
-            result = CalculateBoneMatrix(p_pose, *p_bone.m_parent) * result;
+            return CalculateBoneMatrix(p_pose, *p_bone.m_parent) * YK_Matrix::Construct(boneTransform);
         }
-        return result;
+        return YK_Matrix::Construct(boneTransform);
     }
+
 } // namespace CG_RenderQueue_Private
 
 CG_RenderQueue const CG_RenderQueueBuilder::Build()

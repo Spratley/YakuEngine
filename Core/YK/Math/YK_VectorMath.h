@@ -79,4 +79,56 @@ namespace YK_Vector
                                                                          (p_lhs[2] * p_rhs[0]) - (p_lhs[0] * p_rhs[2]),
                                                                          (p_lhs[0] * p_rhs[1]) - (p_lhs[1] * p_rhs[0]));
     }
+
+    template <YK_VectorType Vector>
+    requires(std::totally_ordered<typename Vector::DataType_T>)
+    constexpr Vector::DataType_T MaximumElement(Vector const& p_vector)
+    {
+        typename Vector::DataType_T maximum = YK_NumericLimits<typename Vector::DataType_T>::Min;
+        for (auto i : YK_CountTo(Vector::Count))
+        {
+            maximum = YK_Max(p_vector[i], maximum);
+        }
+        return maximum;
+    }
+
+    template <YK_VectorType Vector>
+    requires(std::totally_ordered<typename Vector::DataType_T>)
+    constexpr Vector::DataType_T MinimumElement(Vector const& p_vector)
+    {
+        typename Vector::DataType_T minimum = YK_NumericLimits<typename Vector::DataType_T>::Max;
+        for (auto i : YK_CountTo(Vector::Count))
+        {
+            minimum = YK_Min(p_vector[i], minimum);
+        }
+        return minimum;
+    }
+
+    template <YK_VectorType Vector>
+    requires(std::totally_ordered<typename Vector::DataType_T>)
+    constexpr Vector Maximize(Vector const& p_vector)
+    {
+        return Vector{ MaximumElement(p_vector) };
+    }
+
+    template <YK_VectorType Vector>
+    requires(std::totally_ordered<typename Vector::DataType_T>)
+    constexpr Vector Minimize(Vector const& p_vector)
+    {
+        return Vector{ MinimumElement(p_vector) };
+    }
+
+    template <YK_VectorType VectorA, YK_VectorType VectorB>
+    requires(YK_AreVectorsCompatible<VectorA, VectorB>::value && YK_FloatingPointType<typename VectorA::DataType_T>)
+    constexpr bool ApproximatelyEqual(VectorA const& p_lhs, VectorB const& p_rhs)
+    {
+        for (auto i : YK_CountTo(VectorA::Count))
+        {
+            if (!YK_ApproximatelyEqual(p_lhs[i], p_rhs[i]))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 } // namespace YK_Vector

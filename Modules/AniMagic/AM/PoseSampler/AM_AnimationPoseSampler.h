@@ -15,7 +15,7 @@ public:
         : m_animation(p_animation)
     {}
 
-    YK_Transform Sample(YK_U8 p_boneIndex, double p_sampleTime) const;
+    YK_Transform Sample(YK_U8 p_boneIndex, double p_sampleTime) const override;
 
 private:
     CG_Animation const* m_animation = nullptr;

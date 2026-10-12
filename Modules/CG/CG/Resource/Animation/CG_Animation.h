@@ -48,7 +48,7 @@ DataType CG_Animation::Channel<DataType>::Sample(double p_time) const
     // I also feel like there's probably some kind of keyframe collapsing I could do so that we don't have to sample the
     // lerp factor for each keyframe if they're the same timings? Maybe that's overthinking it, gotta profile animation
     // first to see if it's expensive enough to consider
-    for (YK_SizeT i = 1; i < m_keyframes.size(); ++i)
+    for (auto i : YK_CountTo(1, m_keyframes.size()))
     {
         if (p_time > m_keyframes[i].first)
         {

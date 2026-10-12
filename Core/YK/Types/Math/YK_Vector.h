@@ -2,6 +2,7 @@
 
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Traits/YK_Concepts.h"
+#include "YK/Utils/YK_AlgorithmUtils.h"
 
 #include <concepts>
 #include <type_traits>
@@ -71,7 +72,7 @@ public:
     constexpr YK_Vector_N(DataType p_defaultValue)
         : m_data{}
     {
-        for (YK_U32 i = 0; i < DimensionCount; ++i)
+        for (auto i : YK_CountTo(DimensionCount))
         {
             m_data[i] = p_defaultValue;
         }
@@ -80,7 +81,7 @@ public:
     constexpr YK_Vector_N(YK_Vector_N const& p_other)
         : m_data{}
     {
-        for (YK_U32 i = 0; i < DimensionCount; ++i)
+        for (auto i : YK_CountTo(DimensionCount))
         {
             m_data[i] = p_other[i];
         }

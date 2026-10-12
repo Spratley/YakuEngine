@@ -1,7 +1,9 @@
 #pragma once
 
+#include "YK/Math/YK_FloatMath.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Traits/YK_Concepts.h"
+#include "YK/Utils/YK_AlgorithmUtils.h"
 
 template <YK_FloatingPointType Type>
 struct YK_MathConstants
@@ -32,7 +34,7 @@ constexpr Type YK_Cosine(Type p_value)
     if consteval
     {
         // Wrap p_value to range [-PI : PI] for precision
-        p_value = YK_FloatModulo(p_value, YK_MathConstants<Type>::PI_2);
+        p_value = YK_FloatingPointMath<Type>::Modulo(p_value, YK_MathConstants<Type>::PI_2);
         if (p_value < static_cast<Type>(0.0))
         {
             p_value += YK_MathConstants<Type>::PI_2;
@@ -50,7 +52,7 @@ constexpr Type YK_Cosine(Type p_value)
 
         Type const numerator = -p_value * p_value;
 
-        for (YK_U32 i = 1; i < precision; ++i)
+        for (auto i : YK_CountTo(precision))
         {
             Type const i2 = static_cast<Type>(2.0) * static_cast<Type>(i);
             Type const denominator = i2 * (i2 - 1);

@@ -1,12 +1,12 @@
 #pragma once
 
 #include "YK/Debugging/YK_Assert.h"
+#include "YK/Math/YK_NumericLimits.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Traits/YK_Concepts.h"
 
 #include <cmath>
 #include <concepts>
-#include <type_traits>
 
 // -=-=-= Squares =-=-=-
 template <YK_FloatingPointType Type>
@@ -57,66 +57,27 @@ constexpr Type const& YK_Max(Type const& p_lhs, Type const& p_rhs)
     return (p_lhs > p_rhs) ? p_lhs : p_rhs;
 }
 
-template <YK_FloatingPointType Type>
-constexpr Type YK_Truncate(Type p_value)
+template <typename Type>
+constexpr Type YK_Abs(Type const& p_value)
 {
-#if _MSC_VER
     if consteval
     {
-        return static_cast<Type>(static_cast<YK_Int64>(p_value));
+        if (p_value < static_cast<Type>(0))
+        {
+            return -p_value;
+        }
+        return p_value;
     }
     else
-#endif // _MSC_VER
     {
-        return std::trunc(p_value);
+        return std::abs(p_value);
     }
 }
 
-template <YK_FloatingPointType Type>
-constexpr Type YK_Floor(Type p_value)
+template <typename Type>
+constexpr Type YK_Sign(Type const& p_value)
 {
-#if _MSC_VER
-    if consteval
-    {
-        YK_Int64 const wholePart = static_cast<YK_Int64>(p_value);
-        return (p_value < wholePart) ? static_cast<Type>(wholePart - 1) : static_cast<Type>(wholePart);
-    }
-    else
-#endif // _MSC_VER
-    {
-        // Praise to Herb Sutter (and also whoever submtted the proposal) that std::floor is constexpr in C++ 23
-        // Now if only MSVC actually supported it...
-        return std::floor(p_value);
-    }
-}
-
-template <YK_FloatingPointType Type>
-constexpr Type YK_Ceiling(Type p_value)
-{
-#if _MSC_VER
-    if consteval
-    {
-        YK_Int64 const wholePart = static_cast<YK_Int64>(p_value);
-        return (wholePart < p_value) ? static_cast<Type>(wholePart + 1) : static_cast<Type>(wholePart);
-    }
-    else
-#endif // _MSC_VER
-    {
-        return std::ceil(p_value);
-    }
-}
-
-template <YK_FloatingPointType Type>
-constexpr Type YK_FloatModulo(Type p_numerator, Type p_denominator)
-{
-    if consteval
-    {
-        return p_numerator - (YK_Truncate(p_numerator / p_denominator) * p_denominator);
-    }
-    else
-    {
-        return std::fmod(p_numerator, p_denominator);
-    }
+    return (p_value < static_cast<Type>(0)) ? static_cast<Type>(-1) : static_cast<Type>(1);
 }
 
 // -=-=-= Lerp =-=-=-

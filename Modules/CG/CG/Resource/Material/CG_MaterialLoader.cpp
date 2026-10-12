@@ -19,7 +19,7 @@ namespace CG_MaterialLoader_Private
         bool inQuotes = false;
         YK_SizeT writeIndex = 0;
 
-        for (YK_SizeT readIndex = 0; readIndex < p_string.size(); ++readIndex)
+        for (auto readIndex : YK_CountTo(p_string.size()))
         {
             char c = p_string[readIndex];
 

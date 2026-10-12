@@ -38,7 +38,14 @@ struct YK_CountTo
 {
     template <YK_SizeTConvertible Type>
     constexpr YK_CountTo(Type p_limit)
-        : m_limit(static_cast<YK_SizeT>(p_limit))
+        : m_start(0)
+        , m_limit(static_cast<YK_SizeT>(p_limit))
+    {}
+
+    template <YK_SizeTConvertible StartType, YK_SizeTConvertible LimitType = StartType>
+    constexpr YK_CountTo(StartType p_start, LimitType p_limit)
+        : m_start(static_cast<YK_SizeT>(p_start))
+        , m_limit(static_cast<YK_SizeT>(p_limit))
     {}
 
     struct Iterator
@@ -62,8 +69,9 @@ struct YK_CountTo
         YK_SizeT m_i;
     };
 
-    constexpr Iterator begin() const { return Iterator(0); }
+    constexpr Iterator begin() const { return Iterator(m_start); }
     constexpr Iterator end() const { return Iterator(m_limit); }
 
+    YK_SizeT const m_start;
     YK_SizeT const m_limit;
 };

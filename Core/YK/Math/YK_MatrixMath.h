@@ -20,6 +20,8 @@ namespace YK_Matrix
     template <typename DataType>
     constexpr YK_Matrix_R_C<DataType, 4, 4> Inverse(YK_Matrix_R_C<DataType, 4, 4> const& p_matrix)
     {
+        // TODO: This doesn't support scale, but it should..
+
         // Affine transformation matrix
         // Data is stored as a column major matrix
         // Inverse of the rotation 3x3 is the same as the transpose
@@ -125,7 +127,8 @@ namespace YK_Matrix
                                                YK_Vector_N<DataType, 3> const& p_up = YK_Vector_N<DataType, 3>::Up())
     {
         // TODO: This should be a graceful failure, not a hard stop
-        YK_ASSERT(YK_Vector::SqrMagnitude(p_lookTarget - p_eyePosition) > 0.0f, "Eye position and look target are exactly overlapped!");
+        YK_ASSERT(YK_Vector::SqrMagnitude(p_lookTarget - p_eyePosition) > 0.0f,
+                  "Eye position and look target are exactly overlapped!");
         YK_Vector_N<DataType, 3> const forward = -YK_Vector::GetNormalized(p_lookTarget - p_eyePosition);
         YK_Vector_N<DataType, 3> const right = YK_Vector::Cross(p_up, forward);
         YK_Vector_N<DataType, 3> const up = YK_Vector::Cross(forward, right);
@@ -142,7 +145,14 @@ namespace YK_Matrix
     }
 
     template <typename DataType>
-    constexpr YK_Matrix_R_C<DataType, 3, 3> Rotation(YK_Quaternion_T<DataType> const& p_orientation)
+    constexpr YK_Matrix_R_C<DataType, 4, 4> Translation(YK_Vector_N<DataType, 3> const& p_position)
+    {
+        return YK_Matrix_R_C<DataType, 4, 4>{ 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,         1.0f,         0.0f,         0.0f,
+                                              0.0f, 0.0f, 1.0f, 0.0f, p_position.x, p_position.y, p_position.z, 1.0f };
+    }
+
+    template <typename DataType>
+    constexpr YK_Matrix_R_C<DataType, 3, 3> Rotation33(YK_Quaternion_T<DataType> const& p_orientation)
     {
         DataType const xSquare = YK_Square(p_orientation.x) * 2;
         DataType const ySquare = YK_Square(p_orientation.y) * 2;
@@ -163,19 +173,46 @@ namespace YK_Matrix
     }
 
     template <typename DataType>
+    constexpr YK_Matrix_R_C<DataType, 4, 4> Rotation(YK_Quaternion_T<DataType> const& p_orientation)
+    {
+        YK_Matrix_R_C<DataType, 4, 4> result;
+        // TODO: Replace with in-place construction for 4x4
+        YK_Matrix_R_C<DataType, 3, 3> rotation = Rotation33(p_orientation);
+        result[0].xyz = rotation[0];
+        result[1].xyz = rotation[1];
+        result[2].xyz = rotation[2];
+
+        return result;
+    }
+
+    template <typename DataType>
+    constexpr YK_Matrix_R_C<DataType, 4, 4> Scaling(YK_Vector_N<DataType, 3> const& p_scale)
+    {
+        return YK_Matrix_R_C<DataType, 4, 4>{ p_scale.x, 0.0f, 0.0f,      0.0f, 0.0f, p_scale.y, 0.0f, 0.0f,
+                                              0.0f,      0.0f, p_scale.z, 0.0f, 0.0f, 0.0f,      0.0f, 1.0f };
+    }
+
+    template <typename DataType>
     constexpr YK_Matrix_R_C<DataType, 4, 4> Construct(YK_Vector_N<DataType, 3> const& p_position,
                                                       YK_Quaternion_T<DataType> const& p_orientation,
                                                       YK_Vector_N<DataType, 3> const& p_scale)
     {
         YK_Matrix_R_C<DataType, 4, 4> result;
         // TODO: Replace with in-place construction for 4x4
-        YK_Matrix_R_C<DataType, 3, 3> rotation = Rotation(p_orientation);
+        YK_Matrix_R_C<DataType, 3, 3> rotation = Rotation33(p_orientation);
         result[0].xyz = rotation[0] * p_scale.x;
         result[1].xyz = rotation[1] * p_scale.y;
         result[2].xyz = rotation[2] * p_scale.z;
         result[3].xyz = p_position;
 
         return result;
+    }
+
+    template <typename DataType>
+    constexpr YK_Matrix_R_C<DataType, 4, 4> Construct(YK_Vector_N<DataType, 3> const& p_position,
+                                                      YK_Quaternion_T<DataType> const& p_orientation)
+    {
+        return Construct(p_position, p_orientation, YK_Vector_N<DataType, 3>::One());
     }
 
     template <typename DataType>

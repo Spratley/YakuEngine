@@ -12,6 +12,15 @@ struct YK_Transform_T
     using Vector3Type = YK_Vector_N<DataType, 3>;
 
 public:
+    static YK_Transform_T Combine(YK_Transform_T const& p_parent, YK_Transform_T const& p_child)
+    {
+        return YK_Transform_T(p_parent.m_position
+                                + p_parent.m_orientation * (YK_Vector::Scale(p_parent.m_scale, p_child.m_position)),
+                              p_parent.m_orientation * p_child.m_orientation,
+                              YK_Vector::Scale(p_parent.m_scale, p_child.m_scale));
+    }
+
+public:
     constexpr YK_Transform_T() = default;
     constexpr YK_Transform_T(Vector3Type const& p_position,
                              YK_Quaternion_T<DataType> const& p_orientation,

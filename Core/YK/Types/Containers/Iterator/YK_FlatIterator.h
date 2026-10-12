@@ -19,9 +19,9 @@ public:
 
     template <typename OtherType>
     requires(std::is_same_v<std::remove_cv_t<Type>, std::remove_cv_t<OtherType>>)
-    friend bool operator!=(YK_FlatIterator const& p_lhs, YK_FlatIterator<OtherType> const& p_rhs)
+    constexpr bool operator!=(YK_FlatIterator<OtherType> const& p_rhs) const
     {
-        return p_lhs.m_index != p_rhs.m_index;
+        return this->m_index != p_rhs.m_index;
     }
 
 private:
