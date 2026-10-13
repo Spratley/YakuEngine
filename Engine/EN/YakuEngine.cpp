@@ -8,6 +8,8 @@
 
 #include "PP/PP_PhysicsModule.h"
 
+#include "AM/Resource/AM_ResourceRegistry.h"
+
 #include "YK/Core/YK_Core.h"
 #include "YK/Libraries/Zen/Zen_Garden.h"
 #include "YK/Time/YK_Time.h"
@@ -70,4 +72,8 @@ void YakuEngine::EndFrame()
     YK_Time::OnFrameEnd();
 }
 
-void YakuEngine::RegisterAssetTypes() { CG_ResourceRegistry::RegisterAssetTypes(m_assetManager); }
+void YakuEngine::RegisterAssetTypes()
+{
+    CG_ResourceRegistry::RegisterAssetTypes(m_assetManager);
+    AM_ResourceRegistry::RegisterAssetTypes(m_assetManager);
+}

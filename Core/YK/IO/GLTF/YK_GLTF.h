@@ -2,18 +2,17 @@
 
 #include "YK/Debugging/YK_Assert.h"
 #include "YK/IO/File/YK_FilePath.h"
+#include "YK/Libraries/TinyGLTF/tiny_gltf_v3.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Math/YK_Matrix.h"
 #include "YK/Types/Math/YK_Vector.h"
 #include "YK/Types/Traits/YK_Concepts.h"
 
-#include "CG/Libraries/TinyGLTF/tiny_gltf_v3.h"
-
 #include <concepts>
 #include <type_traits>
 
 // Simple wrapper around TinyGLTF since it's effectively just a loader/parser
-namespace CG_GLTF
+namespace YK_GLTF
 {
 #if !YAKU_RETAIL
     namespace Debug
@@ -156,4 +155,4 @@ namespace CG_GLTF
         tg3_model m_model;
         tg3_error_stack m_errorStack;
     };
-} // namespace CG_GLTF
+} // namespace YK_GLTF

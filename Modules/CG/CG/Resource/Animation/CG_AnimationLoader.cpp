@@ -4,17 +4,16 @@
 #include "YK/Debugging/YK_Assert.h"
 #include "YK/IO/File/YK_FilePath.h"
 #include "YK/IO/File/YK_IOFile.h"
+#include "YK/IO/GLTF/YK_GLTF.h"
 #include "YK/IO/Logging/YK_Logger.h"
+#include "YK/Libraries/TinyGLTF/tiny_gltf_v3.h"
 #include "YK/Math/YK_FloatMath.h"
 #include "YK/Math/YK_MathUtils.h"
-#include "YK/Math/YK_VectorMath.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Math/YK_Quaternion.h"
 #include "YK/Types/Math/YK_Vector.h"
 #include "YK/Utils/YK_AlgorithmUtils.h"
 
-#include "CG/IO/CG_GLTF.h"
-#include "CG/Libraries/TinyGLTF/tiny_gltf_v3.h"
 #include "CG/Resource/Animation/CG_Animation.h"
 
 #include <cctype>
@@ -30,7 +29,7 @@
 
 namespace CG_AnimationLoader_Private
 {
-    YK_SizeT FindAnimation(CG_GLTF::File const& p_file, std::string const& p_animationName)
+    YK_SizeT FindAnimation(YK_GLTF::File const& p_file, std::string const& p_animationName)
     {
         if (p_animationName == "")
         {
@@ -77,7 +76,7 @@ namespace CG_AnimationLoader_Private
     }
 
     template <typename ChannelDataType, typename ExtractionType = ChannelDataType>
-    CG_Animation::Channel<ChannelDataType> ExtractChannel(CG_GLTF::File const& p_gltfData,
+    CG_Animation::Channel<ChannelDataType> ExtractChannel(YK_GLTF::File const& p_gltfData,
                                                           tg3_animation const& p_gltfAnimation,
                                                           std::unordered_map<YK_U32, YK_U8> p_nodeIDToBoneIndex,
                                                           YK_SizeT p_channelIndex,
@@ -87,13 +86,13 @@ namespace CG_AnimationLoader_Private
         tg3_animation_sampler const& sampler = p_gltfAnimation.samplers[channel.sampler];
 
         YK_U8 boneIndex = p_nodeIDToBoneIndex[channel.target.node];
-        CG_GLTF::DataView<float> const keys = p_gltfData.ViewData<float>(sampler.input);
+        YK_GLTF::DataView<float> const keys = p_gltfData.ViewData<float>(sampler.input);
 
         CG_Animation::Channel<ChannelDataType> resultChannel;
         resultChannel.m_keyframes.resize(keys.m_count);
         resultChannel.m_boneIndex = boneIndex;
 
-        CG_GLTF::DataView<ExtractionType> const values = p_gltfData.ViewData<ExtractionType>(sampler.output);
+        YK_GLTF::DataView<ExtractionType> const values = p_gltfData.ViewData<ExtractionType>(sampler.output);
         for (auto keyIndex : YK_CountTo(keys.m_count))
         {
             resultChannel.m_keyframes[keyIndex] =
@@ -129,7 +128,7 @@ namespace CG_AnimationLoader_Private
         p_string.resize(writeIndex);
     }
 
-    bool IsRoot(tg3_animation_channel const& p_channel, CG_GLTF::File const& p_file)
+    bool IsRoot(tg3_animation_channel const& p_channel, YK_GLTF::File const& p_file)
     {
         tg3_node const& bone = p_file.GetModel().nodes[p_channel.target.node];
         return std::strcmp("Root", bone.name.data) == 0;
@@ -182,14 +181,13 @@ CG_Animation CG_AnimationLoader::LoadFromGLTF(YK_FilePath const& p_animationPath
     YK_ASSERT(p_animationPath.Extension() == "gltf" || p_animationPath.Extension() == "glb",
               "YakuEn only supports GLTF animations!");
 
-    CG_GLTF::File gltfAnimation(p_animationPath);
+    YK_GLTF::File gltfAnimation(p_animationPath);
     if (gltfAnimation.CheckErrors() || !gltfAnimation.HasSkeleton() || !gltfAnimation.HasAnimation())
     {
         YK_ASSERT(gltfAnimation.HasSkeleton(), "YakuEn only supports animation via skeletons!");
         return CG_Animation();
     }
 
-    // Right now this only loads the first animation
     tg3_model const& model = gltfAnimation.GetModel();
     tg3_animation const& animation =
       model.animations[CG_AnimationLoader_Private::FindAnimation(gltfAnimation, p_animationName)];

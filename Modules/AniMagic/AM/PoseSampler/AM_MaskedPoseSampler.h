@@ -4,13 +4,13 @@
 #include "YK/Types/Math/YK_Integer.h"
 
 #include "AM/PoseSampler/AM_PoseSampler.h"
-#include "AM/Types/AM_PoseMask.h"
+#include "AM/Resource/AM_BoneMask.h"
 
 class AM_MaskedPoseSampler : public AM_PoseSampler
 {
 public:
     constexpr AM_MaskedPoseSampler() = default;
-    AM_MaskedPoseSampler(AM_PoseMask const& p_poseMask,
+    AM_MaskedPoseSampler(AM_BoneMask const& p_poseMask,
                          AM_PoseSampler /*const*/* p_inMaskPose,
                          AM_PoseSampler /*const*/* p_outOfMaskPose)
         : m_inMaskPose(p_inMaskPose)
@@ -27,5 +27,5 @@ public:
 private:
     AM_PoseSampler /*const*/* m_inMaskPose = nullptr;
     AM_PoseSampler /*const*/* m_outOfMaskPose = nullptr;
-    AM_PoseMask m_poseMask = {};
+    AM_BoneMask m_poseMask = {};
 };

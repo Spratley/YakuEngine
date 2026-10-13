@@ -9,9 +9,9 @@
 #include "YK/Types/Math/YK_Quaternion.h"
 #include "YK/Types/Math/YK_Vector.h"
 #include "YK/Utils/YK_AlgorithmUtils.h"
+#include "YK/IO/GLTF/YK_GLTF.h"
+#include "YK/Libraries/TinyGLTF/tiny_gltf_v3.h"
 
-#include "CG/IO/CG_GLTF.h"
-#include "CG/Libraries/TinyGLTF/tiny_gltf_v3.h"
 #include "CG/Resource/Skeleton/CG_Skeleton.h"
 
 #include <cstring>
@@ -26,7 +26,7 @@ CG_Skeleton CG_SkeletonLoader::Load(YK_FilePath const& p_skeletonPath)
     YK_ASSERT(p_skeletonPath.Extension() == "gltf" || p_skeletonPath.Extension() == "glb",
               "YakuEn only supports GLTF skeletons!");
 
-    CG_GLTF::File gltfSkeleton(p_skeletonPath);
+    YK_GLTF::File gltfSkeleton(p_skeletonPath);
     if (gltfSkeleton.CheckErrors() || !gltfSkeleton.HasSkeleton())
     {
         return CG_Skeleton();
@@ -43,7 +43,7 @@ CG_Skeleton CG_SkeletonLoader::Load(YK_FilePath const& p_skeletonPath)
         return CG_Skeleton();
     }
 
-    CG_GLTF::DataView<YK_Matrix44> const inverseBindMatrixBuffer =
+    YK_GLTF::DataView<YK_Matrix44> const inverseBindMatrixBuffer =
       gltfSkeleton.ViewData<YK_Matrix44>(skin.inverse_bind_matrices);
 
     CG_Skeleton skeleton;

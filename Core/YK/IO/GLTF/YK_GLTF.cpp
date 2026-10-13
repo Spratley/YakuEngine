@@ -1,20 +1,19 @@
-#include "PCH/CG_PCH.h"
-#include "CG_GLTF.h"
+#include "PCH/YakuCore_PCH.h"
+#include "YK_GLTF.h"
 
 #include "YK/Debugging/YK_Assert.h"
 #include "YK/IO/File/YK_FilePath.h"
 #include "YK/IO/Logging/YK_Logger.h"
+#include "YK/Libraries/TinyGLTF/tiny_gltf_v3.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Utils/YK_AlgorithmUtils.h"
 
-#include "CG/Libraries/TinyGLTF/tiny_gltf_v3.h"
-
-namespace CG_GLTF
+namespace YK_GLTF
 {
     File::File(YK_FilePath const& p_filePath)
     {
         YK_ASSERT(p_filePath.Extension() == "gltf" || p_filePath.Extension() == "glb",
-                  "Non GLTF file provided to CG_GLTF!");
+                  "Non GLTF file provided to YK_GLTF!");
 
         tg3_parse_options options;
 
@@ -81,4 +80,4 @@ namespace CG_GLTF
         return accessor.count;
     }
 
-} // namespace CG_GLTF
+} // namespace YK_GLTF

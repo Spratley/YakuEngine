@@ -4,13 +4,13 @@
 #include "YK/Debugging/YK_Assert.h"
 #include "YK/IO/File/YK_FilePath.h"
 #include "YK/IO/File/YK_IOFile.h"
+#include "YK/IO/GLTF/YK_GLTF.h"
 #include "YK/IO/Logging/YK_Logger.h"
+#include "YK/Libraries/TinyGLTF/tiny_gltf_v3.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Math/YK_Vector.h"
 #include "YK/Utils/YK_AlgorithmUtils.h"
 
-#include "CG/IO/CG_GLTF.h"
-#include "CG/Libraries/TinyGLTF/tiny_gltf_v3.h"
 #include "CG/Resource/Mesh/CG_Mesh.h"
 #include "CG/Resource/Mesh/CG_MeshFactory.h"
 #include "CG/Resource/Mesh/CG_MeshLayout.h"
@@ -140,7 +140,7 @@ CG_Mesh CG_MeshLoader::LoadOBJ(YK_FilePath const& p_path)
 
 CG_Mesh CG_MeshLoader::LoadGLTF(YK_FilePath const& p_path)
 {
-    CG_GLTF::File gltfMesh(p_path);
+    YK_GLTF::File gltfMesh(p_path);
     if (gltfMesh.CheckErrors() || !gltfMesh.HasMesh())
     {
         return CG_Mesh();
@@ -153,11 +153,11 @@ CG_Mesh CG_MeshLoader::LoadGLTF(YK_FilePath const& p_path)
     using YK_Vector4U8 = YK_Vector_N<YK_U8, 4>;
 
     CG_MeshLayout layout;
-    CG_GLTF::DataView<YK_Vector3f> vertices;
-    CG_GLTF::DataView<YK_Vector3f> normals;
-    CG_GLTF::DataView<YK_Vector2f> uvs;
-    CG_GLTF::DataView<YK_Vector4U8> joints;
-    CG_GLTF::DataView<YK_Vector4f> weights;
+    YK_GLTF::DataView<YK_Vector3f> vertices;
+    YK_GLTF::DataView<YK_Vector3f> normals;
+    YK_GLTF::DataView<YK_Vector2f> uvs;
+    YK_GLTF::DataView<YK_Vector4U8> joints;
+    YK_GLTF::DataView<YK_Vector4f> weights;
 
     for (auto i : YK_CountTo(primitive.attributes_count))
     {
@@ -242,7 +242,7 @@ CG_Mesh CG_MeshLoader::LoadGLTF(YK_FilePath const& p_path)
     }
 
     // Extract index data and upcast to 32 bit integers
-    CG_GLTF::DataView<YK_U16> const indexBuffer = gltfMesh.ViewData<YK_U16>(primitive.indices);
+    YK_GLTF::DataView<YK_U16> const indexBuffer = gltfMesh.ViewData<YK_U16>(primitive.indices);
     std::vector<YK_U32> indices;
     indices.resize(indexBuffer.m_count);
     for (auto i : YK_CountTo(indexBuffer.m_count))
