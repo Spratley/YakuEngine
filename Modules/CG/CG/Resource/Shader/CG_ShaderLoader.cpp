@@ -1,83 +1,27 @@
 #include "PCH/CG_PCH.h"
 #include "CG_ShaderLoader.h"
 
-#include "YK/Debugging/YK_Assert.h"
 #include "YK/IO/File/YK_FilePath.h"
-#include "YK/IO/File/YK_IOFile.h"
-#include "YK/Types/Math/YK_Integer.h"
-#include "YK/Utils/YK_AlgorithmUtils.h"
+#include "YK/IO/Logging/YK_Logger.h"
+#include "YK/Libraries/JParse/JParse.h"
 
 #include "CG/Resource/Shader/CG_Shader.h"
 
-#include <cctype>
-#include <sstream>
-#include <string>
-#include <string_view>
-
-namespace
-{
-    static void StripWhitespace(std::string& p_string)
-    {
-        bool inQuotes = false;
-        YK_SizeT writeIndex = 0;
-
-        for (auto readIndex : YK_CountTo(p_string.size()))
-        {
-            char c = p_string[readIndex];
-
-            if (c == '"')
-            {
-                inQuotes = !inQuotes;
-            }
-
-            if (!inQuotes && std::isspace(c))
-            {
-                continue;
-            }
-
-            p_string[writeIndex++] = c;
-        }
-
-        YK_ASSERT(!inQuotes, "Unclosed quotation found!");
-        p_string.resize(writeIndex);
-    }
-} // namespace
-
-// Quick and dirty explicit parser
-// This would ideally be handled by a specific data deserializer
 CG_Shader CG_ShaderLoader::Load(YK_FilePath const& p_shaderPath)
 {
-    std::stringstream shaderFile;
-    YK_IFile::GetFileContents(p_shaderPath.CString(), shaderFile);
-
-    std::string vertex;
-    std::string fragment;
-    bool isSkeletal = false;
-
-    std::string fileLine;
-    while (std::getline(shaderFile, fileLine))
+    if (p_shaderPath.Extension() != "YKS")
     {
-        StripWhitespace(fileLine);
-
-        YK_SizeT equalsPos = fileLine.find_first_of('=');
-
-        std::string_view attribute(fileLine.begin(), fileLine.begin() + equalsPos);
-        // Trim quotation marks - Assumes there are quotation marks
-        std::string_view value(fileLine.begin() + equalsPos + 2, fileLine.end() - 1);
-
-        if (attribute == "vertex")
-        {
-            vertex = value;
-        }
-        else if (attribute == "fragment")
-        {
-            fragment = value;
-        }
-        else if (attribute == "skeletal")
-        {
-            isSkeletal = value == "true";
-        }
+        YK_LOG_ERROR_PARAM("Non-YakuShader file passed into CG_ShaderLoader!\n{}", p_shaderPath.CString());
+        // TODO: Hard-coded error shader
+        return CG_Shader{};
     }
+    JParse::Root jsonData;
+    jsonData.Parse(p_shaderPath.CString());
+    auto root = jsonData.GetRootItem<JParse::Object const>();
+
+    auto const& vertex = root->Get<JParse::String const>("vertex")->m_value;
+    auto const& fragment = root->Get<JParse::String const>("fragment")->m_value;
+    auto isSkeletal = root->TryGetValue<bool>("skeletal");
 
     YK_FilePath vertexPath(vertex);
     YK_FilePath fragmentPath(fragment);

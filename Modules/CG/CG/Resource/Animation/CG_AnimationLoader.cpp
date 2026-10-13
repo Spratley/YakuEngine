@@ -3,9 +3,9 @@
 
 #include "YK/Debugging/YK_Assert.h"
 #include "YK/IO/File/YK_FilePath.h"
-#include "YK/IO/File/YK_IOFile.h"
 #include "YK/IO/GLTF/YK_GLTF.h"
 #include "YK/IO/Logging/YK_Logger.h"
+#include "YK/Libraries/JParse/JParse.h"
 #include "YK/Libraries/TinyGLTF/tiny_gltf_v3.h"
 #include "YK/Math/YK_FloatMath.h"
 #include "YK/Math/YK_MathUtils.h"
@@ -16,9 +16,7 @@
 
 #include "CG/Resource/Animation/CG_Animation.h"
 
-#include <cctype>
 #include <cstring>
-#include <sstream>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -102,32 +100,6 @@ namespace CG_AnimationLoader_Private
         return resultChannel;
     }
 
-    void StripWhitespace(std::string& p_string)
-    {
-        bool inQuotes = false;
-        YK_SizeT writeIndex = 0;
-
-        for (auto readIndex : YK_CountTo(p_string.size()))
-        {
-            char c = p_string[readIndex];
-
-            if (c == '"')
-            {
-                inQuotes = !inQuotes;
-            }
-
-            if (!inQuotes && std::isspace(c))
-            {
-                continue;
-            }
-
-            p_string[writeIndex++] = c;
-        }
-
-        YK_ASSERT(!inQuotes, "Unclosed quotation found!");
-        p_string.resize(writeIndex);
-    }
-
     bool IsRoot(tg3_animation_channel const& p_channel, YK_GLTF::File const& p_file)
     {
         tg3_node const& bone = p_file.GetModel().nodes[p_channel.target.node];
@@ -142,36 +114,18 @@ CG_Animation CG_AnimationLoader::Load(YK_FilePath const& p_animationPath)
         return LoadFromGLTF(p_animationPath, "");
     }
 
-    YK_ASSERT(p_animationPath.Extension() == "YKA", "Expected YakuAnimation file! (.YKA)");
-
-    std::stringstream animationDescriptorFile;
-    YK_IFile::GetFileContents(p_animationPath.CString(), animationDescriptorFile);
-
-    std::string gltfFile;
-    std::string animationName;
-
-    std::string fileLine;
-    while (std::getline(animationDescriptorFile, fileLine))
+    if (p_animationPath.Extension() != "YKA")
     {
-        CG_AnimationLoader_Private::StripWhitespace(fileLine);
-
-        YK_SizeT equalsPos = fileLine.find_first_of('=');
-
-        std::string_view attribute(fileLine.begin(), fileLine.begin() + equalsPos);
-        // Trim quotation marks - Assumes there are quotation marks
-        std::string_view value(fileLine.begin() + equalsPos + 2, fileLine.end() - 1);
-
-        if (attribute == "file")
-        {
-            gltfFile = value;
-        }
-        else if (attribute == "animation")
-        {
-            animationName = value;
-        }
+        YK_LOG_ERROR_PARAM("Non-YakuAnimation file passed into CG_AnimationLoader!\n{}", p_animationPath.CString());
+        return CG_Animation{};
     }
 
-    return LoadFromGLTF(YK_FilePath(gltfFile), animationName);
+    JParse::Root jsonData;
+    jsonData.Parse(p_animationPath.CString());
+    auto root = jsonData.GetRootItem<JParse::Object const>();
+    auto const& gltfFilePath = root->Get<JParse::String const>("file")->m_value;
+    auto const& animationName = root->Get<JParse::String const>("animation")->m_value;
+    return LoadFromGLTF(YK_FilePath(gltfFilePath), animationName);
 }
 
 CG_Animation CG_AnimationLoader::LoadFromGLTF(YK_FilePath const& p_animationPath,
