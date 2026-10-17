@@ -8,7 +8,7 @@ static constexpr inline void YK_AssertImpl(bool p_condition, char const* p_messa
 {
     if (!p_condition)
     {
-        if consteval
+        if (std::is_constant_evaluated())
         {
             // Constexpr Assert
             YK_Unused(p_message);
