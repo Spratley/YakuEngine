@@ -36,7 +36,7 @@ endfunction()
 function(yaku_project_body TARGET_NAME)
 	set(CMAKE_CXX_STANDARD 23)
 	# Gather all code files
-	file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS
+	file(GLOB_RECURSE SRC_FILES
 		${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/*.h
 		${CMAKE_CURRENT_SOURCE_DIR}/*.hpp
@@ -173,7 +173,7 @@ function(yaku_pch_exclude TARGET_NAME)
 		get_filename_component(ABS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${EXCLUDE_FOLDER}" ABSOLUTE)
 
 		if(EXISTS "${ABS_PATH}" AND IS_DIRECTORY "${ABS_PATH}")
-			file(GLOB_RECURSE NO_PCH_SOURCES CONFIGURE_DEPENDS "${ABS_PATH}/*.cpp" "${ABS_PATH}/*.c")
+			file(GLOB_RECURSE NO_PCH_SOURCES "${ABS_PATH}/*.cpp" "${ABS_PATH}/*.c")
 			foreach(EXCLUDE_FILE IN LISTS NO_PCH_SOURCES)
 				set_source_files_properties(${EXCLUDE_FILE} PROPERTIES COMPILE_FLAGS "/Y-")
 			endforeach()

@@ -9,7 +9,7 @@ set "BUILD_ROOT_DIRECTORY=%SCRIPT_DIRECTORY%..\.."
 set "BUILD_DIRECTORY=%BUILD_ROOT_DIRECTORY%\_Generated"
 
 :: Script Constants
-set CMAKE_GENERATOR="Visual Studio 17 2022"
+set CMAKE_GENERATOR="Visual Studio 18 2026"
 
 :: Script Logic Begin
 if exist "%BUILD_DIRECTORY%" (
