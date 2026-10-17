@@ -1,5 +1,6 @@
 #pragma once
 
+#include "YK/IO/Asset/YK_Asset.h"
 #include "YK/Math/YK_MathUtils.h"
 #include "YK/Math/YK_QuaternionMath.h"
 #include "YK/Types/Containers/YK_FlatSet.h"
@@ -12,7 +13,7 @@
 #include <vector>
 
 // TODO: This should be migrated to AniMagic
-struct CG_Animation
+struct CG_Animation : public YK_Asset
 {
     template <YK_Lerpable DataType>
     struct Channel

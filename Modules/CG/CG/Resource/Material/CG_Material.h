@@ -1,11 +1,14 @@
 #pragma once
 
-class CG_Shader;
-class CG_Texture;
+#include "YK/IO/Asset/YK_Asset.h"
+#include "YK/IO/Asset/YK_AssetHandle.h"
 
-class CG_Material
+#include "CG/Resource/Shader/CG_Shader.h"
+#include "CG/Resource/Texture/CG_Texture.h"
+
+class CG_Material : public YK_Asset
 {
 public:
-    CG_Shader const* m_shader;
-    CG_Texture const* m_texture;
+    YK_AssetHandle<CG_Shader> m_shader;
+    YK_AssetHandle<CG_Texture> m_texture;
 };

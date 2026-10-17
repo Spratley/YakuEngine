@@ -2,10 +2,10 @@
 
 #include "CG/2D/Canvas/CG_Canvas.h"
 #include "CG/RenderTarget/CG_RenderTarget.h"
+#include "CG/Resource/Shader/CG_Shader.h"
 
+#include "YK/IO/Asset/YK_AssetHandle.h"
 #include "YK/Types/Math/YK_Integer.h"
-
-class CG_Shader;
 
 class CG_2DRenderer
 {
@@ -25,8 +25,8 @@ private:
     // This shouldn't be hard-coded
     CG_Canvas m_canvases[4];
 
-    CG_Shader const* m_2DShader = nullptr;
-    CG_Shader const* m_fsqShader = nullptr;
+    YK_AssetHandle<CG_Shader> m_2DShader;
+    YK_AssetHandle<CG_Shader> m_fsqShader;
 
     CG_RenderTarget m_framebuffer;
 

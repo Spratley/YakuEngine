@@ -1,5 +1,8 @@
 #pragma once
 
+#include "YK/IO/Asset/YK_AssetHandle.h"
+#include "YK/IO/Asset/YK_AssetManager.h"
+
 #include "CG/Resource/Animation/CG_Animation.h"
 #include "CG/Resource/Animation/CG_AnimationLoader.h"
 #include "CG/Resource/Material/CG_Material.h"
@@ -12,8 +15,6 @@
 #include "CG/Resource/Skeleton/CG_SkeletonLoader.h"
 #include "CG/Resource/Texture/CG_Texture.h"
 #include "CG/Resource/Texture/CG_TextureLoader.h"
-
-#include "YK/IO/Asset/YK_AssetManager.h"
 
 namespace CG_ResourceRegistry
 {

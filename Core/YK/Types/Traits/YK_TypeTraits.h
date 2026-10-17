@@ -17,3 +17,11 @@ struct YK_CopyCV
 };
 template <typename SourceType, typename DestinationType>
 using YK_CopyCV_T = typename YK_CopyCV<SourceType, DestinationType>::Type;
+
+template <typename Type_T>
+struct YK_StripCVR
+{
+    using Type = std::remove_cvref_t<Type_T>;
+};
+template <typename Type_T>
+using YK_StripCVR_T = typename YK_StripCVR<Type_T>::Type;

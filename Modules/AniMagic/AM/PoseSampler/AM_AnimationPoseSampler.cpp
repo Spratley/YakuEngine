@@ -10,7 +10,7 @@
 YK_Transform AM_AnimationPoseSampler::Sample(YK_U8 p_boneIndex, double p_sampleTime) const
 {
     YK_Transform result;
-    if (!m_animation)
+    if (!m_animation.IsValid())
     {
         return result;
     }

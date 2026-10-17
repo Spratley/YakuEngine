@@ -2,27 +2,24 @@
 
 #include "YK/ECS/Components/YK_TransformComponent.h"
 
+#include "CG/Resource/CG_ResourceHandles.h"
+
 #include <vector>
 
-class CG_Material;
-class CG_Mesh;
-struct CG_Skeleton;
-
 // TODO: Split these into separate files
-
 struct CG_RendererComponent
 {
-    CG_Material const* m_material = nullptr;
+    CG_MaterialHandle m_material = CG_MaterialHandle::EmptyHandle;
 };
 
 struct CG_MeshComponent
 {
-    CG_Mesh const* m_mesh = nullptr;
+    CG_MeshHandle m_mesh = CG_MeshHandle::EmptyHandle;
 };
 
 struct CG_SkeletalMeshComponent : public CG_MeshComponent
 {
-    CG_Skeleton const* m_skeleton = nullptr;
+    CG_SkeletonHandle m_skeleton = CG_SkeletonHandle::EmptyHandle;
 };
 
 struct CG_PoseComponent

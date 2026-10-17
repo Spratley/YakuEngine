@@ -1,6 +1,7 @@
 #pragma once
 
 #include "YK/ECS/Components/YK_TransformComponent.h"
+#include "YK/IO/Asset/YK_Asset.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Math/YK_Matrix.h"
 
@@ -8,7 +9,7 @@
 #include <string>
 #include <vector>
 
-struct CG_Skeleton
+struct CG_Skeleton : public YK_Asset
 {
     struct Bone
     {

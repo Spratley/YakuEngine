@@ -1,6 +1,7 @@
 #pragma once
 
 #include "YK/Debugging/YK_Assert.h"
+#include "YK/IO/Asset/YK_AssetConcepts.h"
 #include "YK/IO/File/YK_FilePath.h"
 #include "YK/Types/Containers/YK_ColonyArray.h"
 
@@ -8,7 +9,7 @@
 #include <unordered_map>
 
 template <typename Loader, typename AssetType>
-concept YK_AssetLoaderType = requires(YK_FilePath const& p_path) {
+concept YK_AssetLoaderType = YK_AssetType<AssetType> && requires(YK_FilePath const& p_path) {
     { Loader::Load(p_path) } -> std::convertible_to<AssetType>;
 };
 
@@ -18,7 +19,7 @@ struct YK_TypeList
 
 // TODO: Add a generation stamp and asset handles,
 // so that we don't get overlapping memory causing incorrect assets to be used
-template <typename AssetType>
+template <YK_AssetType AssetType>
 class YK_AssetStorage
 {
 public:
@@ -28,7 +29,7 @@ public:
     YK_AssetStorage(YK_TypeList<AssetLoader> p_loaderType);
 
     // TODO: Replace with concepts for actual load function parameters
-    AssetType const& GetAsset(YK_FilePath const& p_localDataPath);
+    YK_AssetHandle<AssetType> GetAsset(YK_FilePath const& p_localDataPath);
     bool LoadAsset(YK_FilePath const& p_localDataPath);
     void UnloadAsset(YK_FilePath const& p_localDataPath);
 
@@ -44,7 +45,7 @@ private:
     LoadAssetFunctionSignature m_loadAssetFunction;
 };
 
-template <typename AssetType>
+template <YK_AssetType AssetType>
 template <YK_AssetLoaderType<AssetType> AssetLoader>
 inline YK_AssetStorage<AssetType>::YK_AssetStorage(YK_TypeList<AssetLoader>)
     : m_loadedAssets()
@@ -52,18 +53,18 @@ inline YK_AssetStorage<AssetType>::YK_AssetStorage(YK_TypeList<AssetLoader>)
     , m_loadAssetFunction(AssetLoader::Load)
 {}
 
-template <typename AssetType>
-AssetType const& YK_AssetStorage<AssetType>::GetAsset(YK_FilePath const& p_localDataPath)
+template <YK_AssetType AssetType>
+YK_AssetHandle<AssetType> YK_AssetStorage<AssetType>::GetAsset(YK_FilePath const& p_localDataPath)
 {
     if (!HasAsset(p_localDataPath))
     {
         LoadAsset(p_localDataPath);
         YK_ASSERT_PARAM(HasAsset(p_localDataPath), "Asset '{}' not found!", p_localDataPath.CString());
     }
-    return *m_dataColony[m_loadedAssets[p_localDataPath]];
+    return m_dataColony[m_loadedAssets[p_localDataPath]]->GetHandle();
 }
 
-template <typename AssetType>
+template <YK_AssetType AssetType>
 bool YK_AssetStorage<AssetType>::LoadAsset(YK_FilePath const& p_localDataPath)
 {
     // TODO: Check that file exists
@@ -72,7 +73,7 @@ bool YK_AssetStorage<AssetType>::LoadAsset(YK_FilePath const& p_localDataPath)
     return true;
 }
 
-template <typename AssetType>
+template <YK_AssetType AssetType>
 void YK_AssetStorage<AssetType>::UnloadAsset(YK_FilePath const& p_localDataPath)
 {
     if (!HasAsset(p_localDataPath))

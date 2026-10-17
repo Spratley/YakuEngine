@@ -120,18 +120,18 @@ void CG_RenderQueueBuilder::PushEntry(YK_TransformComponent const& p_transform,
                                       CG_RendererComponent const& p_rendererComponent)
 {
     YK_SizeT index = m_entries.size();
-    m_entries.push_back(Entry{ .m_transform = &p_transform, .m_material = p_rendererComponent.m_material });
+    m_entries.push_back(Entry{ .m_transform = &p_transform, .m_material = &*p_rendererComponent.m_material });
     m_workingEntry = &m_entries[index];
 }
 
-void CG_RenderQueueBuilder::SetMesh(CG_MeshComponent const& p_mesh) { m_workingEntry->m_mesh = p_mesh.m_mesh; }
+void CG_RenderQueueBuilder::SetMesh(CG_MeshComponent const& p_mesh) { m_workingEntry->m_mesh = &*p_mesh.m_mesh; }
 
 void CG_RenderQueueBuilder::SetMesh(CG_SkeletalMeshComponent const& p_skeletalMesh, CG_PoseComponent const& p_pose)
 {
     YK_ASSERT(!m_workingEntry->m_skeleton, "Overwriting skeleton data!");
 
-    m_workingEntry->m_mesh = p_skeletalMesh.m_mesh;
-    m_workingEntry->m_skeleton = p_skeletalMesh.m_skeleton;
+    m_workingEntry->m_mesh = &*p_skeletalMesh.m_mesh;
+    m_workingEntry->m_skeleton = &*p_skeletalMesh.m_skeleton;
     m_workingEntry->m_pose = &p_pose;
 
     m_bonesInQueue += p_skeletalMesh.m_skeleton->m_bones.size();

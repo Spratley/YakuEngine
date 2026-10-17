@@ -3,6 +3,7 @@
 #include "CG/GPU/CG_GPUDataPolicy.h"
 #include "CG/GPU/CG_GPUResource.h"
 
+#include "YK/IO/Asset/YK_Asset.h"
 #include "YK/Types/Math/YK_Integer.h"
 
 // TODO: Decouple textures and OpenGL
@@ -10,7 +11,9 @@ struct CG_GLTextureBuffer;
 
 // Represents a texture to be used with the GPU
 // Do we need a CPU side texture for CPU sampling?
-class CG_Texture : public CG_GPUResource<CG_Texture>
+class CG_Texture
+    : public CG_GPUResource<CG_Texture>
+    , public YK_Asset
 {
     friend class CG_TextureFactory;
     friend class CG_GPUResource<CG_Texture>;

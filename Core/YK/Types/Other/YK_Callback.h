@@ -2,6 +2,7 @@
 
 #include "YK/Types/Containers/YK_FlatSet.h"
 
+#include <compare>
 #include <type_traits>
 
 template <typename... Parameters>
@@ -12,15 +13,11 @@ class YK_Callback
     using GlobalSignature = void (*)(Parameters...);
     template <GlobalSignature Function>
     static void InvokeGlobal(void*, Parameters... p_parameters)
-    {
-        Function(std::forward<Parameters>(p_parameters)...);
-    }
+    { Function(std::forward<Parameters>(p_parameters)...); }
 
     template <typename Type, auto Function>
     static void InvokeMember(void* m_object, Parameters... p_parameters)
-    {
-        (static_cast<Type*>(m_object)->*Function)(std::forward<Parameters>(p_parameters)...);
-    }
+    { (static_cast<Type*>(m_object)->*Function)(std::forward<Parameters>(p_parameters)...); }
 
     struct Callback
     {
@@ -45,27 +42,19 @@ public:
     // Global Functions
     template <GlobalSignature Function>
     void Attach()
-    {
-        m_callbacks.Insert(Callback{ nullptr, &InvokeGlobal<Function> });
-    }
+    { m_callbacks.Insert(Callback{ nullptr, &InvokeGlobal<Function> }); }
     template <GlobalSignature Function>
     void Detach()
-    {
-        m_callbacks.Remove(Callback{ nullptr, &InvokeGlobal<Function> });
-    }
+    { m_callbacks.Remove(Callback{ nullptr, &InvokeGlobal<Function> }); }
 
     // Member Functions
     template <typename Type, auto Function>
     void Attach(Type* p_object)
-    {
-        m_callbacks.Insert(Callback{ static_cast<void*>(p_object), &InvokeMember<Type, Function> });
-    }
+    { m_callbacks.Insert(Callback{ static_cast<void*>(p_object), &InvokeMember<Type, Function> }); }
 
     template <typename Type, auto Function>
     void Detach(Type* p_object)
-    {
-        m_callbacks.Remove(Callback{static_cast<void*>(p_object), &InvokeMember<Type, Function>});
-    }
+    { m_callbacks.Remove(Callback{ static_cast<void*>(p_object), &InvokeMember<Type, Function> }); }
 
     template <typename... CallParameters>
     requires(sizeof...(Parameters) == sizeof...(CallParameters)

@@ -86,7 +86,7 @@ void CG_3DRenderer::Render(CG_RenderTarget const& p_target,
     for (auto const& [material, materialEndIndex] : renderQueue.m_materialEntries)
     {
         p_bindings.Bind(*material);
-        CG_Shader const& shader = *material->m_shader;
+        CG_Shader const& shader = *(material->m_shader);
 
         YK_SizeT endIndex;
         do

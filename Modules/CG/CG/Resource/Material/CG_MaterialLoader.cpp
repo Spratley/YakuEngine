@@ -2,8 +2,11 @@
 #include "CG_MaterialLoader.h"
 
 #include "YK/Core/YK_Core.h"
+#include "YK/IO/Asset/YK_AssetHandle.h"
+#include "YK/IO/File/YK_FilePath.h"
 #include "YK/Libraries/JParse/JParse.h"
 
+#include "CG/Resource/Material/CG_Material.h"
 #include "CG/Resource/Shader/CG_Shader.h"
 #include "CG/Resource/Texture/CG_Texture.h"
 
@@ -18,8 +21,8 @@ CG_Material CG_MaterialLoader::Load(YK_FilePath const& p_materialPath)
     auto const& texture = root->Get<JParse::String const>("texture")->m_value;
 
     YK_Core& engine = YK_Core::GetEngine();
-    CG_Shader const& shaderAsset = engine.GetAssetManager().GetAsset<CG_Shader>(YK_FilePath(shader));
-    CG_Texture const& textureAsset = engine.GetAssetManager().GetAsset<CG_Texture>(YK_FilePath(texture));
+    YK_AssetHandle<CG_Shader> shaderAsset = engine.GetAssetManager().GetAsset<CG_Shader>(YK_FilePath(shader));
+    YK_AssetHandle<CG_Texture> textureAsset = engine.GetAssetManager().GetAsset<CG_Texture>(YK_FilePath(texture));
 
-    return CG_Material{ .m_shader = &shaderAsset, .m_texture = &textureAsset };
+    return CG_Material{ .m_shader = shaderAsset, .m_texture = textureAsset };
 }

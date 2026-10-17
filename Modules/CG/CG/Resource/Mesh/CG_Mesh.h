@@ -1,5 +1,6 @@
 #pragma once
 
+#include "YK/IO/Asset/YK_Asset.h"
 #include "YK/Types/Math/YK_Integer.h"
 
 #include "CG/GPU/CG_GPUDataPolicy.h"
@@ -9,7 +10,9 @@
 // TODO: Decouple mesh and OpenGL
 struct CG_GLMeshBuffer;
 
-class CG_Mesh : public CG_GPUResource<CG_Mesh>
+class CG_Mesh
+    : public CG_GPUResource<CG_Mesh>
+    , public YK_Asset
 {
     friend class CG_MeshFactory;
     friend class CG_GPUResource<CG_Mesh>;

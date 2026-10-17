@@ -23,10 +23,10 @@ void CG_RenderBinding::Bind(CG_Shader const& p_shader)
 
 void CG_RenderBinding::Bind(CG_Material const& p_material)
 {
-    if (m_boundMaterial != &p_material && p_material.m_texture && p_material.m_shader)
+    if (m_boundMaterial != &p_material && p_material.m_texture.IsValid() && p_material.m_shader.IsValid())
     {
-        Bind(*p_material.m_shader);
-        Bind(*p_material.m_texture, 0); // TODO: Materials should configure slots
+        Bind(*(p_material.m_shader));
+        Bind(*(p_material.m_texture), 0); // TODO: Materials should configure slots
         m_boundMaterial = &p_material;
     }
 }

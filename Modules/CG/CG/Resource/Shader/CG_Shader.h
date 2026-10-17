@@ -5,13 +5,14 @@
 // We need to separate the rendering API and the user-facing code so we can swap what renderer is being used
 // per-platform
 
+#include "YK/IO/Asset/YK_Asset.h"
 #include "YK/Types/Containers/YK_StaticArray.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Math/YK_Matrix.h"
 
 #include <string>
 
-class CG_Shader
+class CG_Shader : public YK_Asset
 {
 public:
     CG_Shader() = default;
@@ -33,9 +34,7 @@ public:
 
     // Alias for SetInt for readability
     inline void SetTextureSamplerSlot(char const* p_textureSamplerName, YK_Int32 p_slot) const
-    {
-        SetInt(p_textureSamplerName, p_slot);
-    }
+    { SetInt(p_textureSamplerName, p_slot); }
 
     bool IsSkeletal() const { return m_skeletonUBOID != 0; }
     void SetSkeletonData(YK_StaticArray<YK_Matrix44, 64> const& p_bones) const;

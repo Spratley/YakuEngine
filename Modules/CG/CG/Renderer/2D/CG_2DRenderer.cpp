@@ -33,8 +33,8 @@ CG_2DRenderer::CG_2DRenderer()
     YK_Core& engine = YK_Core::GetEngine();
     YK_AssetManager& assetManager = engine.GetAssetManager();
 
-    m_2DShader = &assetManager.GetAsset<CG_Shader>(YK_FilePath("Shaders/2DR.YKS"));
-    m_fsqShader = &assetManager.GetAsset<CG_Shader>(YK_FilePath("Shaders/FSQ.YKS"));
+    m_2DShader = assetManager.GetAsset<CG_Shader>(YK_FilePath("Shaders/2DR.YKS"));
+    m_fsqShader = assetManager.GetAsset<CG_Shader>(YK_FilePath("Shaders/FSQ.YKS"));
 
     // TODO: Abstract this away from the renderer
     glGenVertexArrays(1, &m_nullVAO);
