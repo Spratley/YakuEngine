@@ -4,9 +4,12 @@
 #include "YK/IO/Asset/YK_AssetConcepts.h"
 #include "YK/IO/File/YK_FilePath.h"
 #include "YK/Types/Containers/YK_ColonyArray.h"
+#include "YK_AssetHandle.h"
 
+#include <algorithm>
 #include <concepts>
 #include <unordered_map>
+#include <utility>
 
 template <typename Loader, typename AssetType>
 concept YK_AssetLoaderType = YK_AssetType<AssetType> && requires(YK_FilePath const& p_path) {

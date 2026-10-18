@@ -3,6 +3,10 @@
 #include "YK/Debugging/YK_Assert.h"
 #include "YK/IO/Asset/YK_AssetConcepts.h"
 #include "YK/Types/Math/YK_Integer.h"
+#include "YK/Utils/YK_AlgorithmUtils.h"
+
+#include <algorithm>
+#include <utility>
 
 // Asset garbage collection is done through deferred reference counting
 // Long term I'd like to replace this with a tri-color mark and sweep GC
@@ -16,15 +20,50 @@ struct YK_AssetHandle
 public:
     static const YK_AssetHandle<AssetType> EmptyHandle;
 
-public:
-    constexpr YK_AssetHandle() = default;
-
 private:
     constexpr YK_AssetHandle(AssetType const* p_asset)
         : m_asset(p_asset)
     {}
 
 public:
+    constexpr YK_AssetHandle() = default;
+
+    constexpr YK_AssetHandle(YK_AssetHandle const& p_other)
+    {
+        if (!p_other.IsValid())
+        {
+            // Leave as empty handle
+            return;
+        }
+        *this = std::move(p_other.m_asset->GetHandle());
+    }
+
+    constexpr YK_AssetHandle(YK_AssetHandle&& p_other)
+        : m_asset(YK_Exchange(p_other.m_asset, nullptr))
+        , m_generation(YK_Exchange(p_other.m_generation, 0))
+    {}
+
+    constexpr ~YK_AssetHandle() { ReleaseAsset(); }
+
+    constexpr YK_AssetHandle& operator=(YK_AssetHandle const& p_other)
+    {
+        ReleaseAsset();
+        if (!p_other.IsValid())
+        {
+            // Leave as empty handle
+            return *this;
+        }
+        *this = std::move(p_other.m_asset->GetHandle());
+        return *this;
+    }
+
+    constexpr YK_AssetHandle& operator=(YK_AssetHandle&& p_other)
+    {
+        m_asset = YK_Exchange(p_other.m_asset, nullptr);
+        m_generation = YK_Exchange(p_other.m_generation, 0);
+        return *this;
+    }
+
     constexpr AssetType const& operator*() const
     {
         YK_ASSERT(IsValid(), "Attempting to dereference an invalid asset!");
@@ -49,6 +88,15 @@ public:
     {
         // TODO: This isn't actually what we need to check
         return m_asset != nullptr;
+    }
+
+private:
+    constexpr void ReleaseAsset()
+    {
+        if (IsValid())
+        {
+            m_asset->ReturnHandle(*this);
+        }
     }
 
 private:
