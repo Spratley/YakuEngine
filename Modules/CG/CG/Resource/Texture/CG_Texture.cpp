@@ -1,9 +1,17 @@
 #include "PCH/CG_PCH.h"
 #include "CG_Texture.h"
 
+#include "YK/IO/Asset/YK_Asset.h"
+#include "YK/Types/Math/YK_Integer.h"
+#include "YK/Utils/YK_AlgorithmUtils.h"
+#include "YK/Utils/YK_MemoryUtils.h"
+
+#include "CG/GPU/CG_GPUDataPolicy.h"
+#include "CG/GPU/CG_GPUResource.h"
 #include "CG/OpenGL/CG_GLTextureBuffer.h"
 
-#include "YK/Utils/YK_AlgorithmUtils.h"
+#include <string.h>
+#include <utility>
 
 CG_Texture::CG_Texture()
     : CG_GPUResource<CG_Texture>(CG_GPUDataPolicy::INVALID)
