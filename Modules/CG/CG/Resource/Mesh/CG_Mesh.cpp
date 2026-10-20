@@ -2,6 +2,7 @@
 #include "CG_Mesh.h"
 
 #include "YK/Debugging/YK_Assert.h"
+#include "YK/IO/Asset/YK_Asset.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Utils/YK_AlgorithmUtils.h"
 #include "YK/Utils/YK_MemoryUtils.h"
@@ -16,6 +17,7 @@
 
 CG_Mesh::CG_Mesh()
     : CG_GPUResource<CG_Mesh>(CG_GPUDataPolicy::INVALID)
+    , YK_Asset()
     , m_glData(nullptr)
     , m_vertexBuffer(nullptr)
     , m_indexBuffer(nullptr)
@@ -28,6 +30,7 @@ CG_Mesh::CG_Mesh()
 
 CG_Mesh::CG_Mesh(CG_GPUDataPolicy::GPUDataPolicy p_dataPolicy)
     : CG_GPUResource<CG_Mesh>(p_dataPolicy)
+    , YK_Asset()
     , m_glData(nullptr)
     , m_vertexBuffer(nullptr)
     , m_indexBuffer(nullptr)
@@ -40,6 +43,7 @@ CG_Mesh::CG_Mesh(CG_GPUDataPolicy::GPUDataPolicy p_dataPolicy)
 
 CG_Mesh::CG_Mesh(CG_Mesh&& p_otherMesh) noexcept
     : CG_GPUResource<CG_Mesh>(std::move(p_otherMesh))
+    , YK_Asset(std::move(p_otherMesh))
     , m_glData(YK_Exchange(p_otherMesh.m_glData, nullptr))
     , m_vertexBuffer(YK_Exchange(p_otherMesh.m_vertexBuffer, nullptr))
     , m_indexBuffer(YK_Exchange(p_otherMesh.m_indexBuffer, nullptr))
@@ -60,6 +64,7 @@ CG_Mesh& CG_Mesh::operator=(CG_Mesh&& p_otherMesh) noexcept
     FlushResources();
 
     CG_GPUResource::operator=(std::move(p_otherMesh));
+    YK_Asset::operator=(std::move(p_otherMesh));
 
     m_glData = YK_Exchange(p_otherMesh.m_glData, nullptr);
     m_vertexBuffer = YK_Exchange(p_otherMesh.m_vertexBuffer, nullptr);

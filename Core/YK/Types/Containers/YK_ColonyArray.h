@@ -10,6 +10,7 @@
 #include "YK/Utils/YK_MemoryUtils.h"
 
 #include <concepts>
+#include <string.h>
 #include <type_traits>
 #include <vector>
 
@@ -29,9 +30,7 @@ struct YK_ColonyArray
         YK_SizeT m_localIndex = InvalidIndex;
 
         bool operator!=(Index const& p_rhs) const
-        {
-            return m_blockIndex != p_rhs.m_blockIndex || m_localIndex != p_rhs.m_localIndex;
-        }
+        { return m_blockIndex != p_rhs.m_blockIndex || m_localIndex != p_rhs.m_localIndex; }
 
         constexpr bool IsValid() const { return m_blockIndex != InvalidIndex && m_localIndex != InvalidIndex; }
     };
@@ -61,12 +60,12 @@ public:
     void Remove(Index const& p_index);
     void Remove(DataType const& p_item)
     requires(std::equality_comparable<DataType>)
-    {
-        Remove(Find(p_item));
-    }
+    { Remove(Find(p_item)); }
 
     Index Find(DataType const& p_item) const
     requires(std::equality_comparable<DataType>);
+
+    constexpr YK_SizeT Count() const { return m_count; }
 
     YK_ColonyArrayIterator<DataType, BlockCapacity> begin()
     {
@@ -95,30 +94,22 @@ public:
         return YK_ColonyArrayIterator<DataType const, BlockCapacity>(*this, startIndex);
     }
     YK_ColonyArrayIterator<DataType, BlockCapacity> end()
-    {
-        return YK_ColonyArrayIterator<DataType, BlockCapacity>(*this, Index{ InvalidIndex, InvalidIndex });
-    }
+    { return YK_ColonyArrayIterator<DataType, BlockCapacity>(*this, Index{ InvalidIndex, InvalidIndex }); }
     YK_ColonyArrayIterator<DataType const, BlockCapacity> end() const
-    {
-        return YK_ColonyArrayIterator<DataType const, BlockCapacity>(*this, Index{ InvalidIndex, InvalidIndex });
-    }
+    { return YK_ColonyArrayIterator<DataType const, BlockCapacity>(*this, Index{ InvalidIndex, InvalidIndex }); }
 
 private:
     static constexpr YK_SizeT ToFlatIndex(Index const& p_index)
-    {
-        return (p_index.m_blockIndex * BlockCapacity) + p_index.m_localIndex;
-    }
+    { return (p_index.m_blockIndex * BlockCapacity) + p_index.m_localIndex; }
 
     inline void IncrementIndex(Index& p_index) const;
 
     inline bool ValidateIndex(Index const& p_index) const
-    {
-        return p_index.m_blockIndex < m_blocks.size() && p_index.m_localIndex < BlockCapacity;
-    }
+    { return p_index.m_blockIndex < m_blocks.size() && p_index.m_localIndex < BlockCapacity; }
 
     inline bool Exists(Index& p_index) const { return m_skipField.Exists(ToFlatIndex(p_index)); }
 
-    DataType* FindNextFreeAddress(Index& p_outIndex);
+    DataType* ReserveNextFreeAddress(Index& p_outIndex);
     void AllocateBlock();
 
 private:
@@ -155,6 +146,7 @@ private:
     std::vector<YK_UniquePointer<YK_StaticArray<BlockItem, BlockCapacity>>> m_blocks;
     SkipField m_skipField;
     Index m_firstEmptyIndex;
+    YK_SizeT m_count = 0;
 };
 
 template <typename DataType, YK_SizeT BlockCapacity>
@@ -177,9 +169,7 @@ public:
     }
 
     friend bool operator!=(YK_ColonyArrayIterator const& p_lhs, YK_ColonyArrayIterator const& p_rhs)
-    {
-        return p_lhs.m_index != p_rhs.m_index || &p_lhs.m_sourceColony != &p_rhs.m_sourceColony;
-    }
+    { return p_lhs.m_index != p_rhs.m_index || &p_lhs.m_sourceColony != &p_rhs.m_sourceColony; }
 
     Index const& GetIndex() const { return m_index; }
 
@@ -228,7 +218,7 @@ YK_ColonyArray<DataType, BlockCapacity>::Index YK_ColonyArray<DataType, BlockCap
 requires(std::is_copy_constructible_v<DataType>)
 {
     Index outIndex;
-    DataType* dummy = YK_PlacementNew::New(FindNextFreeAddress(outIndex), p_item);
+    DataType* dummy = YK_PlacementNew::New(ReserveNextFreeAddress(outIndex), p_item);
     YK_Unused(dummy);
     return outIndex;
 }
@@ -239,7 +229,7 @@ YK_ColonyArray<DataType, BlockCapacity>::Index YK_ColonyArray<DataType, BlockCap
 requires(std::is_move_constructible_v<DataType>)
 {
     Index outIndex;
-    DataType* dummy = YK_PlacementNew::New(FindNextFreeAddress(outIndex), std::move(p_item));
+    DataType* dummy = YK_PlacementNew::New(ReserveNextFreeAddress(outIndex), std::move(p_item));
     YK_Unused(dummy);
     return outIndex;
 }
@@ -251,7 +241,7 @@ requires(std::is_constructible_v<DataType, Parameters...>)
 DataType& YK_ColonyArray<DataType, BlockCapacity>::AddInPlace(Parameters&&... p_parameters)
 {
     Index dummy;
-    return *YK_PlacementNew::New(FindNextFreeAddress(dummy), std::forward<Parameters>(p_parameters)...);
+    return *YK_PlacementNew::New(ReserveNextFreeAddress(dummy), std::forward<Parameters>(p_parameters)...);
 }
 
 template <typename DataType, YK_SizeT BlockCapacity>
@@ -269,6 +259,8 @@ void YK_ColonyArray<DataType, BlockCapacity>::Remove(Index const& p_index)
         return;
     }
     YK_PlacementNew::Destruct(*item);
+    std::memset(item, 0, sizeof(*item));
+    --m_count;
 }
 
 template <typename DataType, YK_SizeT BlockCapacity>
@@ -334,7 +326,7 @@ void YK_ColonyArray<DataType, BlockCapacity>::IncrementIndex(Index& p_index) con
 
 template <typename DataType, YK_SizeT BlockCapacity>
 requires(YK_IsPowerOfTwo<BlockCapacity>)
-DataType* YK_ColonyArray<DataType, BlockCapacity>::FindNextFreeAddress(Index& p_outIndex)
+DataType* YK_ColonyArray<DataType, BlockCapacity>::ReserveNextFreeAddress(Index& p_outIndex)
 {
     if (!ValidateIndex(m_firstEmptyIndex))
     {
@@ -343,6 +335,7 @@ DataType* YK_ColonyArray<DataType, BlockCapacity>::FindNextFreeAddress(Index& p_
     p_outIndex = m_firstEmptyIndex;
     BlockItem& item = m_blocks[m_firstEmptyIndex.m_blockIndex]->operator[](m_firstEmptyIndex.m_localIndex);
     m_skipField.RemoveSkip(m_firstEmptyIndex);
+    ++m_count;
     return &item.m_item;
 }
 

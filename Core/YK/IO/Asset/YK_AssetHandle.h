@@ -2,6 +2,7 @@
 
 #include "YK/Debugging/YK_Assert.h"
 #include "YK/IO/Asset/YK_AssetConcepts.h"
+#include "YK/Types/Identifier/YK_UID.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Utils/YK_AlgorithmUtils.h"
 
@@ -21,8 +22,9 @@ public:
     static const YK_AssetHandle<AssetType> EmptyHandle;
 
 private:
-    constexpr YK_AssetHandle(AssetType const* p_asset)
+    constexpr YK_AssetHandle(AssetType const* p_asset, YK_UID p_identifier)
         : m_asset(p_asset)
+        , m_uid(p_identifier)
     {}
 
 public:
@@ -38,9 +40,9 @@ public:
         *this = std::move(p_other.m_asset->GetHandle());
     }
 
-    constexpr YK_AssetHandle(YK_AssetHandle&& p_other)
+    constexpr YK_AssetHandle(YK_AssetHandle&& p_other) noexcept
         : m_asset(YK_Exchange(p_other.m_asset, nullptr))
-        , m_generation(YK_Exchange(p_other.m_generation, 0))
+        , m_uid(YK_Exchange(p_other.m_uid, 0))
     {}
 
     constexpr ~YK_AssetHandle() { ReleaseAsset(); }
@@ -57,10 +59,10 @@ public:
         return *this;
     }
 
-    constexpr YK_AssetHandle& operator=(YK_AssetHandle&& p_other)
+    constexpr YK_AssetHandle& operator=(YK_AssetHandle&& p_other) noexcept
     {
         m_asset = YK_Exchange(p_other.m_asset, nullptr);
-        m_generation = YK_Exchange(p_other.m_generation, 0);
+        m_uid = YK_Exchange(p_other.m_uid, 0);
         return *this;
     }
 
@@ -76,18 +78,16 @@ public:
         return m_asset;
     }
 
-    constexpr bool operator==(YK_AssetHandle const& p_other) const
-    {
-        // TODO: Not the actual comparison here
-        return m_asset != p_other.m_asset;
-    }
-
-    constexpr bool operator!=(YK_AssetHandle const& p_other) const { return !(*this == p_other); }
+    constexpr bool operator==(YK_AssetHandle const& p_other) const = default;
+    constexpr bool operator!=(YK_AssetHandle const& p_other) const = default;
 
     constexpr bool IsValid() const
     {
-        // TODO: This isn't actually what we need to check
-        return m_asset != nullptr;
+        if (!m_asset)
+        {
+            return false;
+        }
+        return m_asset->GetUID() == m_uid;
     }
 
 private:
@@ -101,7 +101,7 @@ private:
 
 private:
     AssetType const* m_asset = nullptr;
-    YK_U32 m_generation = 0;
+    YK_UID m_uid;
 };
 
 template <YK_AssetType AssetType>

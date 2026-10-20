@@ -20,6 +20,8 @@
 #include "YK/Types/Containers/YK_DynamicArray.h"
 #include "YK/Types/Containers/YK_StaticArray.h"
 
+#include "YK/Types/Identifier/YK_UID.h"
+
 // Math
 #include "YK/Math/YK_AngleMath.h"
 #include "YK/Math/YK_MathUtils.h"

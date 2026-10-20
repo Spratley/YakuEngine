@@ -7,6 +7,7 @@
 
 CG_Texture::CG_Texture()
     : CG_GPUResource<CG_Texture>(CG_GPUDataPolicy::INVALID)
+    , YK_Asset()
     , m_glData(nullptr)
     , m_buffer(nullptr)
     , m_width(0)
@@ -16,6 +17,7 @@ CG_Texture::CG_Texture()
 
 CG_Texture::CG_Texture(CG_GPUDataPolicy::GPUDataPolicy p_dataPolicy)
     : CG_GPUResource<CG_Texture>(p_dataPolicy)
+    , YK_Asset()
     , m_glData(nullptr)
     , m_buffer(nullptr)
     , m_width(0)
@@ -25,6 +27,7 @@ CG_Texture::CG_Texture(CG_GPUDataPolicy::GPUDataPolicy p_dataPolicy)
 
 CG_Texture::CG_Texture(CG_Texture&& p_otherTexture) noexcept
     : CG_GPUResource<CG_Texture>(std::move(p_otherTexture))
+    , YK_Asset(std::move(p_otherTexture))
     , m_glData(p_otherTexture.m_glData)
     , m_buffer(p_otherTexture.m_buffer)
     , m_width(p_otherTexture.m_width)
@@ -49,6 +52,7 @@ CG_Texture& CG_Texture::operator=(CG_Texture&& p_otherTexture) noexcept
     FlushResources();
 
     CG_GPUResource::operator=(std::move(p_otherTexture));
+    YK_Asset::operator=(std::move(p_otherTexture));
 
     m_glData = YK_Exchange(p_otherTexture.m_glData, nullptr);
     m_buffer = YK_Exchange(p_otherTexture.m_buffer, nullptr);

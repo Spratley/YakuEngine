@@ -2,11 +2,15 @@
 
 #include "YK/IO/Asset/YK_AssetConcepts.h"
 #include "YK/IO/Asset/YK_AssetHandle.h"
+#include "YK/Types/Identifier/YK_UID.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Traits/YK_TypeTraits.h"
 
 class YK_Asset
 {
+    template <YK_AssetType AssetType>
+    friend class YK_AssetStorage;
+
 public:
     template <typename Self>
     requires(YK_AssetType<YK_StripCVR_T<Self>>)
@@ -15,7 +19,7 @@ public:
         // TODO: Make thread safe
         using HandleType = YK_AssetHandle<YK_StripCVR_T<Self&&>>;
         ++(p_self.m_referenceCount);
-        return HandleType{ &p_self };
+        return HandleType(&p_self, p_self.m_uid);
     }
 
     template <typename Self>
@@ -26,16 +30,13 @@ public:
         using HandleType = YK_AssetHandle<YK_StripCVR_T<Self&&>>;
         --(p_self.m_referenceCount);
         p_handle.m_asset = nullptr;
-
-        if (p_self.m_referenceCount == 0)
-        {
-            YK_LOG("Reference count for asset just hit 0!");
-        }
+        p_handle.m_uid = 0;
     }
 
+    YK_UID GetUID() const { return m_uid; }
     YK_SizeT ReferenceCount() const { return m_referenceCount; }
 
 private:
+    YK_UID m_uid;
     mutable YK_U32 m_referenceCount = 0;
-    mutable YK_U32 m_generation = 0;
 };
