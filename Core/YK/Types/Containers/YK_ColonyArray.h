@@ -259,7 +259,7 @@ void YK_ColonyArray<DataType, BlockCapacity>::Remove(Index const& p_index)
         return;
     }
     YK_PlacementNew::Destruct(*item);
-    std::memset(item, 0, sizeof(*item));
+    std::memset(static_cast<void*>(item), 0, sizeof(*item));
     --m_count;
 }
 

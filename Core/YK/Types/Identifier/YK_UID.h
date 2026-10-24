@@ -38,5 +38,5 @@ private:
 template <>
 struct std::hash<YK_UID>
 {
-    std::size_t operator()(YK_UID const& p_item) const noexcept { return std::hash<YK_U64>::operator()(p_item.m_uid); }
+    std::size_t operator()(YK_UID const& p_item) const noexcept { return std::hash<YK_U64>{}(p_item.m_uid); }
 };
