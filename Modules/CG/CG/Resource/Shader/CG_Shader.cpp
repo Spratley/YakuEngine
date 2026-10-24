@@ -48,19 +48,13 @@ CG_Shader::CG_Shader(char const* p_vertexPath, char const* p_fragmentPath, bool 
 void CG_Shader::Use() const { glUseProgram(m_id); }
 
 void CG_Shader::SetBool(char const* p_name, bool p_value) const
-{
-    glUniform1i(glGetUniformLocation(m_id, p_name), static_cast<YK_Int32>(p_value));
-}
+{ glUniform1i(glGetUniformLocation(m_id, p_name), static_cast<YK_Int32>(p_value)); }
 
 void CG_Shader::SetInt(char const* p_name, YK_Int32 p_value) const
-{
-    glUniform1i(glGetUniformLocation(m_id, p_name), p_value);
-}
+{ glUniform1i(glGetUniformLocation(m_id, p_name), p_value); }
 
 void CG_Shader::SetFloat(char const* p_name, float p_value) const
-{
-    glUniform1f(glGetUniformLocation(m_id, p_name), p_value);
-}
+{ glUniform1f(glGetUniformLocation(m_id, p_name), p_value); }
 
 void CG_Shader::SetMatrix44(char const* p_name, float const* p_buffer) const
 {
@@ -146,8 +140,7 @@ void CG_Shader::LogShaderErrors(YK_U32 p_shaderID, YK_U32 p_errorType) const
             default:             glGetShaderInfoLog(p_shaderID, 512, NULL, infoLog); break;
         }
 
-        YK_LOG_ERROR("Shader compilation error!");
-        YK_LOG_ERROR(infoLog);
+        YK_LOG_ERROR("Shader compilation error!\n{}", infoLog);
     }
 #else
     YK_Unused(p_shaderID);

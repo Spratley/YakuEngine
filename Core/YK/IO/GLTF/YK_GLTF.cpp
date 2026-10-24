@@ -51,7 +51,7 @@ namespace YK_GLTF
         for (auto i : YK_CountTo(m_errorStack.count))
         {
             tg3_error_entry const& error = m_errorStack.entries[i];
-            YK_LOG_ERROR_PARAM("GLTF Error [{}]: {}",
+            YK_LOG_ERROR("GLTF Error [{}]: {}",
                                static_cast<YK_U32>(error.severity),
                                error.message ? error.message : "No Message");
         }
@@ -63,7 +63,7 @@ namespace YK_GLTF
     {
         if (p_accessorIndex >= m_model.accessors_count)
         {
-            YK_LOG_ERROR_PARAM("Invalid accessor requested! File is likely corrupt.\nAccessor Index: {}",
+            YK_LOG_ERROR("Invalid accessor requested! File is likely corrupt.\nAccessor Index: {}",
                                p_accessorIndex);
             p_outBuffer = nullptr;
             return 0;

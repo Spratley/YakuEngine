@@ -17,7 +17,7 @@ AM_BoneMask AM_BoneMaskLoader::Load(YK_FilePath const& p_boneMaskPath)
 {
     if (p_boneMaskPath.Extension() != "AMBoneMask")
     {
-        YK_LOG_ERROR_PARAM("Attempting to load non-bone mask file as bone mask!\n{}", p_boneMaskPath.CString());
+        YK_LOG_ERROR("Attempting to load non-bone mask file as bone mask!\n{}", p_boneMaskPath.CString());
         return AM_BoneMask{};
     }
 

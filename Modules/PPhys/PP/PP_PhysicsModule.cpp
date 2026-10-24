@@ -39,7 +39,7 @@ namespace PP_PhysicsModule_Private
         vsnprintf(buffer, sizeof(buffer), p_format, list);
         va_end(list);
 
-        YK_LOG(buffer);
+        YK_LOG("{}", buffer);
     }
 #endif // !YAKU_RETAIL
 
@@ -47,7 +47,7 @@ namespace PP_PhysicsModule_Private
     // Callback for asserts, connect this to your own assert handler if you have one
     static bool LogJoltAssert(const char* p_expression, const char* p_message, const char* p_file, YK_U32 p_line)
     {
-        YK_LOG_ERROR_PARAM("Jolt Assert Failed on line {} in {}\n{}\n\"{}\n", p_line, p_file, p_expression, p_message);
+        YK_LOG_ERROR("Jolt Assert Failed on line {} in {}\n{}\n\"{}\n", p_line, p_file, p_expression, p_message);
         return true;
     };
 #endif // JPH_ENABLE_ASSERTS

@@ -86,7 +86,7 @@ namespace YK_GLTF
               ValidateType<DataType>(accessor.type) && ValidateComponentType<DataType>(accessor.component_type);
             if (!valid)
             {
-                YK_LOG_ERROR_PARAM("Type Validation Failed! Expected type: {} {}",
+                YK_LOG_ERROR("Type Validation Failed! Expected type: {} {}",
                                    accessor.type,
                                    accessor.component_type);
             }

@@ -44,7 +44,7 @@ namespace CG_AnimationLoader_Private
                 return i;
             }
         }
-        YK_LOG_ERROR_PARAM("Failed to find animation [{}] in file", p_animationName);
+        YK_LOG_ERROR("Failed to find animation [{}] in file", p_animationName);
         return 0;
     }
 
@@ -69,7 +69,7 @@ namespace CG_AnimationLoader_Private
         {
             return AnimationChannel::SCALE;
         }
-        YK_LOG_ERROR_PARAM("Unknown animation channel requested! {}", p_channelName);
+        YK_LOG_ERROR("Unknown animation channel requested! {}", p_channelName);
         return static_cast<AnimationChannel>(-1);
     }
 
@@ -116,7 +116,7 @@ CG_Animation CG_AnimationLoader::Load(YK_FilePath const& p_animationPath)
 
     if (p_animationPath.Extension() != "YKA")
     {
-        YK_LOG_ERROR_PARAM("Non-YakuAnimation file passed into CG_AnimationLoader!\n{}", p_animationPath.CString());
+        YK_LOG_ERROR("Non-YakuAnimation file passed into CG_AnimationLoader!\n{}", p_animationPath.CString());
         return CG_Animation{};
     }
 
@@ -206,7 +206,7 @@ CG_Animation CG_AnimationLoader::LoadFromGLTF(YK_FilePath const& p_animationPath
             {
                 continue;
             }
-            YK_LOG_ERROR_PARAM(
+            YK_LOG_ERROR(
               "GLTF Error: Non-uniform scale detected when loading animation {} in file {}! (Scale was {})",
               p_animationName,
               p_animationPath.CString(),

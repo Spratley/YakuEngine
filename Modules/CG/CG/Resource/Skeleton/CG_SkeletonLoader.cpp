@@ -37,7 +37,7 @@ CG_Skeleton CG_SkeletonLoader::Load(YK_FilePath const& p_skeletonPath)
 
     if (skin.joints_count > 64)
     {
-        YK_LOG_ERROR_PARAM("Skeleton {} has {} bones! YakuEn's hard limit is 64!",
+        YK_LOG_ERROR("Skeleton {} has {} bones! YakuEn's hard limit is 64!",
                            p_skeletonPath.CString(),
                            skin.joints_count);
         return CG_Skeleton();

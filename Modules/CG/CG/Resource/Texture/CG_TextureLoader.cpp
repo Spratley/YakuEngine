@@ -21,8 +21,7 @@ CG_Texture CG_TextureLoader::Load(YK_FilePath const& p_path)
 #if !YAKU_RETAIL
     if (!imageData)
     {
-        YK_LOG_ERROR("Failed to load image:");
-        YK_LOG_ERROR(p_path.CString());
+        YK_LOG_ERROR("Failed to load image: {}", p_path.CString());
         return CG_Texture();
     }
 #endif // !YAKU_RETAIL

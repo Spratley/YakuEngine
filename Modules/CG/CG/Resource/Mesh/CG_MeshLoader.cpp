@@ -37,7 +37,7 @@ CG_Mesh CG_MeshLoader::Load(YK_FilePath const& p_path)
         return LoadGLTF(p_path);
     }
 
-    YK_LOG_ERROR_PARAM("Attempting to load a mesh with an unsupported format!\n{}", p_path.CString());
+    YK_LOG_ERROR("Attempting to load a mesh with an unsupported format!\n{}", p_path.CString());
     return CG_Mesh();
 }
 

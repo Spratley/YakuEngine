@@ -8,7 +8,7 @@ namespace YK_Core_GLFWHelpers
 #if YK_PLATFORM != YK_WASM
         glfwGetError(&error);
 #endif // YK_PLATFORM != YK_WASM
-        YK_LOG_ERROR_PARAM("GLFW Error: {} - {}", p_errorMessage, error);
+        YK_LOG_ERROR("GLFW Error: {} - {}", p_errorMessage, error);
         glfwTerminate();
     }
 

@@ -11,7 +11,7 @@ CG_Shader CG_ShaderLoader::Load(YK_FilePath const& p_shaderPath)
 {
     if (p_shaderPath.Extension() != "YKS")
     {
-        YK_LOG_ERROR_PARAM("Non-YakuShader file passed into CG_ShaderLoader!\n{}", p_shaderPath.CString());
+        YK_LOG_ERROR("Non-YakuShader file passed into CG_ShaderLoader!\n{}", p_shaderPath.CString());
         // TODO: Hard-coded error shader
         return CG_Shader{};
     }

@@ -30,7 +30,7 @@ bool YK_IFile::Open(char const* p_path)
     }
     catch (std::ifstream::failure)
     {
-        YK_LOG_ERROR_PARAM("Failed to open file: {}", p_path);
+        YK_LOG_ERROR("Failed to open file: {}", p_path);
         return false;
     }
     return true;
@@ -78,7 +78,7 @@ bool YK_OFile::Open(char const* p_path)
     }
     catch (std::ifstream::failure)
     {
-        YK_LOG_ERROR_PARAM("Failed to open file: {}", p_path);
+        YK_LOG_ERROR("Failed to open file: {}", p_path);
         return false;
     }
     return true;
