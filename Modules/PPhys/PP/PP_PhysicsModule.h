@@ -1,5 +1,6 @@
 #pragma once
 
+#include "YK/Libraries/Zen/Zen_ForwardDeclare.h"
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Other/YK_DeferredConstructible.h"
 
@@ -9,11 +10,6 @@
 #include "Jolt/Core/JobSystemThreadPool.h"
 #include "Jolt/Core/TempAllocator.h"
 #include "Jolt/Physics/PhysicsSystem.h"
-
-namespace Zen
-{
-    class Garden;
-}
 
 class PP_PhysicsModule
 {
