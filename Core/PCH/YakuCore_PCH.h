@@ -10,6 +10,7 @@
 // Utilities
 #include "YK/Utils/YK_AlgorithmUtils.h"
 #include "YK/Utils/YK_MemoryUtils.h"
+#include "YK/Utils/YK_PointerUtils.h"
 
 // Types
 #include "YK/Types/Math/YK_Integer.h"
