@@ -17,7 +17,7 @@ static constexpr inline void YK_AssertImpl(bool p_condition, char const* p_messa
         else
         {
             // Runtime Assert
-            YK_LOG_ERROR("{}", p_message);
+            YK_LOG_ERROR(p_message);
 #if _MSC_VER
             __debugbreak();
 #endif // _MSC_VER
