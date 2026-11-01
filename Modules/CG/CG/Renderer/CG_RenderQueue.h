@@ -5,6 +5,7 @@
 #include "YK/Types/Math/YK_Integer.h"
 #include "YK/Types/Math/YK_Matrix.h"
 
+#include "CG/DebugDraw/CG_DebugDefines.h"
 #include "CG/ECS/CG_Components.h"
 
 #include <vector>
@@ -42,6 +43,10 @@ public:
     void PushEntry(YK_TransformComponent const& p_transform, CG_RendererComponent const& p_rendererComponent);
     void SetMesh(CG_MeshComponent const& p_mesh);
     void SetMesh(CG_SkeletalMeshComponent const& p_skeletalMesh, CG_PoseComponent const& p_pose);
+
+    CG_IF_DEBUG_DRAW_ENABLED(void PushDebugEntry(YK_Transform const& p_transform,
+                                                 CG_Material const& p_material,
+                                                 CG_Mesh const& p_mesh));
 
 private:
     struct Entry

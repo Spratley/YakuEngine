@@ -8,6 +8,7 @@
 #include "YK/Platforms/YK_PlatformDefines.h"
 
 #include "CG/Camera/CG_CameraComponent.h"
+#include "CG/DebugDraw/CG_DebugDefines.h"
 #include "CG/RenderTarget/CG_RenderTarget.h"
 #include "CG/Renderer/2D/CG_2DRenderer.h"
 #include "CG/Renderer/3D/CG_3DRenderer.h"
@@ -25,7 +26,7 @@
 CG_RenderModule::CG_RenderModule(YK_DisplaySurface& p_displaySurface)
     : m_display(&p_displaySurface)
     , m_displayRenderTarget()
-    , m_3DRenderer(p_displaySurface)
+    , m_3DRenderer()
     , m_2DRenderer()
     , m_activeCamera(Zen::Entity{})
 {
@@ -50,6 +51,9 @@ void CG_RenderModule::Render() const
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_3DRenderer.Render(m_displayRenderTarget, m_renderBindingsCache, *camera);
+    CG_IF_DEBUG_DRAW_ENABLED(m_debugDrawer.Render(m_displayRenderTarget, m_renderBindingsCache, *camera));
+    m_renderBindingsCache.TempInvalidate();
+
     m_2DRenderer.Render(m_displayRenderTarget);
 
     m_display->SwapBuffers();

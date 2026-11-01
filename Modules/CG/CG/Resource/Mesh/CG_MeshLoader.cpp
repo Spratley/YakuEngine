@@ -41,12 +41,8 @@ CG_Mesh CG_MeshLoader::Load(YK_FilePath const& p_path)
     return CG_Mesh();
 }
 
-// TODO: This needs SUPER improvement. It's not good as it stands
-CG_Mesh CG_MeshLoader::LoadOBJ(YK_FilePath const& p_path)
+CG_Mesh CG_MeshLoader::ParseOBJ(std::stringstream& p_dataStream)
 {
-    std::stringstream objFileContents;
-    YK_IFile::GetFileContents(p_path.CString(), objFileContents);
-
     std::vector<YK_Vector3f> vertexPositions;
     std::vector<YK_Vector2f> vertexTexCoords;
 
@@ -57,7 +53,7 @@ CG_Mesh CG_MeshLoader::LoadOBJ(YK_FilePath const& p_path)
     std::vector<YK_U32> indices;
 
     std::string fileLine;
-    while (std::getline(objFileContents, fileLine))
+    while (std::getline(p_dataStream, fileLine))
     {
         // TODO: Move string parsing to its own YKC file
         char const* dataPtr = &fileLine[fileLine.find_first_of(' ') + 1];
@@ -125,10 +121,46 @@ CG_Mesh CG_MeshLoader::LoadOBJ(YK_FilePath const& p_path)
                 }
             }
         }
+        else if (linePrefix.compare("fb") == 0)
+        {
+            // HACK: Add new "Face Basic" prefix to indicate it's only vertices
+            // This is proof that this needed to be rewritten
+            for (auto i : YK_CountTo(3))
+            {
+                YK_Unused(i);
+
+                constexpr YK_U32 dummyVertexTexCoordIndex = 0;
+                YK_U32 vertexPositionIndex;
+                extractData(vertexPositionIndex);
+                --vertexPositionIndex;
+
+                auto const foundIndex =
+                  vertexTexturePairIndices.find(std::make_tuple(vertexPositionIndex, dummyVertexTexCoordIndex));
+                if (foundIndex != vertexTexturePairIndices.end())
+                {
+                    indices.push_back(foundIndex->second);
+                }
+                else
+                {
+                    const YK_U32 vertexIndex = static_cast<YK_U32>(vertexTexturePairIndices.size());
+                    vertexTexturePairIndices.emplace(
+                      std::pair(std::make_tuple(vertexPositionIndex, dummyVertexTexCoordIndex), vertexIndex));
+
+                    YK_Vector3f const& vertexPosition = vertexPositions[vertexPositionIndex];
+                    vertices.push_back(vertexPosition.x);
+                    vertices.push_back(vertexPosition.y);
+                    vertices.push_back(vertexPosition.z);
+
+                    indices.push_back(vertexIndex);
+                }
+            }
+        }
     }
 
     // Right now this is hard-coded to ONLY load position and UV
-    constexpr CG_MeshLayout layout{ CG_MeshAttribute::POSITION, CG_MeshAttribute::UV };
+    CG_MeshLayout const layout = vertexTexCoords.empty() ?
+                                   CG_MeshLayout{ CG_MeshAttribute::POSITION } :
+                                   CG_MeshLayout{ CG_MeshAttribute::POSITION, CG_MeshAttribute::UV };
 
     return CG_MeshFactory::FromData(reinterpret_cast<YK_Byte const*>(vertices.data()),
                                     static_cast<YK_U32>(vertices.size()),
@@ -136,6 +168,14 @@ CG_Mesh CG_MeshLoader::LoadOBJ(YK_FilePath const& p_path)
                                     static_cast<YK_U32>(indices.size()),
                                     0, // No bones for OBJs
                                     layout);
+}
+
+// TODO: This needs SUPER improvement. It's not good as it stands
+CG_Mesh CG_MeshLoader::LoadOBJ(YK_FilePath const& p_path)
+{
+    std::stringstream objFileContents;
+    YK_IFile::GetFileContents(p_path.CString(), objFileContents);
+    return ParseOBJ(objFileContents);
 }
 
 CG_Mesh CG_MeshLoader::LoadGLTF(YK_FilePath const& p_path)

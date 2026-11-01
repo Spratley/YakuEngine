@@ -113,6 +113,7 @@ CG_RenderQueue const CG_RenderQueueBuilder::Build()
     renderQueue.m_materialEntries.back().m_endIndex = lastIndex;
     renderQueue.m_meshEntries.back().m_endIndex = lastIndex;
 
+    m_entries.clear();
     return renderQueue;
 }
 
@@ -136,3 +137,14 @@ void CG_RenderQueueBuilder::SetMesh(CG_SkeletalMeshComponent const& p_skeletalMe
 
     m_bonesInQueue += p_skeletalMesh.m_skeleton->m_bones.size();
 }
+
+#if CG_DEBUG_DRAW_ENABLED
+void CG_RenderQueueBuilder::PushDebugEntry(YK_Transform const& p_transform,
+                                           CG_Material const& p_material,
+                                           CG_Mesh const& p_mesh)
+{
+    YK_SizeT index = m_entries.size();
+    m_entries.push_back(Entry{ .m_transform = &p_transform, .m_material = &p_material, .m_mesh = &p_mesh });
+    m_workingEntry = &m_entries[index];
+}
+#endif // CG_DEBUG_DRAW_ENABLED

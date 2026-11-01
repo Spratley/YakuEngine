@@ -14,6 +14,7 @@
 #include "YK/Types/Math/YK_Vector.h"
 
 #include "CG/Camera/CG_CameraComponent.h"
+#include "CG/DebugDraw/CG_DebugDefines.h"
 #include "CG/ECS/CG_Components.h"
 #include "CG/RenderTarget/CG_RenderTarget.h"
 #include "CG/Renderer/CG_RenderBinding.h"
@@ -34,27 +35,6 @@
 #endif
 
 #include <cstring>
-
-// TODO: Move to a better place
-namespace CG_3DRenderer_Private
-{
-    YK_Vector2i viewportDimensions;
-    float viewportAspectRatio;
-
-    void RecalculateViewport(YK_Vector2i p_newDimensions)
-    {
-        viewportDimensions = p_newDimensions;
-        viewportAspectRatio = static_cast<float>(p_newDimensions.x) / static_cast<float>(p_newDimensions.y);
-    }
-} // namespace CG_3DRenderer_Private
-
-CG_3DRenderer::CG_3DRenderer(YK_DisplaySurface& p_displaySurface)
-{
-    GLint currentViewport[4];
-    glGetIntegerv(GL_VIEWPORT, currentViewport);
-    CG_3DRenderer_Private::RecalculateViewport(YK_Vector2i(currentViewport[2], currentViewport[3]));
-    p_displaySurface.GetResizedCallback().Attach<&CG_3DRenderer_Private::RecalculateViewport>();
-}
 
 void CG_3DRenderer::Render(CG_RenderTarget const& p_target,
                            CG_RenderBinding& p_bindings,
@@ -78,7 +58,7 @@ void CG_3DRenderer::Render(CG_RenderTarget const& p_target,
     }
     CG_RenderQueue renderQueue = renderQueueBuilder.Build();
 
-    YK_Matrix44 const cameraMatrix = p_camera.CalculateCameraMatrix(CG_3DRenderer_Private::viewportAspectRatio);
+    YK_Matrix44 const cameraMatrix = p_camera.CalculateCameraMatrix(p_target.GetAspectRatio());
     p_target.Bind();
 
     YK_SizeT itemIndex = 0;
@@ -120,6 +100,4 @@ void CG_3DRenderer::Render(CG_RenderTarget const& p_target,
 
         } while (endIndex < materialEndIndex);
     }
-
-    p_bindings.TempInvalidate();
 }
