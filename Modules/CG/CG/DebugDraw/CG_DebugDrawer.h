@@ -43,4 +43,22 @@ namespace YK_Debug
     CG_DebugDrawer& GetDrawer();
 }
 
-#endif CG_DEBUG_DRAW_ENABLED
+#else // CG_DEBUG_DRAW_ENABLED == FALSE
+
+class CG_DebugDrawer
+{
+    // No-ops
+public:
+    void AddSphere(YK_Vector3f const&, float) {}
+};
+
+namespace YK_Debug
+{
+    inline CG_DebugDrawer& GetDrawer()
+    {
+        static CG_DebugDrawer drawer;
+        return drawer;
+    }
+} // namespace YK_Debug
+
+#endif // CG_DEBUG_DRAW_ENABLED
