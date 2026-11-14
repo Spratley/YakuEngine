@@ -1,0 +1,36 @@
+name: Update Latest Source Zip
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-latest-source-zip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Zip source into archive
+        uses: qmonnet/git-archive-all-action@v1
+        with:
+          output-files: "${{ github.event.repository.name }}-latest.zip"
+          
+      - name: Move 'latest-zip' tag to latest
+        run: |
+          git tag -f latest-zip
+          git push -f origin latest-zip
+
+      - name: Release latest zip
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest-zip
+          name: Latest Source
+          files: "${{ github.event.repository.name }}-latest.zip"
