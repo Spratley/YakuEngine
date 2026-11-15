@@ -40,6 +40,7 @@ namespace CG_DebugDrawer_Private
 
     // TODO: Make constexpr
     CG_Mesh PrimitiveSphere;
+    CG_Mesh PrimitiveCube;
 
     CG_DebugDrawer* Instance = nullptr;
 } // namespace CG_DebugDrawer_Private
@@ -53,11 +54,20 @@ CG_DebugDrawer::CG_DebugDrawer()
     // Too bad it's not universally supported yet...
     // C++26 I love you
 
+    auto ParseObj = [](std::string const& p_data) {
+        std::stringstream dataStream(p_data);
+        return CG_MeshLoader::ParseOBJ(dataStream);
+    };
+
     std::string sphereData =
 #include "Resources/CG_DebugSphere"
       ;
-    std::stringstream dataStream(sphereData);
-    CG_DebugDrawer_Private::PrimitiveSphere = CG_MeshLoader::ParseOBJ(dataStream);
+    CG_DebugDrawer_Private::PrimitiveSphere = ParseObj(sphereData);
+
+    std::string cubeData =
+#include "Resources/CG_DebugCube"
+      ;
+    CG_DebugDrawer_Private::PrimitiveCube = ParseObj(cubeData);
 
     CG_DebugDrawer_Private::DebugMaterial = CG_MaterialLoader::Load(YK_FilePath("Materials/Error.YKM"));
 }
@@ -73,6 +83,17 @@ void CG_DebugDrawer::AddSphere(YK_Vector3f const& p_position, float p_radius)
     m_queue.push_back(CG_DebugDrawEntry{
       .m_transform = YK_Transform{ p_position, YK_Quaternion{}, YK_Vector3f{ p_radius } },
       .m_mesh = &CG_DebugDrawer_Private::PrimitiveSphere,
+      .m_lifetime = 0u
+    });
+}
+
+void CG_DebugDrawer::AddCube(YK_Vector3f const& p_position,
+                             YK_Quaternion const& p_orientation,
+                             YK_Vector3f const& p_dimensions)
+{
+    m_queue.push_back(CG_DebugDrawEntry{
+      .m_transform = YK_Transform{ p_position, p_orientation, p_dimensions },
+      .m_mesh = &CG_DebugDrawer_Private::PrimitiveCube,
       .m_lifetime = 0u
     });
 }

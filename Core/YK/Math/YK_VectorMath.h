@@ -23,15 +23,11 @@ namespace YK_Vector
 
     template <YK_VectorType Vector>
     constexpr float Magnitude(Vector const& p_vector)
-    {
-        return YK_SquareRoot(SqrMagnitude(p_vector));
-    }
+    { return YK_SquareRoot(SqrMagnitude(p_vector)); }
 
     template <YK_VectorType Vector>
     constexpr YK_Vector_N<typename Vector::DataType_T, Vector::Count> GetNormalized(Vector const& p_vector)
-    {
-        return p_vector / Magnitude(p_vector);
-    }
+    { return p_vector / Magnitude(p_vector); }
 
     template <YK_VectorType Vector>
     constexpr Vector& Normalize(Vector& p_vector)
@@ -84,6 +80,12 @@ namespace YK_Vector
                                                                          (p_lhs[0] * p_rhs[1]) - (p_lhs[1] * p_rhs[0]));
     }
 
+    template <YK_VectorType VectorA, YK_VectorType VectorB>
+    requires(YK_AreVectorsCompatible<VectorA, VectorB>::value)
+    constexpr YK_Vector_N<typename VectorA::DataType_T, VectorA::Count> Project(VectorA const& p_from,
+                                                                                VectorB const& p_onto)
+    { return p_onto * (Dot(p_from, p_onto) / SqrMagnitude(p_onto)); }
+
     template <YK_VectorType Vector>
     requires(std::totally_ordered<typename Vector::DataType_T>)
     constexpr Vector::DataType_T MaximumElement(Vector const& p_vector)
@@ -111,16 +113,12 @@ namespace YK_Vector
     template <YK_VectorType Vector>
     requires(std::totally_ordered<typename Vector::DataType_T>)
     constexpr Vector Maximize(Vector const& p_vector)
-    {
-        return Vector{ MaximumElement(p_vector) };
-    }
+    { return Vector{ MaximumElement(p_vector) }; }
 
     template <YK_VectorType Vector>
     requires(std::totally_ordered<typename Vector::DataType_T>)
     constexpr Vector Minimize(Vector const& p_vector)
-    {
-        return Vector{ MinimumElement(p_vector) };
-    }
+    { return Vector{ MinimumElement(p_vector) }; }
 
     template <YK_VectorType VectorA, YK_VectorType VectorB>
     requires(YK_AreVectorsCompatible<VectorA, VectorB>::value && YK_FloatingPointType<typename VectorA::DataType_T>)

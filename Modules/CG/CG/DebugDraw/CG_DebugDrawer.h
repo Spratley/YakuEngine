@@ -31,6 +31,7 @@ public:
     ~CG_DebugDrawer();
 
     void AddSphere(YK_Vector3f const& p_position, float p_radius);
+    void AddCube(YK_Vector3f const& p_position, YK_Quaternion const& p_orientation, YK_Vector3f const& p_dimensions);
 
     void Render(CG_RenderTarget const& p_target, CG_RenderBinding& p_bindings, CG_Camera const& p_camera) const;
 
@@ -50,6 +51,7 @@ class CG_DebugDrawer
     // No-ops
 public:
     void AddSphere(YK_Vector3f const&, float) {}
+    void AddCube(YK_Vector3f const& p_position, YK_Quaternion const& p_orientation, YK_Vector3f const& p_dimensions) {}
 };
 
 namespace YK_Debug
